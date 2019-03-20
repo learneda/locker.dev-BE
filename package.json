@@ -1,0 +1,28 @@
+{
+  "name": "auth-demo",
+  "version": "1.0.0",
+  "description": "auth",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luiscmartinez/demo.git"
+  },
+  "author": "me",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "helmet": "^3.16.0",
+    "knex": "^0.16.3",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.10",
+    "passport": "^0.4.0",
+    "passport-github": "^1.1.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-twitter": "^1.0.4",
+    "pg": "^7.9.0",
+    "socket.io": "^2.2.0"
+  }
+}

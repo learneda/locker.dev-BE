@@ -1,3 +1,4 @@
+require('dotenv').config();
 const server = require('express')();
 require('./config/passport');
 require('./middleware/index')(server);

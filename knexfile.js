@@ -3,12 +3,12 @@
 module.exports = {
   development: {
     client: 'pg',
-    connection: 'postgresql://chivo@localhost/chivo'
+    connection: 'postgresql://localhost'
   },
 
   staging: {
     client: 'postgresql',
-    connection: 'postgresql://chivo@localhost/chivo',
+    connection: 'postgresql://localhost',
     pool: {
       min: 2,
       max: 10

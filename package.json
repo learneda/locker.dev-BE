@@ -1,4 +1,4 @@
-{
+-{
   "name": "learned-be",
   "version": "1.0.0",
   "description": "learned-",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/learneda/labs11_learned_a-FE"
+    "url": "https://github.com/learneda/labs11_learned_a-BE"
   },
   "author": "me",
   "license": "ISC",

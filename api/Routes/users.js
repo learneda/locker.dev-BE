@@ -12,4 +12,14 @@ router.get('/users', async (req, res) => {
   res.status(200).send(users);
 });
 
+router.post('/users/create', async (req, res) => {
+  if (req.body.email && req.body.display_name) {
+    try {
+      await usersDb.createUser(req.body);
+      res.status(201).json({ message: 'user successfully added!' });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else res.status(400).json({ error: 'Please provide a email & display name for the new user.' });})
+
 module.exports = router;

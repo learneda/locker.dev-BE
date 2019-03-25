@@ -4,11 +4,11 @@ exports.up = function(knex, Promise) {
     tbl.string('first_name').nullable();
     tbl.string('last_name').nullable();
     tbl
-      .string('email', 254)
-      .unique();
+      .string('email', 254).nullable().unique();
     tbl.string('password').nullable();
     tbl.string('display_name').notNullable();
     tbl.string('profile_picture').nullable();
+    tbl.string('github_id').nullable();
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.timestamp('updated_at').defaultTo(knex.fn.now());
   });

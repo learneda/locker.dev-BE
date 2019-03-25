@@ -9,7 +9,7 @@ router.get('/github/cb', passport.authenticate('github'), (req, res, next) => {
   console.log('IS USER Authenti ??? ??', req.isAuthenticated())
   if (process.env.NODE_ENV === 'production') {
     res.redirect('https://learnedadev.netlify.com/feed');
-  } else res.redirect('http://localhost:3000');
+  } else res.redirect('http://localhost:3000/feed');
 })
 
 module.exports = router

@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const db = require('../../dbConfig');
 
 // ==============================================
 // this JS file includes helpers that access our
@@ -6,6 +7,14 @@ const router = require('express').Router();
 // requests all the users in the users database)
 // ==============================================
 const usersDb = require('../helpers/usersHelper');
+
+// will need user id to fetch data
+router.get('/user', async(req, res, next) => {
+  const userDetails = await db('users').where('id', req.body.id).first()
+  if (userDetails) {
+    res.json({user: userDetails});
+  } 
+});
 
 router.get('/users', async (req, res) => {
   const users = await usersDb.get();

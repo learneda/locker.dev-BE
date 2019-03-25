@@ -24,4 +24,10 @@ router.get('/post', (req, res) => {
   );
 });
 
+router.get('/posts/:id', async (req, res) => {
+  const { id } = req.params;
+  const posts = await postsDb.get(id);
+  res.status(200).send(posts);
+});
+
 module.exports = router;

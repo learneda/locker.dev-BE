@@ -34,3 +34,17 @@ passport.use(
 );
 
 // passport.use(new TwitterStrategy({}))
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT,
+      clientSecret: process.env.GOOGLE_SECRET,
+      callbackURL: '/auth/google/callback',
+      proxy: true
+    },
+    (accessToken, refreshToken, profile, done) => {
+      console.log(accessToken);
+      console.log(profile);
+    }
+  )
+);

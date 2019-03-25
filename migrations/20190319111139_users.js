@@ -7,6 +7,7 @@ exports.up = function(knex, Promise) {
       .string('email', 254)
       .unique();
     tbl.string('password').nullable();
+    tbl.string('github_id').nullable();
     tbl.string('display_name').notNullable();
     tbl.string('profile_picture').nullable();
     tbl.timestamp('created_at').defaultTo(knex.fn.now());

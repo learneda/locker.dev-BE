@@ -4,7 +4,7 @@ const passport = require('passport')
 
 router.get('/github', passport.authenticate('github'))
 
-router.get('/github/cb', passport.authenticate('github'), function (req, res) {
+router.get('/github/cb', passport.authenticate('github'), (req, res, next) => {
   // Successful authentication, redirect home.
   console.log('here')
   res.send('hello you signed in from github')

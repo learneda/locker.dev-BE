@@ -1,16 +1,6 @@
 const request = require('request');
 const router = require('express').Router();
 
-// server.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   res.setHeader("Access-Control-Allow-Credentials", true);
-//   next();
-// });
-
 router.get('/courses', function(req, res) {
   request(
     {

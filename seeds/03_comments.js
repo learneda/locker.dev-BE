@@ -1,13 +1,12 @@
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('table_name').del()
+  return knex('comments').del()
     .then(function () {
-      // Inserts seed entries
-      return knex('table_name').insert([
-        {id: 1, colName: 'rowValue1'},
-        {id: 2, colName: 'rowValue2'},
-        {id: 3, colName: 'rowValue3'}
+      return knex('comments').insert([
+        {id: 1, content: 'dope', post_id: 1, user_id: 1},
+        {id: 2, content: 'ughhh', post_id:1, user_id: 2},
+        {id: 3, content: 'youtube needs to stop bullying people !', post_id:3, user_id: 2}
       ]);
     });
 };

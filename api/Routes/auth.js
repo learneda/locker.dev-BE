@@ -1,3 +1,6 @@
+const router = require('express').Router();
+const passport = require('passport');
+// const db = require('../../dbConfig')
 require('dotenv').config()
 const router = require('express').Router()
 const passport = require('passport')
@@ -5,15 +8,28 @@ const db = require('../../dbConfig')
 const jtw = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 
-router.get('/github', passport.authenticate('github'))
+router.get('/github', passport.authenticate('github'));
 
 router.get('/github/cb', passport.authenticate('github'), (req, res, next) => {
   // Successful authentication, redirect home.
-  console.log('IS USER Authenti ??? ??', req.isAuthenticated())
+  console.log('IS USER Authenti ??? ??', req.isAuthenticated());
   if (process.env.NODE_ENV === 'production') {
     res.redirect('https://learnedadev.netlify.com/feed');
   } else res.redirect('http://localhost:3000/feed');
-})
+});
+
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { failureRedirect: '/failed' }),
+  (req, res) => {
+    res.redirect('success');
+  }
+);
 
 router.post('/register', (req, res, next) => {
   console.log(req.body)

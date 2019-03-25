@@ -14,6 +14,8 @@ router.get('/courses', (req, res) => {
     (error, response, body) => {
       if (!error && response.statusCode == 200) {
         res.json(JSON.parse(body));
+      } else {
+        res.json({err: error});
       }
     }
   );

@@ -1,17 +1,17 @@
 const request = require('request');
 const router = require('express').Router();
 
-router.get('/courses', function(req, res) {
+router.get('/courses', (req, res) => {
   request(
     {
       method: 'GET',
       uri: 'https://www.udemy.com/api-2.0/courses',
       auth: {
-        username: process.env.CLIENT_ID,
-        password: process.env.CLIENT_SECRET
+        username: process.env.UDEMY_ID,
+        password: process.env.UDEMY_SECRET
       }
     },
-    function(error, response, body) {
+    (error, response, body) => {
       if (!error && response.statusCode == 200) {
         res.json(JSON.parse(body));
       }

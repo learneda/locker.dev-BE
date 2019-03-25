@@ -1,5 +1,5 @@
 require('dotenv').config()
-console.log('make sure these R defined',process.env.GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET,GITHUB_CB_URL)
+console.log('make sure these R defined',process.env.GITHUB_CLIENT_ID,process.env.GITHUB_CLIENT_SECRET,process.env.GITHUB_CB_URL)
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
 const TwitterStrategy = require('passport-twitter').Strategy

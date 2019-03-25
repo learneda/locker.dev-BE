@@ -3,7 +3,7 @@ const router = require('express').Router();
 const passport = require('passport');
 const db = require('../../dbConfig');
 const jtw = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 router.get('/github', passport.authenticate('github'));
 

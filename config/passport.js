@@ -51,7 +51,7 @@ passport.use(
         .where('google_id', google_id)
         .first();
       if (existingUser) {
-        done(null, newUser);
+        done(null, existingUser);
       } else {
         const newUser = await db('users').insert({
           google_id: profile.id,
@@ -62,15 +62,6 @@ passport.use(
         console.log('user created');
         done(null, newUser);
       }
-      // create new user object to save in
-      // const newUser = {
-      //   google_id: profile.id,
-      //   display_name: profile.displayName,
-      //   email: profile.emails[0].value,
-      //   profile_picture: profile.photos[0].value
-      // };
-      // console.log(accessToken);
-      // console.log(profile);
     }
   )
 );

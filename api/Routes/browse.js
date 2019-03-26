@@ -33,7 +33,8 @@ router.get('/articles', routeCache.cacheSeconds(60), (req, res) => {
           title: article.title,
           description: article.description,
           thumbnail: article.image,
-          created: article.publishedTime
+          created: article.publishedTime,
+          url: url
         }))
         .catch(err => {
           console.log(err);

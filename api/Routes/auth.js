@@ -24,6 +24,7 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/failed' }),
   (req, res) => {
+    console.log('isAuthenticated 😂', req.isAuthenticated());
     if (process.env.NODE_ENV === 'production') {
       res.redirect('https://learnedadev.netlify.com/profile');
     } else res.redirect('http://localhost:3000/profile');
@@ -78,5 +79,14 @@ router.post('/login', (req, res, next) => {
       }
     });
 });
+
+router.get('/logout', (req, res) => {
+  req.logout();
+  if (process.env.NODE_ENV === 'production') {
+    res.redirect('https://learnedadev.netlify.com');
+  } else res.redirect('http://localhost:3000');
+});
+
+router.get('/current_user', (req, res) => res.send(req.user));
 
 module.exports = router;

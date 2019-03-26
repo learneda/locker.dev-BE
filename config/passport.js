@@ -12,7 +12,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  console.log('deserialize: look up' + user);
+  console.log('deserialize: look up' + id);
   db('users')
     .where({ id: id })
     .first()

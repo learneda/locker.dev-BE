@@ -36,7 +36,7 @@ passport.use(
   )
 );
 
-// passport.use(new TwitterStrategy({}))
+/* ===== PASSPORT GOOGLE STRATEGY ===== */
 passport.use(
   new GoogleStrategy(
     {
@@ -45,9 +45,44 @@ passport.use(
       callbackURL: '/auth/google/callback',
       proxy: true
     },
-    (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken);
-      console.log(profile);
+    async function findOrCreate(accessToken, refreshToken, profile, done) {
+      const google_id = profile.id;
+      const existingUser = await db('users')
+        .where('google_id', google_id)
+        .first();
+      if (existingUser) {
+        done(null, existingUser);
+      } else {
+        const newUser = await db('users').insert({
+          google_id: profile.id,
+          display_name: profile.displayName,
+          email: profile.emails[0].value,
+          profile_picture: profile.photos[0].value
+        });
+        console.log('user created');
+        done(null, newUser);
+      }
     }
   )
 );
+
+passport.serializeUser((user, done) => {
+  console.log('serialize: passport saving id from:', user);
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  console.log('deserialize: look up' + user);
+  // db('users')
+  //   .get(id)
+  //   .then(user => done(null, user))
+  //   .catch(err => console.log(err));
+  db('users')
+    .where({ id: id })
+    .then(([user]) => {
+      if (!user) {
+        done(new Error('User not found ' + id));
+      }
+      done(null, user);
+    });
+});

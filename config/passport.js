@@ -65,3 +65,24 @@ passport.use(
     }
   )
 );
+
+passport.serializeUser((user, done) => {
+  console.log('serialize: passport saving id from:', user);
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  console.log('deserialize: look up' + user);
+  // db('users')
+  //   .get(id)
+  //   .then(user => done(null, user))
+  //   .catch(err => console.log(err));
+  db('users')
+    .where({ id: id })
+    .then(([user]) => {
+      if (!user) {
+        done(new Error('User not found ' + id));
+      }
+      done(null, user);
+    });
+});

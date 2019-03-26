@@ -8,8 +8,6 @@ const bcrypt = require('bcrypt');
 router.get('/github', passport.authenticate('github'));
 
 router.get('/github/cb', passport.authenticate('github'), (req, res, next) => {
-  // Successful authentication, redirect home.
-  console.log('IS USER Authenti ??? ??', req.isAuthenticated());
   if (process.env.NODE_ENV === 'production') {
     res.redirect('https://learnedadev.netlify.com/profile');
   } else res.redirect('http://localhost:3000/profile');
@@ -24,7 +22,6 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/failed' }),
   (req, res) => {
-    console.log('isAuthenticated 😂', req.isAuthenticated());
     if (process.env.NODE_ENV === 'production') {
       res.redirect('https://learnedadev.netlify.com/profile');
     } else res.redirect('http://localhost:3000/profile');

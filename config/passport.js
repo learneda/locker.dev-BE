@@ -1,7 +1,7 @@
-const passport = require('passport')
-const GitHubStrategy = require('passport-github').Strategy
-const TwitterStrategy = require('passport-twitter').Strategy
-const GoogleStrategy = require('passport-google-oauth20').Strategy
+const passport = require('passport');
+const GitHubStrategy = require('passport-github').Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const db = require('../dbConfig')
 
@@ -18,7 +18,7 @@ passport.use(
       const display_name = profile.username;
       const profile_picture = profile.photos[0].value;
       const existingUser = await db('users')
-        .where('github_id', github_id)
+        .where('github_id', github_id);
         .first();
       if (existingUser) {
         done(null, existingUser);
@@ -76,7 +76,7 @@ passport.deserializeUser((id, done) => {
   //   .then(user => done(null, user))
   //   .catch(err => console.log(err));
   db('users')
-    .where({ id: id })
+    .where({ id: id });
     .then(([user]) => {
       if (!user) {
         done(new Error('User not found ' + id));

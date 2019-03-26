@@ -1,10 +1,8 @@
-require('dotenv').config()
 const router = require('express').Router()
 const passport = require('passport')
-const db = require('../../dbConfig')
+// const db = require('../../dbConfig')
 const jtw = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-
 router.get('/github', passport.authenticate('github'))
 
 router.get('/github/cb', passport.authenticate('github'), (req, res, next) => {

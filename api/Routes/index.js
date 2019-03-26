@@ -5,7 +5,7 @@ const routeCourses = require('./courses');
 
 module.exports = server => {
   server.use('/auth', routeAuth);
-  server.use('/api', routeUser);
+  server.use('/users', routeUser);
   server.use('/posts', routePost);
   server.use('/udemy', routeCourses);
 };

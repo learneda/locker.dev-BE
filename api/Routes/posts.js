@@ -30,4 +30,19 @@ router.get('/posts/:id', async (req, res) => {
   res.status(200).send(posts);
 });
 
+router.post('/posts', async (req, res) => {
+  if (req.body.post_url && req.body.user_id) {
+    try {
+      await postsDb.insert(req.body);
+      res.status(201).json({ message: 'Post was successfully added :)' });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    res
+      .status(400)
+      .json({ message: 'Please provide a post url and a user id :)' });
+  }
+});
+
 module.exports = router;

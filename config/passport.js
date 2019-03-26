@@ -2,10 +2,27 @@ require('dotenv').config();
 
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
-const TwitterStrategy = require('passport-twitter').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const db = require('../dbConfig');
+
+passport.serializeUser((user, done) => {
+  console.log('serialize: passport saving id from:', user);
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  console.log('deserialize: look up' + user);
+  db('users')
+    .where({ id: id })
+    .first()
+    .then(user => {
+      if (!user) {
+        done(new Error('User not found ' + id));
+      }
+      done(null, user);
+    });
+});
 
 passport.use(
   new GitHubStrategy(
@@ -30,13 +47,14 @@ passport.use(
           display_name: display_name,
           profile_picture: profile_picture
         });
+        console.log(createdUser);
         done(null, createdUser);
       }
     }
   )
 );
 
-// passport.use(new TwitterStrategy({}))
+/* ===== PASSPORT GOOGLE STRATEGY ===== */
 passport.use(
   new GoogleStrategy(
     {
@@ -45,9 +63,27 @@ passport.use(
       callbackURL: '/auth/google/callback',
       proxy: true
     },
-    (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken);
-      console.log(profile);
+    async function findOrCreate(accessToken, refreshToken, profile, done) {
+      const google_id = profile.id;
+      const existingUser = await db('users')
+        .where('google_id', google_id)
+        .first();
+      if (existingUser) {
+        done(null, existingUser);
+      } else {
+        await db('users').insert({
+          google_id: profile.id,
+          display_name: profile.displayName,
+          email: profile.emails[0].value,
+          profile_picture: profile.photos[0].value
+        });
+        const newUser = db('users')
+          .where({ google_id: profile.id })
+          .first()
+          .then(user => {
+            done(null, user);
+          });
+      }
     }
   )
 );

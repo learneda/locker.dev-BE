@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const DB = require('../../dbConfig');
+const db = require('../../dbConfig');
 const urlMetadata = require('url-metadata');
 // ==============================================
 // this JS file includes helpers that access our
@@ -8,10 +8,26 @@ const urlMetadata = require('url-metadata');
 // ==============================================
 const postsDb = require('../helpers/postsHelper');
 
-router.get('/posts', async (req, res) => {
-  const posts = await postsDb.get();
-  res.status(200).send(posts);
-});
+// GET ALL USER POST
+router.get('/', (req, res) => {
+  db('posts').where({user_id: req.body.user,}).then((rows) => {
+    res.json({post: rows});
+  })
+})
+
+// USER CREATING A POST 
+router.post('/create', (req, res, next) => {
+  const {user_id, categories, post_url} = req.body;
+  db('posts').insert({
+    user_id: user_id, completed: false, categories: categories, post_url: post_url
+  }).then((createdPost) => {
+    res.status(200).json({msg: createdPost});
+  })
+})
+
+// router.post('/edit', (req, res, next) => {
+//   db('posts').where({id: req.body.post_id}).then()
+// })
 
 router.get('/post', (req, res) => {
   urlMetadata(`${req.query.url}`).then(
@@ -22,12 +38,6 @@ router.get('/post', (req, res) => {
       console.log(error);
     }
   );
-});
-
-router.get('/posts/:id', async (req, res) => {
-  const { id } = req.params;
-  const posts = await postsDb.get(id);
-  res.status(200).send(posts);
 });
 
 module.exports = router;

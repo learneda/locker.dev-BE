@@ -14,26 +14,29 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: '/auth/github/cb'
     },
-    async function findOrCreate (accessToken, refreshToken, profile, done) {
-      console.log(profile)
-      const github_id = profile.id
-      const display_name = profile.username
-      const profile_picture = profile.photos[0].value 
+    async function findOrCreate(accessToken, refreshToken, profile, done) {
+      console.log(profile);
+      const github_id = profile.id;
+      const display_name = profile.username;
+      const profile_picture = profile.photos[0].value;
       const existingUser = await db('users')
         .where('github_id', github_id)
-        .first()
+        .first();
       if (existingUser) {
-        done(null, existingUser)
-      }
-      else {
-        const createdUser = await db('users').insert({github_id:github_id, display_name:display_name, profile_picture:profile_picture})
-        done(null, createdUser)
+        done(null, existingUser);
+      } else {
+        const createdUser = await db('users').insert({
+          github_id: github_id,
+          display_name: display_name,
+          profile_picture: profile_picture
+        });
+        done(null, createdUser);
       }
     }
   )
 );
 
-// passport.use(new TwitterStrategy({}))
+/* ===== PASSPORT GOOGLE STRATEGY ===== */
 passport.use(
   new GoogleStrategy(
     {
@@ -42,9 +45,32 @@ passport.use(
       callbackURL: '/auth/google/callback',
       proxy: true
     },
-    (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken);
-      console.log(profile);
+    async function findOrCreate(accessToken, refreshToken, profile, done) {
+      const google_id = profile.id;
+      const existingUser = await db('users')
+        .where('google_id', google_id)
+        .first();
+      if (existingUser) {
+        done(null, newUser);
+      } else {
+        const newUser = await db('users').insert({
+          google_id: profile.id,
+          display_name: profile.displayName,
+          email: profile.emails[0].value,
+          profile_picture: profile.photos[0].value
+        });
+        console.log('user created');
+        done(null, newUser);
+      }
+      // create new user object to save in
+      // const newUser = {
+      //   google_id: profile.id,
+      //   display_name: profile.displayName,
+      //   email: profile.emails[0].value,
+      //   profile_picture: profile.photos[0].value
+      // };
+      // console.log(accessToken);
+      // console.log(profile);
     }
   )
 );

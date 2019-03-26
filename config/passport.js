@@ -14,20 +14,23 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: '/auth/github/cb'
     },
-    async function findOrCreate (accessToken, refreshToken, profile, done) {
-      console.log(profile)
-      const github_id = profile.id
-      const display_name = profile.username
-      const profile_picture = profile.photos[0].value 
+    async function findOrCreate(accessToken, refreshToken, profile, done) {
+      console.log(profile);
+      const github_id = profile.id;
+      const display_name = profile.username;
+      const profile_picture = profile.photos[0].value;
       const existingUser = await db('users')
         .where('github_id', github_id)
-        .first()
+        .first();
       if (existingUser) {
-        done(null, existingUser)
-      }
-      else {
-        const createdUser = await db('users').insert({github_id:github_id, display_name:display_name, profile_picture:profile_picture})
-        done(null, createdUser)
+        done(null, existingUser);
+      } else {
+        const createdUser = await db('users').insert({
+          github_id: github_id,
+          display_name: display_name,
+          profile_picture: profile_picture
+        });
+        done(null, createdUser);
       }
     }
   )

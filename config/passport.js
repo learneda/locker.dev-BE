@@ -5,16 +5,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 
 const db = require('../dbConfig')
 
-passport.serializeUser(function (email, done) {
-  console.log('SERIALizing A user', email)
-  done(null, email)
-})
-
-passport.deserializeUser(function (id, done) {
-  console.log('deserializing USer', id)
-  done(null, id)
-})
-
 passport.use(
   new GitHubStrategy(
     {
@@ -74,8 +64,6 @@ passport.use(
   )
 )
 
-<<<<<<< HEAD
-=======
 passport.serializeUser((user, done) => {
   console.log('serialize: passport saving id from:', user);
   done(null, user.id);
@@ -96,4 +84,3 @@ passport.deserializeUser((id, done) => {
       done(null, user);
     });
 });
->>>>>>> db40b72198cd359252a43301f942bc251f484545

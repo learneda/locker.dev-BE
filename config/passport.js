@@ -6,13 +6,9 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const db = require('../dbConfig');
 
-passport.serializeUser((user, done) => {
-  console.log('serialize: passport saving id from:', user);
-  done(null, user.id);
-});
+passport.serializeUser((user, done) => done(null, user.id));
 
 passport.deserializeUser((id, done) => {
-  console.log('deserialize: look up' + id);
   db('users')
     .where({ id: id })
     .first()
@@ -29,26 +25,25 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: '/auth/github/cb'
+      callbackURL: '/auth/github/cb',
+      proxy: true
     },
-    async function findOrCreate(accessToken, refreshToken, profile, done) {
-      console.log(profile);
-      const github_id = profile.id;
-      const display_name = profile.username;
-      const profile_picture = profile.photos[0].value;
+    async (accessToken, refreshToken, profile, done) => {
       const existingUser = await db('users')
-        .where('github_id', github_id)
+        .where('github_id', profile.id)
         .first();
       if (existingUser) {
         done(null, existingUser);
       } else {
-        const createdUser = await db('users').insert({
-          github_id: github_id,
-          display_name: display_name,
-          profile_picture: profile_picture
+        await db('users').insert({
+          github_id: profile.id,
+          display_name: profile.username,
+          profile_picture: profile.photos[0].value
         });
-        console.log(createdUser);
-        done(null, createdUser);
+        const user = await db('users')
+          .where({ github_id: profile.id })
+          .first();
+        done(null, user);
       }
     }
   )
@@ -63,7 +58,7 @@ passport.use(
       callbackURL: '/auth/google/callback',
       proxy: true
     },
-    async function findOrCreate(accessToken, refreshToken, profile, done) {
+    async (accessToken, refreshToken, profile, done) => {
       const google_id = profile.id;
       const existingUser = await db('users')
         .where('google_id', google_id)
@@ -77,12 +72,10 @@ passport.use(
           email: profile.emails[0].value,
           profile_picture: profile.photos[0].value
         });
-        const newUser = db('users')
+        const user = await db('users')
           .where({ google_id: profile.id })
-          .first()
-          .then(user => {
-            done(null, user);
-          });
+          .first();
+        done(null, user);
       }
     }
   )

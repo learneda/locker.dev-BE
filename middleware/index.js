@@ -6,6 +6,11 @@ const passport = require('passport');
 const logger = require('morgan');
 const cors = require('cors');
 
+const corsOptions = {
+  credentials: true,
+  origin: ['http://localhost:3000', 'https://learnedadev.netlify.com/']
+};
+
 module.exports = server => {
   server.use(express.json());
   server.use(
@@ -15,7 +20,7 @@ module.exports = server => {
       maxAge: 60 * 60 * 1000
     })
   );
-  server.use(cors());
+  server.use(cors(corsOptions));
   server.use(helmet());
   server.use(logger('dev'));
   server.use(passport.initialize());

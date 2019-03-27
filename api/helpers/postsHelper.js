@@ -7,5 +7,10 @@ module.exports = {
     let query = db('posts');
     if (id) query.where('id', Number(id)).first();
     return query;
+  },
+  insert: function(post) {
+    return db('posts')
+      .insert(post)
+      .then(ids => ({ id: ids[0] }));
   }
 };

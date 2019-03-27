@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "localpg": "knex migrate:rollback && knex migrate:latest && knex seed:run",
+    "prodpg": "heroku run knex migrate:rollback && heroku run knex migrate:latest && heroku run knex seed:run"
   },
   "repository": {
     "type": "git",

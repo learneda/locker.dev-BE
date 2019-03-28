@@ -15,7 +15,7 @@ router.get('/github/cb', passport.authenticate('github'), (req, res, next) => {
 
 router.get(
   '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] });
+  passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
 router.get(
@@ -30,11 +30,14 @@ router.get(
 
 
 
-router.post('/signup', passport.authenticate('local'), (req, res, next) => {
+router.post('/register', passport.authenticate('local'), (req, res, next) => {
   res.send({msg:'cool'});
 });
 router.post('/login', passport.authenticate('local'), (req, res, next) => {
-  res.json({msg:'cool login'});
+  console.log('what is req.user ?????', req.user)
+  if (process.env.NODE_ENV === 'production') {
+    res.redirect('https://learnedadev.netlify.com/profile');
+  } else res.redirect('http://localhost:3000/profile');
 });
 
 router.get('/logout', (req, res) => {

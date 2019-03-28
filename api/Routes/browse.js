@@ -31,7 +31,6 @@ router.get('/courses', routeCache.cacheSeconds(120), (req, res) => {
               console.log(err);
             });
         });
-        console.log('HELLOOOO', temp_courses);
         Promise.all(temp_courses).then(courses => {
           res.json(courses);
         });

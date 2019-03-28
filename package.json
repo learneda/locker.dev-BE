@@ -29,6 +29,7 @@
     "passport": "^0.4.0",
     "passport-github": "^1.1.0",
     "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
     "pg": "^7.9.0",
     "request": "^2.88.0",
     "route-cache": "^0.4.4",

@@ -1,8 +1,44 @@
 require('dotenv').config();
 
+const bcrypt = require('bcrypt');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+},
+  async function(email, password, done) { 
+    console.log(email, password)
+    const existingUser = await db('users')
+      .where('email', email)
+      .first();
+    if (existingUser) {
+      console.log(existingUser)
+      const passwordCheck = bcrypt.compareSync(password, existingUser.password)
+      console.log(passwordCheck === true)
+      if (passwordCheck === true) {
+        console.log('here true')
+        done(null, existingUser);
+      } else {
+        done(new Error('credentials wrong'))
+      }
+    } else {
+      password = bcrypt.hashSync(password, 10);
+      await db('users').insert({
+        email: email,
+        password: password,
+        display_name: 'a dynamic name',
+      });
+      const user = await db('users')
+        .where({email: email })
+        .first();
+      done(null, user);
+    }
+  }));
+
 
 const db = require('../dbConfig');
 

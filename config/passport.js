@@ -12,18 +12,18 @@ passport.use(new LocalStrategy({
 },
   async function(email, password, done) { 
     console.log(email, password)
-    const existingUser = await db('users')
+    const existingUser = await db('users');
       .where('email', email)
       .first();
     if (existingUser) {
-      console.log(existingUser)
-      const passwordCheck = bcrypt.compareSync(password, existingUser.password)
-      console.log(passwordCheck === true)
+      console.log(existingUser);
+      const passwordCheck = bcrypt.compareSync(password, existingUser.password);
+      console.log(passwordCheck === true);
       if (passwordCheck === true) {
-        console.log('here true')
+        console.log('here true');
         done(null, existingUser);
       } else {
-        done(new Error('credentials wrong'))
+        done(new Error('credentials wrong'));
       }
     } else {
       password = bcrypt.hashSync(password, 10);

@@ -9,8 +9,21 @@ const urlMetadata = require('url-metadata');
 const postsDb = require('../helpers/postsHelper');
 
 router.get('/posts', async (req, res) => {
-  const posts = await postsDb.get();
-  res.status(200).send(posts);
+  console.log(req.user);
+  const posts = await DB('posts').where({ user_id: req.user.id });
+  // const postUrl = posts[0].post_url;
+  let test = [];
+  const newPost = await Promise.all(
+    posts.map(post => {
+      return urlMetadata(post.post_url);
+    })
+  );
+  const postsWithMetadata = posts.map((post, index) => {
+    const { title, description, url } = newPost[index];
+    post.metadata = { title, description, url };
+    return post;
+  });
+  res.status(200).send(postsWithMetadata);
 });
 
 router.get('/post', (req, res) => {

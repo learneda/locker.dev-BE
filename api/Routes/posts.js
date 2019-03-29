@@ -9,7 +9,6 @@ const urlMetadata = require('url-metadata');
 const postsDb = require('../helpers/postsHelper');
 
 router.get('/posts', async (req, res) => {
-  console.log(req.user);
   const posts = await DB('posts').where({ user_id: req.user.id });
   // const postUrl = posts[0].post_url;
   let test = [];
@@ -44,9 +43,14 @@ router.get('/posts/:id', async (req, res) => {
 });
 
 router.post('/posts', async (req, res) => {
-  if (req.body.post_url && req.body.user_id) {
+  console.log('this is the req user', req.user, req.isAuthenticated());
+
+  if (req.body.post_url && req.body.id) {
     try {
-      await postsDb.insert(req.body);
+      await postsDb.insert({
+        post_url: req.body.post_url,
+        user_id: req.body.id
+      });
       res.status(201).json({ message: 'Post was successfully added :)' });
     } catch (err) {
       res.status(500).json(err);

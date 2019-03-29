@@ -14,6 +14,9 @@ exports.up = function(knex, Promise) {
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.timestamp('updated_at').defaultTo(knex.fn.now());
     tbl.integer('rating').nullable();
+    tbl.string('title').nullable();
+    tbl.string('description').nullable();
+    tbl.string('thumbnail_url').nullable();
   });
 };
 

@@ -11,34 +11,22 @@ const postsDb = require('../helpers/postsHelper');
 router.get('/posts', async (req, res) => {
   try {
     const posts = await DB('posts').where({ user_id: req.user.id });
-    // const postUrl = posts[0].post_url;
-    let test = [];
-    const newPost = await Promise.all(
-      posts.map(post => {
-        return urlMetadata(post.post_url);
-      })
-    );
-    const postsWithMetadata = posts.map((post, index) => {
-      const { title, description, url } = newPost[index];
-      post.metadata = { title, description, url };
-      return post;
-    });
-    res.status(200).send(postsWithMetadata);
+    res.status(200).json(posts);
   } catch (err) {
     console.log(err);
   }
 });
 
-router.get('/post', (req, res) => {
-  urlMetadata(`${req.query.url}`).then(
-    function(metadata) {
-      res.json(metadata);
-    },
-    function(error) {
-      console.log(error);
-    }
-  );
-});
+// router.get('/post', (req, res) => {
+//   urlMetadata(`${req.query.url}`).then(
+//     function(metadata) {
+//       res.json(metadata);
+//     },
+//     function(error) {
+//       console.log(error);
+//     }
+//   );
+// });
 
 router.get('/posts/:id', async (req, res) => {
   const { id } = req.params;
@@ -51,10 +39,17 @@ router.post('/posts', async (req, res) => {
 
   if (req.body.post_url && req.body.id) {
     try {
-      await postsDb.insert({
-        post_url: req.body.post_url,
-        user_id: req.body.id
-      });
+      await urlMetadata(req.body.post_url)
+        .then(metadata => {
+          postsDb.insert({
+            post_url: req.body.post_url,
+            user_id: req.body.id,
+            title: metadata.title,
+            description: metadata.description,
+            thumbnail_url: metadata.image
+          });
+        })
+        .catch(err => console.log('META ERROR', err));
       res.status(201).json({ message: 'Post was successfully added :)' });
     } catch (err) {
       res.status(500).json(err);

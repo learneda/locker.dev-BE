@@ -28,13 +28,11 @@ router.get(
   }
 );
 
-
-
 router.post('/register', passport.authenticate('local'), (req, res, next) => {
-  res.send({msg:'cool'});
+  res.send({ msg: 'cool' });
 });
 router.post('/login', passport.authenticate('local'), (req, res, next) => {
-  console.log('what is req.user ?????', req.user)
+  console.log('what is req.user ?????', req.user);
   if (process.env.NODE_ENV === 'production') {
     res.redirect('https://learnedadev.netlify.com/profile');
   } else res.redirect('http://localhost:3000/profile');
@@ -47,12 +45,6 @@ router.get('/logout', (req, res) => {
   } else res.redirect('http://localhost:3000');
 });
 
-router.get('/current_user', (req, res) => {
-  if (req.user) {
-    res.status(200).json(req.user);
-  } else {
-    res.status(403).json({ error: 'Not authorized' });
-  }
-});
+router.get('/current_user', (req, res) => res.send(req.user));
 
 module.exports = router;

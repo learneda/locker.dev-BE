@@ -1,10 +1,10 @@
-require('dotenv').config()
+require('dotenv').config();
 
-const bcrypt = require('bcrypt')
-const passport = require('passport')
-const GitHubStrategy = require('passport-github').Strategy
-const GoogleStrategy = require('passport-google-oauth20').Strategy
-const LocalStrategy = require('passport-local').Strategy
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+const GitHubStrategy = require('passport-github').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 
 passport.use(
   new LocalStrategy(
@@ -40,11 +40,11 @@ passport.use(
       }
     }
   )
-)
+);
 
-const db = require('../dbConfig')
+const db = require('../dbConfig');
 
-passport.serializeUser((user, done) => done(null, user.id))
+passport.serializeUser((user, done) => done(null, user.id));
 
 passport.deserializeUser((id, done) => {
   db('users').where({ id: id }).first().then((user) => {
@@ -53,7 +53,7 @@ passport.deserializeUser((id, done) => {
     }
     done(null, user)
   })
-})
+});
 
 passport.use(
   new GitHubStrategy(
@@ -86,7 +86,7 @@ passport.use(
       }
     }
   )
-)
+);
 
 /* ===== PASSPORT GOOGLE STRATEGY ===== */
 passport.use(
@@ -122,4 +122,4 @@ passport.use(
       }
     }
   )
-)
+);

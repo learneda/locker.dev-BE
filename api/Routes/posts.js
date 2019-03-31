@@ -77,7 +77,6 @@ router.delete('/posts/:id', async (req, res) => {
       .where('id', id)
       .delete()
       if (deletePromise) {
-        console.log(deletePromise);
         res.status(200).json({ success: 'post deleted' });
       } else {
         res.status(404).json({ error: 'Post not found' });

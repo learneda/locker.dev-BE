@@ -17,17 +17,6 @@ router.get('/posts', async (req, res) => {
   }
 });
 
-// router.get('/post', (req, res) => {
-//   urlMetadata(`${req.query.url}`).then(
-//     function(metadata) {
-//       res.json(metadata);
-//     },
-//     function(error) {
-//       console.log(error);
-//     }
-//   );
-// });
-
 router.get('/posts/:id', async (req, res) => {
   const { id } = req.params;
   const posts = await postsDb.get(id);

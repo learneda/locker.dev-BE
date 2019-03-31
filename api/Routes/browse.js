@@ -5,10 +5,14 @@ const routeCache = require('route-cache');
 const urlMetadata = require('url-metadata');
 
 router.get('/courses', (req, res) => {
+  let queryParams = {
+    'fields[course]': 'title,headline,image_480x270,url'
+  };
   request(
     {
       method: 'GET',
       uri: 'https://www.udemy.com/api-2.0/courses',
+      qs: queryParams,
       auth: {
         username: process.env.UDEMY_ID,
         password: process.env.UDEMY_SECRET

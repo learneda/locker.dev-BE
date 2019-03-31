@@ -61,4 +61,24 @@ router.post('/posts', async (req, res) => {
   }
 });
 
+/* ===== DELETE POST || TODO: MAKE ROUTE SECURE  ===== */
+router.delete('/posts/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    await DB('posts')
+      .where('id', id)
+      .delete()
+      .then(note => {
+        if (note) {
+          res.status(200).json({ success: 'post deleted' });
+        } else {
+          res.status(404).json({ error: 'Post not found' });
+        }
+      });
+  } catch (err) {
+    res.status(500).json({ error: 'There was an error on the server' });
+  }
+});
+
 module.exports = router;

@@ -48,14 +48,18 @@ router.post('/posts', async (req, res) => {
           description: metadata.description,
           thumbnail_url: metadata.image
         });
-        res.status(201).json({ message: 'Post was successfully added :)' });
+        if (newInsert) {
+          res.status(201).json({ message: 'Post was successfully added :)' });
+        } else {
+          res.status(300).json({err: 'couldnt add new entry'});
+        }
       }
       catch (err) {
         res.status(500).json(err);
       }
     } catch (err) {
       console.log('META ERROR', err);
-      res.status(500).json(err);
+      res.status(300).json({err: 'couldnt add new entry'});
     }
   } else {
     res
@@ -68,19 +72,18 @@ router.post('/posts', async (req, res) => {
 /* ===== DELETE POST || TODO: MAKE ROUTE SECURE  ===== */
 router.delete('/posts/:id', async (req, res) => {
   const id = req.params.id;
-
   try {
-    await DB('posts')
+    const deletePromise = await DB('posts')
       .where('id', id)
       .delete()
-      .then(note => {
-        if (note) {
-          res.status(200).json({ success: 'post deleted' });
-        } else {
-          res.status(404).json({ error: 'Post not found' });
-        }
-      });
+      if (deletePromise) {
+        console.log(deletePromise);
+        res.status(200).json({ success: 'post deleted' });
+      } else {
+        res.status(404).json({ error: 'Post not found' });
+      }
   } catch (err) {
+    console.log(err)
     res.status(500).json({ error: 'There was an error on the server' });
   }
 });

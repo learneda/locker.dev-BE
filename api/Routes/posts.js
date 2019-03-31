@@ -36,22 +36,25 @@ router.get('/posts/:id', async (req, res) => {
 
 router.post('/posts', async (req, res) => {
   console.log('this is the req user', req.user, req.isAuthenticated());
-
   if (req.body.post_url && req.body.id) {
     try {
-      await urlMetadata(req.body.post_url)
-        .then(metadata => {
-          postsDb.insert({
-            post_url: req.body.post_url,
-            user_id: req.body.id,
-            title: metadata.title,
-            description: metadata.description,
-            thumbnail_url: metadata.image
-          });
-        })
-        .catch(err => console.log('META ERROR', err));
-      res.status(201).json({ message: 'Post was successfully added :)' });
+      const newUrl = req.body.post_url.indexOf('http') > -1 ? req.body.post_url : `http://${req.body.post_url}`;
+      const metadata = await urlMetadata(newUrl);
+      try {
+        const newInsert = postsDb.insert({
+          post_url: req.body.post_url,
+          user_id: req.body.id,
+          title: metadata.title,
+          description: metadata.description,
+          thumbnail_url: metadata.image
+        });
+        res.status(201).json({ message: 'Post was successfully added :)' });
+      }
+      catch (err) {
+        res.status(500).json(err);
+      }
     } catch (err) {
+      console.log('META ERROR', err);
       res.status(500).json(err);
     }
   } else {
@@ -60,6 +63,7 @@ router.post('/posts', async (req, res) => {
       .json({ message: 'Please provide a post url and a user id :)' });
   }
 });
+
 
 /* ===== DELETE POST || TODO: MAKE ROUTE SECURE  ===== */
 router.delete('/posts/:id', async (req, res) => {

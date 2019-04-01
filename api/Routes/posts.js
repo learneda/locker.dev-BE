@@ -1,12 +1,12 @@
-const router = require('express').Router()
-const DB = require('../../dbConfig')
-const urlMetadata = require('url-metadata')
+const router = require('express').Router();
+const DB = require('../../dbConfig');
+const urlMetadata = require('url-metadata');
 // ==============================================
 // this JS file includes helpers that access our
 // database accordingly (for example, getUsers
 // requests all the users in the users database)
 // ==============================================
-const postsDb = require('../helpers/postsHelper')
+const postsDb = require('../helpers/postsHelper');
 
 router.get('/posts', async (req, res) => {
   try {
@@ -23,7 +23,7 @@ router.get('/posts/shared', async (req, res) => {
     const sharedPostPromise = await DB('posts').where({
       user_id,
       recommended: true
-    })
+    });
     if (sharedPostPromise) {
       console.log(sharedPostPromise)
       res.status(200).json({postsArr: sharedPostPromise});
@@ -32,7 +32,7 @@ router.get('/posts/shared', async (req, res) => {
     console.log(err);
     res.status(500).json({error: err});
   }
-})
+});
 
 router.get('/posts/:id', async (req, res) => {
   const { id } = req.params
@@ -47,7 +47,7 @@ router.post('/posts', async (req, res) => {
       const newUrl =
         req.body.post_url.indexOf('http') > -1
           ? req.body.post_url
-          : `http://${req.body.post_url}`
+          : `http://${req.body.post_url}`;
       const metadata = await urlMetadata(newUrl);
       try {
         const newInsert = postsDb.insert({
@@ -63,7 +63,7 @@ router.post('/posts', async (req, res) => {
           res.status(300).json({ err: 'couldnt add new entry' });
         }
       } catch (err) {
-        res.status(500).json(err)
+        res.status(500).json(err);
       }
     } catch (err) {
       console.log('META ERROR', err);
@@ -111,4 +111,4 @@ router.put('/posts/like/:id', async (req, res) => {
 });
 
 
-module.exports = router
+module.exports = router;

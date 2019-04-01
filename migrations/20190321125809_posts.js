@@ -7,6 +7,7 @@ exports.up = function(knex, Promise) {
       .references('id')
       .inTable('users')
       .onDelete('cascade')
+      .onUpdate('cascade')
       .unsigned();
     tbl.specificType('categories', 'TEXT[]');
     tbl.boolean('recommended').defaultTo(false);

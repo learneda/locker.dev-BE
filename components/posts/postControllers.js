@@ -107,5 +107,22 @@ module.exports = {
       console.log(err);
       res.status(500).json({ error: 'There was an error on the server' });
     }
+  },
+  async editPost (req, res, next) {
+    const id = req.params.id;
+    const {post_url, title, description} = req.body;
+    try {
+      const editPromise = await db('posts')
+      .where({id})
+      .update({post_url, title, description});
+      if (editPromise) {
+        res.status(200).json({success: 'post updated'});
+      } else {
+        res.status(404).json({error: 'something went wrong'});
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({err});
+    }
   }
 }

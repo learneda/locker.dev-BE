@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const passport = require('passport');
 const logger = require('morgan');
 const cors = require('cors');
+const cookieSession = require('cookie-session');
 
 const corsOptions = {
   credentials: true,
@@ -13,14 +14,10 @@ const corsOptions = {
 
 module.exports = server => {
   server.use(express.json());
+  server.use(cors());
   server.use(
-    cookieSession({
-      name: 'learned-a',
-      keys: [process.env.COOKIE_KEY],
-      maxAge: 60 * 60 * 1000
-    })
+    cookieSession({ maxAge: 20000000, keys: [process.env.COOKIE_SECRET] })
   );
-  server.use(cors(corsOptions));
   server.use(helmet());
   server.use(logger('dev'));
   server.use(passport.initialize());

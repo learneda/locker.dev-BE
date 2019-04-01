@@ -1,6 +1,3 @@
-require('dotenv').config();
-
-const bcrypt = require('bcrypt');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -42,7 +39,7 @@ passport.use(
   )
 );
 
-const db = require('../dbConfig');
+const db = require('../dbConfig')
 
 passport.serializeUser((user, done) => done(null, user.id));
 
@@ -58,31 +55,28 @@ passport.deserializeUser((id, done) => {
 passport.use(
   new GitHubStrategy(
     {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: '/auth/github/cb',
-      proxy: true
+      clientID: 'da193d63c68a570de8dc',
+      clientSecret: '45bbbe7838f269a89640da2081e1bf5dd5180308',
+      callbackURL: process.env.CB_URL
     },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        const existingUser = await db('users')
-          .where('github_id', profile.id)
-          .first()
-        if (existingUser) {
-          return done(null, existingUser)
-        } else {
-          await db('users').insert({
-            github_id: profile.id,
-            display_name: profile.username,
-            profile_picture: profile.photos[0].value
-          })
-          const user = await db('users')
-            .where({ github_id: profile.id })
-            .first()
-          return done(null, user)
-        }
-      } catch (err) {
-        return done(err)
+    async function findOrCreate(accessToken, refreshToken, profile, done) {
+      console.log(profile);
+      const github_id = profile.id;
+      const display_name = profile.username;
+      const profile_picture = profile.photos[0].value;
+      const existingUser = await db('users')
+        .where('github_id', github_id);
+        .first();
+      if (existingUser) {
+        done(null, existingUser);
+      } else {
+        const createdUser = await db('users').insert({
+          github_id: github_id,
+          display_name: display_name,
+          profile_picture: profile_picture
+        });
+        console.log(createdUser);
+        done(null, createdUser);
       }
     }
   )

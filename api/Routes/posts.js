@@ -9,11 +9,15 @@ const urlMetadata = require('url-metadata');
 const postsDb = require('../helpers/postsHelper');
 
 router.get('/posts', async (req, res) => {
-  try {
-    const posts = await DB('posts').where({ user_id: req.user.id });
-    res.status(200).json(posts);
-  } catch (err) {
-    console.log(err);
+  if (req.user) {
+    try {
+      const posts = await DB('posts').where({ user_id: req.user.id });
+      res.status(200).json(posts);
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    res.status(403).json({ error: 'Not authorized' });
   }
 });
 

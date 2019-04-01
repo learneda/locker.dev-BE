@@ -20,5 +20,7 @@ router.delete('/:id', controllers.deletePost);
 
 router.put('/like/:id', controllers.likePost);
 
+router.put('/:id', controllers.editPost)
+
 
 module.exports = router;

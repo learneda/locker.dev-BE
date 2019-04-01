@@ -1,12 +1,13 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('posts', tbl => {
     tbl.increments('id');
-    tbl.string('post_url').notNullable();
+    tbl.text('post_url').notNullable();
     tbl
       .integer('user_id')
       .references('id')
       .inTable('users')
       .onDelete('cascade')
+      .onUpdate('cascade')
       .unsigned();
     tbl.specificType('categories', 'TEXT[]');
     tbl.boolean('recommended').defaultTo(false);

@@ -19,6 +19,9 @@ module.exports = {
         console.log(err);
         res.status(500).json({err});
       }
+    } else {
+      res.status(404).json({err: 'must include folder_name in the request body.'})
     }
-  }
+  },
+
 }

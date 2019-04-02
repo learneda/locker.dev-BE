@@ -3,7 +3,8 @@ const db = require('../../dbConfig');
 module.exports = {
   async createFolder (req, res, next) {
     const { folder_name } = req.body;
-    if (folder_name && req.user.id) {
+    const user_id = req.user.id || req.body.user
+    if (folder_name) {
       try {
         const folderPromise = await db('folders').insert({
           folder_name,

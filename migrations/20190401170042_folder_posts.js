@@ -16,6 +16,8 @@ exports.up = function(knex, Promise) {
     .onDelete('cascade')
     .onUpdate('cascade')
     .unsigned();
+
+    tbl.integer('user_id')
   });
 };
 

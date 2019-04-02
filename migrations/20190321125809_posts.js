@@ -9,7 +9,7 @@ exports.up = function(knex, Promise) {
       .onDelete('cascade')
       .onUpdate('cascade')
       .unsigned();
-    tbl.specificType('categories', 'TEXT[]');
+    tbl.integer('folder_id');
     tbl.boolean('liked').defaultTo(false);
     tbl.boolean('completed').defaultTo(false);
     tbl.timestamp('created_at').defaultTo(knex.fn.now());

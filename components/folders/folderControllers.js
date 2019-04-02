@@ -31,7 +31,7 @@ module.exports = {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
     console.log('user IDDDDD',user_id);
     if (post_id && folder_id) {
-      try{
+      try {
         const insertPromise = await db('folder_posts').insert({
           folder_id,
           post_id,
@@ -49,5 +49,16 @@ module.exports = {
     } else {
       res.status(404).json({err: 'must include folder_id && post_id in the request body..'});
     }
+  },
+  async getUserFolders (req, res, next) {
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    try {
+      const selectPromise = await db('folders').where({user_id});
+      if (selectPromise) {}
+    }
+  },
+  async getPostByFolderId (req, res, next) {
+    const {folder_id} = req.params.id;
+    const posts = await db('posts as p').where({folder_id: folder_id});
   }
 }

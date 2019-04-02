@@ -12,6 +12,16 @@ module.exports = {
       console.log(err);
     }
   },
+  async getAllUserPostsLiked(req, res, next) {
+    try {
+      const posts = await db('posts')
+        .where({ user_id: req.user.id, liked: true })
+        .orderBy('id', 'asc');
+      return res.status(200).json(posts);
+    } catch (err) {
+      console.log(err);
+    }
+  },
 
   async getAllSharedPost(req, res, next) {
     const user_id = req.user.id;

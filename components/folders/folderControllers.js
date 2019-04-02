@@ -24,4 +24,25 @@ module.exports = {
     }
   },
 
+  async addPost (req, res, next) {
+    const {post_id, folder_id} = req.body;
+    if (post_id && folder_id) {
+      try{
+        const insertPromise = await db('folder_posts').insert({
+          folder_id,
+          post_id
+        });
+        if (insertPromise) {
+          res.status(200).json({success: 'insert successful'});
+        } else {
+          res.status(400).json({err: 'something went wrong'});
+        }
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({err});
+      }
+    } else {
+      res.status(404).json({err: 'must include folder_id && post_id in the request body..'});
+    }
+  }
 }

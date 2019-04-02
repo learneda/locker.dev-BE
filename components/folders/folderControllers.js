@@ -3,7 +3,7 @@ const db = require('../../dbConfig');
 module.exports = {
   async createFolder (req, res, next) {
     const { folder_name } = req.body;
-    const user_id = req.user.id || req.body.user
+    const user_id = req.user.id || req.body.user_id;
     if (folder_name) {
       try {
         const folderPromise = await db('folders').insert({
@@ -26,13 +26,16 @@ module.exports = {
 
   async addPost (req, res, next) {
     const {post_id, folder_id} = req.body;
-    const user_id = req.user.id || req.body.user_id;
+    console.log(req.body)
+    console.log(req.user)
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    console.log('user IDDDDD',user_id);
     if (post_id && folder_id) {
       try{
         const insertPromise = await db('folder_posts').insert({
           folder_id,
           post_id,
-          user_id
+          user_id:user_id
         });
         if (insertPromise) {
           res.status(200).json({success: 'insert successful'});

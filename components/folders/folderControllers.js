@@ -1,0 +1,23 @@
+const db = require('../../dbConfig');
+
+module.exports = {
+  async createFolder (req, res, next) {
+    const { folder_name } = req.body;
+    if (folder_name && req.user.id) {
+      try {
+        const folderPromise = await db('folders').insert({
+          folder_name,
+          user_id
+        });
+        if (folderPromise) {
+          res.status(200).json({success: 'folder was created'});
+        } else {
+          res.status(400).json({err: 'something went wrong'});
+        }
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({err});
+      }
+    }
+  }
+}

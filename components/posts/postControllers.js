@@ -97,7 +97,7 @@ module.exports = {
     try {
       const likePromise = await db('posts')
         .where({id})
-        .update({ recommended: status});
+        .update({ liked : status});
       if (likePromise) {
         res.status(200).json({ success: 'posted liked' });
       } else {

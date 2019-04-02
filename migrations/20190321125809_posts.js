@@ -10,7 +10,7 @@ exports.up = function(knex, Promise) {
       .onUpdate('cascade')
       .unsigned();
     tbl.specificType('categories', 'TEXT[]');
-    tbl.boolean('recommended').defaultTo(false);
+    tbl.boolean('liked').defaultTo(false);
     tbl.boolean('completed').defaultTo(false);
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.timestamp('updated_at').defaultTo(knex.fn.now());

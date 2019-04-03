@@ -93,18 +93,22 @@ module.exports = {
   async deletePost(req, res, next) {
     const id = req.params.id;
     console.log('IN HERE', id);
-    try {
-      const deletePromise = await db('posts')
-        .where({ id })
-        .delete();
-      if (deletePromise) {
-        res.status(200).json({ success: 'post deleted' });
-      } else {
-        res.status(404).json({ error: 'Post not found' });
+    if (req.user) {
+      try {
+        const deletePromise = await db('posts')
+          .where({ id, user_id: req.user.id })
+          .delete();
+        if (deletePromise) {
+          res.status(200).json({ success: 'post deleted' });
+        } else {
+          res.status(404).json({ error: 'Post not found' });
+        }
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'There was an error on the server' });
       }
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: 'There was an error on the server' });
+    } else {
+      res.status(403).json({ error: 'Not authorized' });
     }
   },
   async likePost(req, res, next) {

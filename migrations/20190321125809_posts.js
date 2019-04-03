@@ -12,12 +12,12 @@ exports.up = function(knex, Promise) {
     tbl.integer('folder_id');
     tbl.boolean('liked').defaultTo(false);
     tbl.boolean('completed').defaultTo(false);
-    tbl.timestamp('created_at').defaultTo(knex.fn.now());
-    tbl.timestamp('updated_at').defaultTo(knex.fn.now());
     tbl.integer('rating').nullable();
     tbl.string('title').nullable();
     tbl.string('description').nullable();
     tbl.string('thumbnail_url').nullable();
+    tbl.timestamp('created_at').defaultTo(knex.fn.now());
+    tbl.timestamp('updated_at').defaultTo(knex.fn.now());
   });
 };
 

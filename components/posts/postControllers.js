@@ -2,16 +2,28 @@ const db = require('../../dbConfig');
 const urlMetadata = require('url-metadata');
 
 module.exports = {
-  async getAllUserPosts (req, res, next) {
+  async getAllUserPosts(req, res, next) {
     try {
-      const posts = await db('posts').where({ user_id: req.user.id });
-        return res.status(200).json(posts);
+      const posts = await db('posts')
+        .where({ user_id: req.user.id })
+        .orderBy('id', 'asc');
+      return res.status(200).json(posts);
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  async getAllUserPostsLiked(req, res, next) {
+    try {
+      const posts = await db('posts')
+        .where({ user_id: req.user.id, liked: true })
+        .orderBy('id', 'asc');
+      return res.status(200).json(posts);
     } catch (err) {
       console.log(err);
     }
   },
 
-  async getAllSharedPost (req, res, next) {
+  async getAllSharedPost(req, res, next) {
     const user_id = req.user.id;
     try {
       const sharedPostPromise = await db('posts').where({
@@ -19,25 +31,27 @@ module.exports = {
         recommended: true
       });
       if (sharedPostPromise) {
-        console.log(sharedPostPromise)
-        res.status(200).json({postsArr: sharedPostPromise});
+        console.log(sharedPostPromise);
+        res.status(200).json({ postsArr: sharedPostPromise });
       }
     } catch (err) {
       console.log(err);
-      res.status(500).json({error: err});
+      res.status(500).json({ error: err });
     }
   },
-  async getPost (req, res, next) {
+  async getPost(req, res, next) {
     const { id } = req.params;
     try {
-    if (id) {
-      const post = await db('posts').where({id}).first();
-      if (post) {
-        res.status(200).json({post});
+      if (id) {
+        const post = await db('posts')
+          .where({ id })
+          .first();
+        if (post) {
+          res.status(200).json({ post });
         }
       }
     } catch (err) {
-      res.status(500).json({error: err});
+      res.status(500).json({ error: err });
     }
   },
   async createNewPost(req, res, next) {
@@ -76,11 +90,13 @@ module.exports = {
         .json({ message: 'Please provide a post url and a user id :)' });
     }
   },
-  async deletePost (req, res, next) {
-    const id = req.params.id
-    console.log('IN HERE',id)
+  async deletePost(req, res, next) {
+    const id = req.params.id;
+    console.log('IN HERE', id);
     try {
-      const deletePromise = await db('posts').where({id}).delete();
+      const deletePromise = await db('posts')
+        .where({ id })
+        .delete();
       if (deletePromise) {
         res.status(200).json({ success: 'post deleted' });
       } else {
@@ -91,13 +107,13 @@ module.exports = {
       res.status(500).json({ error: 'There was an error on the server' });
     }
   },
-  async likePost (req, res, next) {
-    const id = req.params.id
-    const status = req.body.status
+  async likePost(req, res, next) {
+    const id = req.params.id;
+    const status = req.body.status;
     try {
       const likePromise = await db('posts')
-        .where({id})
-        .update({ liked : status});
+        .where({ id })
+        .update({ liked: status });
       if (likePromise) {
         res.status(200).json({ success: 'posted liked' });
       } else {
@@ -108,21 +124,21 @@ module.exports = {
       res.status(500).json({ error: 'There was an error on the server' });
     }
   },
-  async editPost (req, res, next) {
+  async editPost(req, res, next) {
     const id = req.params.id;
-    const {post_url, title, description} = req.body;
+    const { post_url, title, description } = req.body;
     try {
       const editPromise = await db('posts')
-      .where({id})
-      .update({post_url, title, description});
+        .where({ id })
+        .update({ post_url, title, description });
       if (editPromise) {
-        res.status(200).json({success: 'post updated'});
+        res.status(200).json({ success: 'post updated' });
       } else {
-        res.status(404).json({error: 'something went wrong'});
+        res.status(404).json({ error: 'something went wrong' });
       }
     } catch (err) {
       console.log(err);
-      res.status(500).json({err});
+      res.status(500).json({ err });
     }
   },
   async assignPostToFolder (req, res, next) {
@@ -141,4 +157,4 @@ module.exports = {
       }
     }
   }
-}
+};

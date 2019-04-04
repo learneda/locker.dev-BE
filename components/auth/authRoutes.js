@@ -2,10 +2,13 @@ const router = require('express').Router();
 const controllers = require('./authControllers');
 const passport = require('passport');
 
-
 router.get('/github', passport.authenticate('github'));
 
-router.get('/github/cb', passport.authenticate('github'), controllers.gitHubHandler);
+router.get(
+  '/github/cb',
+  passport.authenticate('github'),
+  controllers.gitHubHandler
+);
 
 router.get(
   '/google',
@@ -21,5 +24,7 @@ router.get(
 router.get('/logout', controllers.logoutHandler);
 
 router.get('/current_user', (req, res) => res.send(req.user));
+
+router.put('/current_user/:id', controllers.editProfile);
 
 module.exports = router;

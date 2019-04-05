@@ -73,6 +73,7 @@ passport.use(
         } else {
           await db('users').insert({
             github_id: profile.id,
+            username: profile.username,
             display_name: profile.username,
             profile_picture: profile.photos[0].value
           })
@@ -108,6 +109,7 @@ passport.use(
         } else {
           await db('users').insert({
             google_id: profile.id,
+            username: profile.displayName,
             display_name: profile.displayName,
             email: profile.emails[0].value,
             profile_picture: profile.photos[0].value

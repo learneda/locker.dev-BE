@@ -31,7 +31,7 @@ module.exports = {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
     console.log('user IDDDDD',user_id);
     if (post_id && folder_id) {
-      try{
+      try {
         const insertPromise = await db('folder_posts').insert({
           folder_id,
           post_id,
@@ -48,6 +48,37 @@ module.exports = {
       }
     } else {
       res.status(404).json({err: 'must include folder_id && post_id in the request body..'});
+    }
+  },
+  async getUserFolders (req, res, next) {
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    try {
+      const selectPromise = await db('folders').where({user_id});
+      if (selectPromise) {
+        res.status(200).json({folders: selectPromise})
+      } else {
+        res.status(404).json({msg: 'user aint got no folders ..'});
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(303).json({err})
+    }
+  },
+  async getPostByFolderId (req, res, next) {
+    const {folder_id} = req.params.id;
+    if (folder_id) {
+      try {
+        const posts = await db('posts as p').where({folder_id: folder_id});
+        if (posts) {
+          res.status(200).json({posts});
+        } else {
+          res.status(400).json({error: 'something went wrong'});
+        }
+      } catch (err) {
+        res.status(500).json({err});
+      }
+    } else {
+      res.status(404).jons({error:'please provide '})
     }
   }
 }

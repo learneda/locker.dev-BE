@@ -3,7 +3,6 @@ const urlMetadata = require('url-metadata');
 
 module.exports = {
   async getAllUserPosts(req, res, next) {
-    if (req.user) {
       try {
         const posts = await db('posts')
           .where({ user_id: req.user.id })
@@ -12,9 +11,6 @@ module.exports = {
       } catch (err) {
         console.log(err);
       }
-    } else {
-      res.status(403).json({ error: 'Not authorized' });
-    }
   },
   async getAllUserPostsLiked(req, res, next) {
     if (req.user) {
@@ -160,6 +156,22 @@ module.exports = {
     } catch (err) {
       console.log(err);
       res.status(500).json({ err });
+    }
+  },
+  async assignPostToFolder (req, res, next) {
+    const {folder_id, post_id} = req.body;
+    if (folder_id && post_id) {
+      try {
+        const updatePromose = await db('posts').where({id: post_id}).update({folder_id: folder_id});
+        if (updatePromose) {
+          res.status(200).json({msg:'success'});
+        } else {
+          res.status(404).json({error: 'something went wrong'});
+        }
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({err});
+      }
     }
   }
 };

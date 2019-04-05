@@ -166,7 +166,7 @@ module.exports = {
     const {folder_id, post_id} = req.body;
     if (folder_id && post_id) {
       try {
-        const updatePromose = await db('posts').where({id: post_id}).update(folder_id: folder_id);
+        const updatePromose = await db('posts').where({id: post_id}).update({folder_id: folder_id});
         if (updatePromose) {
           res.status(200).json({msg:'success'});
         } else {

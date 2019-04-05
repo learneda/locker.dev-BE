@@ -18,5 +18,6 @@ module.exports = (server) => {
   require('./auth')(server);
   require('./services')(server);
   require('./folders')(server);
+  require('./users')(server);
 }
 

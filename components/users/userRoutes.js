@@ -6,6 +6,7 @@ const controllers = require('./userControllers');
 // database accordingly (for example, getUsers
 // requests all the users in the users database)
 // ==============================================
+router.get('/newsfeed', controllers.getUserNewsFeed);
 
 router.post('/details', controllers.postUserDetails);
 

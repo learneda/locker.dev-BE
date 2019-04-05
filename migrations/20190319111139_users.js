@@ -5,6 +5,7 @@ exports.up = function(knex, Promise) {
       .string('email', 254)
       .unique();
     tbl.string('username').nullable().unique();
+    tbl.string('display_name');
     tbl.string('profile_picture').nullable();
     tbl.string('github_id').nullable();
     tbl.string('google_id').nullable();

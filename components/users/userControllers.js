@@ -48,6 +48,21 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  async unsubscribetoUser(req, res, next) {
+    const user_id = req.body.user_id;
+    const friend_id = req.body.friend_id;
+    try {
+      const deletePromise = await db('friendships').where({user_id, friend_id}).del()
+      if (deletePromise) {
+        res.status(200).json({msg: 'success'});
+      } else {
+        res.status(404).json({msg: 'something went wrong ..'});
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
   async getUserNewsFeed(req, res, next) {
     console.log(req.user)
     const user_id = req.user === undefined ? req.body.user_id : req.user.id

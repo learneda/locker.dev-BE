@@ -34,7 +34,7 @@ module.exports = {
     }
   },
   async subscribetoUser(req, res, next) {
-    const user_id = req.body.user_id;
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id
     const friend_id = req.body.friend_id;
     try {
       const insertPromise = await db('friendships').insert({user_id, friend_id})
@@ -64,7 +64,6 @@ module.exports = {
     }
   },
   async getUserNewsFeed(req, res, next) {
-    console.log(req.user)
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     try {
       const newsFeedPromise = await db('friendships').join('posts', function () {

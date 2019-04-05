@@ -14,9 +14,13 @@ fakeInsertData.push(...user_array);
 
 for (let i = 1; i < 500; i++) {
   const username = faker.internet.userName();
+  const location = faker.address.city();
+  const profile_picture = faker.image.imageUrl();
 
   const user = {
-    username: username
+    username: username,
+    location,
+    profile_picture
   };
 
   fakeInsertData.push(user);

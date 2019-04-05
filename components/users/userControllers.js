@@ -22,7 +22,7 @@ module.exports = {
   async getUserDetailsByUserName(req, res, next) {
     const username = req.params.username
     try {
-      const selectPromise = await db('users').where({username: username})
+      const selectPromise = await db('users').where({username: username}).select('username', 'display_name', 'profile_picture', 'bio', 'location', 'website_url');
       if (selectPromise) {
         res.status(200).json(selectPromise);
       } else {

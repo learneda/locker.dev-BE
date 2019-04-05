@@ -49,8 +49,7 @@ module.exports = {
     }
   },
   async unsubscribetoUser(req, res, next) {
-    const user_id = req.body.user_id;
-    const friend_id = req.body.friend_id;
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id    const friend_id = req.body.friend_id;
     try {
       const deletePromise = await db('friendships').where({user_id, friend_id}).del()
       if (deletePromise) {

@@ -18,5 +18,19 @@ module.exports = {
     } else {
       res.status(400).json({err: 'not allowed'})
     }
+  },
+  async getUserDetailsByUserName(req, res, next) {
+    const username = req.params.username
+    try {
+      const selectPromise = await db('users').where({username: username})
+      if (selectPromise) {
+        res.status(200).json(selectPromise);
+      } else {
+        res.status(404).json({msg: 'user not found..'});
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   }
 }

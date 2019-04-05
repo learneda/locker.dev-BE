@@ -9,5 +9,7 @@ const controllers = require('./userControllers');
 
 router.post('/details', controllers.postUserDetails);
 
+router.get('/:username', controllers.getUserDetailsByUserName);
+
 
 module.exports = router;

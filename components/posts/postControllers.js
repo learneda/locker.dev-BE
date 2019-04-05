@@ -3,7 +3,6 @@ const urlMetadata = require('url-metadata');
 
 module.exports = {
   async getAllUserPosts(req, res, next) {
-    if (req.user) {
       try {
         const posts = await db('posts')
           .where({ user_id: req.user.id })
@@ -12,9 +11,6 @@ module.exports = {
       } catch (err) {
         console.log(err);
       }
-    } else {
-      res.status(403).json({ error: 'Not authorized' });
-    }
   },
   async getAllUserPostsLiked(req, res, next) {
     if (req.user) {

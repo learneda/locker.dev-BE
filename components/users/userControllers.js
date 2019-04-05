@@ -67,7 +67,9 @@ module.exports = {
     console.log(req.user)
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     try {
-      const newsFeedPromise = await db('friendships').join('posts', 'friendships.friend_id', 'posts.user_id').where('friendships.user_id', user_id).select('posts.user_id', 'post_url', 'title','description', 'thumbnail_url', 'posts.created_at', 'posts.updated_at').distinct();
+      const newsFeedPromise = await db('friendships').join('posts', function () {
+              this.on('friendships.friend_id', '=','posts.user_id').orOn('posts.user_id', '=', user_id)
+            }).where('friendships.user_id', user_id).orWhere('posts.user_id', '=', user_id).select('posts.user_id', 'post_url', 'title','description', 'thumbnail_url', 'posts.created_at', 'posts.updated_at').distinct();
       if (newsFeedPromise) {
         console.log(newsFeedPromise);
         res.status(200).json(newsFeedPromise);

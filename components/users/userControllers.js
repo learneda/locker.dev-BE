@@ -49,7 +49,8 @@ module.exports = {
     }
   },
   async unsubscribetoUser(req, res, next) {
-    const user_id = req.user === undefined ? req.body.user_id : req.user.id    const friend_id = req.body.friend_id;
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id    
+    const friend_id = req.body.friend_id;
     try {
       const deletePromise = await db('friendships').where({user_id, friend_id}).del()
       if (deletePromise) {
@@ -70,6 +71,8 @@ module.exports = {
       if (newsFeedPromise) {
         console.log(newsFeedPromise);
         res.status(200).json(newsFeedPromise);
+      } else {
+        res.status(404).json({msg: 'looks like you need some friends'});
       }
     } catch (err) {
       console.log(err);

@@ -14,5 +14,8 @@ router.get('/:username', controllers.getUserDetailsByUserName);
 
 router.post('/subscribe', controllers.subscribetoUser);
 
+router.delete('/unsubscribe', controllers.unsubscribetoUser);
+
+
 
 module.exports = router;

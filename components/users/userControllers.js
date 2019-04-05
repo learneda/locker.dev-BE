@@ -22,7 +22,7 @@ module.exports = {
   async getUserDetailsByUserName(req, res, next) {
     const username = req.params.username
     try {
-      const selectPromise = await db('users').where({username: username})
+      const selectPromise = await db('users').where({username: username}).select('username', 'display_name', 'profile_picture', 'bio', 'location', 'website_url');
       if (selectPromise) {
         res.status(200).json(selectPromise);
       } else {
@@ -67,7 +67,7 @@ module.exports = {
     console.log(req.user)
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     try {
-      const newsFeedPromise = await db('friendships').join('posts', 'friendships.friend_id', 'posts.user_id').where('friendships.user_id', user_id).select('posts.user_id', 'post_url', 'title','description', 'thumbnail_url', 'posts.created_at', 'posts.updated_at').orderBy('posts.created_at', 'dec')
+      const newsFeedPromise = await db('friendships').join('posts', 'friendships.friend_id', 'posts.user_id').where('friendships.user_id', user_id).select('posts.user_id', 'post_url', 'title','description', 'thumbnail_url', 'posts.created_at', 'posts.updated_at').distinct();
       if (newsFeedPromise) {
         console.log(newsFeedPromise);
         res.status(200).json(newsFeedPromise);

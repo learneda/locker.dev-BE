@@ -29,8 +29,10 @@ io.on('connection', (socket) => {
           user_id: msg.user_id,
           post_id: msg.post_id
         })
-        .then((res) => console.log(res));
+        .then((res) =>{
+          socket.broadcast.emit('comments', {msg, username: socket.id.slice(8)})          
+        });
     }
-    io.emit('comments', msg);
+    // io.emit('comments', msg);
   });
 });

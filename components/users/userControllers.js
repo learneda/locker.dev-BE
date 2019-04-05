@@ -32,5 +32,20 @@ module.exports = {
       console.log(err);
       res.status(500).json(err);
     }
+  },
+  async subscribetoUser(req, res, next) {
+    const user_id = req.user;
+    const friend_id = req.body;
+    try {
+      const insertPromise = await db('friendships').insert({user_id, friend_id})
+      if (insertPromise) {
+        res.status(200).json({msg: 'success'});
+      } else {
+        res.status(404).json({msg: 'something went wrong ..'});
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   }
 }

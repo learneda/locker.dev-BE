@@ -11,5 +11,7 @@ router.post('/details', controllers.postUserDetails);
 
 router.get('/:username', controllers.getUserDetailsByUserName);
 
+router.post('/subscribe', controllers.subscribetoUser);
+
 
 module.exports = router;

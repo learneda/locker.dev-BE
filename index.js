@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
           post_id: msg.post_id
         })
         .then((res) =>{
-          socket.broadcast.emit('comments', {msg, username: socket.id.slice(8)})          
+          socket.broadcast.emit('comments', {msg, username: msg.username})          
         });
     }
     // io.emit('comments', msg);

@@ -118,19 +118,22 @@ module.exports = {
     const user_id = req.body.user_id;
     // const friend_id = req.body.user_id;
     try {
-      const totalUserFollowers = await db('friendships').where(
-        'friendships.user_id',
-        '1'
-      );
+      const totalUserFollowers = await db('friendships')
+        .where('user_id', user_id)
+        .countDistinct('friend_id')
+        .first();
 
       if (totalUserFollowers) {
-        console.log('yoyoyoooo');
-        res.send(200).json({ yo: 'working' });
+        console.log(totalUserFollowers);
+        res.status(200).json(totalUserFollowers);
       } else {
-        res.send(201).json({ error: 'dis shit broke' });
+        console.log(totalUserFollowers);
+        res.status(201).json({ error: 'dis shit broke' });
       }
     } catch (err) {
+      console.log('broken yo');
       console.log(err);
+      res.status(500).json(err);
     }
   }
 };

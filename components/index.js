@@ -19,5 +19,6 @@ module.exports = (server) => {
   require('./services')(server);
   require('./folders')(server);
   require('./users')(server);
+  require('./comments')(server);
 }
 

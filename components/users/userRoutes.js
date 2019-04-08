@@ -12,10 +12,10 @@ router.post('/details', controllers.postUserDetails);
 
 router.get('/:username', controllers.getUserDetailsByUserName);
 
+router.get('/followersCount', controllers.getUserTotalFollowers);
+
 router.post('/subscribe', controllers.subscribetoUser);
 
 router.delete('/unsubscribe', controllers.unsubscribetoUser);
-
-
 
 module.exports = router;

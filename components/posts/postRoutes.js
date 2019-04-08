@@ -16,11 +16,13 @@ router.get('/:id', controllers.getPost);
 
 router.post('/', controllers.createNewPost);
 
-/* ===== DELETE POST || TODO: MAKE ROUTE SECURE  ===== */
+/* ===== DELETE POST ===== */
 router.delete('/:id', controllers.deletePost);
 
+/* ===== TOGGLE LIKE BOOLEAN ===== */
 router.put('/like/:id', controllers.likePost);
 
+/* ===== EDIT POST ===== */
 router.put('/:id', controllers.editPost);
 
 module.exports = router;

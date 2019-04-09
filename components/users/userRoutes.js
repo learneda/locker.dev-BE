@@ -11,7 +11,7 @@ router.get('/followStats', controllers.getUserFollowStats);
 
 router.get('/newsfeed', controllers.getUserNewsFeed);
 
-router.post('/details', controllers.postUserDetails);
+router.put('/edit', controllers.editProfile);
 
 router.get('/:username', controllers.getUserDetailsByUserName);
 

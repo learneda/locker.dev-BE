@@ -126,7 +126,7 @@ module.exports = {
 
       if (totalUserFollowers) {
         console.log(totalUserFollowers);
-        res.status(200).json(totalUserFollowers);
+        res.status(200).json({ followers: totalUserFollowers.count });
       } else {
         console.log(totalUserFollowers);
         res.status(201).json({ error: 'dis shit broke' });
@@ -150,7 +150,7 @@ module.exports = {
 
       if (totalUserFollowing) {
         console.log(totalUserFollowing);
-        res.status(200).json(totalUserFollowing);
+        res.status(200).json({ following: totalUserFollowing.count });
       } else {
         console.log(totalUserFollowing);
         res.status(201).json({ error: 'dis shit broke' });

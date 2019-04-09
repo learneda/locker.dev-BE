@@ -9,8 +9,6 @@ const controllers = require('./userControllers');
 
 router.get('/followersCount', controllers.getUserTotalFollowers);
 
-router.get('/followingCount', controllers.getUserTotalFollowing);
-
 router.get('/newsfeed', controllers.getUserNewsFeed);
 
 router.post('/details', controllers.postUserDetails);

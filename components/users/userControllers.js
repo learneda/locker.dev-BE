@@ -93,6 +93,7 @@ module.exports = {
         .where('friendships.user_id', user_id)
         .orWhere('posts.user_id', '=', user_id)
         .select(
+          'users.username',
           'posts.user_id',
           'post_url',
           'title',
@@ -101,10 +102,15 @@ module.exports = {
           'posts.created_at',
           'posts.updated_at'
         )
-        .distinct();
-      if (newsFeedPromise) {
-        console.log(newsFeedPromise);
-        res.status(200).json(newsFeedPromise);
+        .distinct().join('users', 'users.id', 'posts.user_id');
+
+      let friendArray = await db('friendships').where('user_id', user_id).select('friend_id')
+      friendArray = friendArray.map(friend => friend.friend_id)
+      friendArray.push(user_id)
+      console.log(friendArray, user_id)
+      const commentsPromise = await db('comments').join('users','comments.user_id', 'users.id').whereIn('user_id', friendArray)
+      if (commentsPromise && newsFeedPromise) {
+        res.status(200).json({commentsPromise, newsFeedPromise});
       } else {
         res.status(404).json({ msg: 'looks like you need some friends' });
       }

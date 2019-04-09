@@ -1,13 +1,28 @@
 const db = require('../../dbConfig');
 module.exports = {
-  async postUserDetails(req, res, next) {
+  async editProfile(req, res, next) {
     const user = req.body.id;
-    const { bio, location, website_url } = req.body;
+    const {
+      profile_picture,
+      display_name,
+      username,
+      bio,
+      location,
+      website_url
+    } = req.body;
+    console.log('REQ.BODY', req.body);
     if (user) {
       try {
         const postPromise = await db('users')
           .where({ id: user })
-          .update({ bio, location, website_url });
+          .update({
+            profile_picture,
+            display_name,
+            username,
+            bio,
+            location,
+            website_url
+          });
         if (postPromise) {
           res.status(200).json({ msg: 'success' });
         } else {

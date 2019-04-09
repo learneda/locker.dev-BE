@@ -114,18 +114,20 @@ module.exports = {
     }
   },
 
+  /* ===== TOTAL USER FOLLOWERS ===== */
   async getUserTotalFollowers(req, res, next) {
-    const user_id = req.body.user_id;
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    console.log(req.user);
     // const friend_id = req.body.user_id;
     try {
       const totalUserFollowers = await db('friendships')
-        .where('user_id', user_id)
-        .countDistinct('friend_id')
+        .where('friend_id', user_id)
+        .countDistinct('user_id', 'friend_id')
         .first();
 
       if (totalUserFollowers) {
         console.log(totalUserFollowers);
-        res.status(200).json(totalUserFollowers);
+        res.status(200).json({ followers: totalUserFollowers.count });
       } else {
         console.log(totalUserFollowers);
         res.status(201).json({ error: 'dis shit broke' });
@@ -134,6 +136,34 @@ module.exports = {
       console.log('broken yo');
       console.log(err);
       res.status(500).json(err);
+    }
+  },
+
+  /* ===== TOTAL USER FOLLOWING ===== */
+  async getUserTotalFollowing(req, res, next) {
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    // const friend_id = req.body.user_id;
+    if (user_id) {
+      try {
+        const totalUserFollowing = await db('friendships')
+          .where('user_id', user_id)
+          .countDistinct('user_id', 'friend_id')
+          .first();
+
+        if (totalUserFollowing) {
+          console.log(totalUserFollowing);
+          res.status(200).json({ following: totalUserFollowing.count });
+        } else {
+          console.log(totalUserFollowing);
+          res.status(201).json({ error: 'dis shit broke' });
+        }
+      } catch (err) {
+        console.log('broken yo');
+        console.log(err);
+        res.status(500).json(err);
+      }
+    } else {
+      console.log('not auth');
     }
   }
 };

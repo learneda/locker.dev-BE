@@ -66,12 +66,36 @@ module.exports = {
   async getUserNewsFeed(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     try {
-      const newsFeedPromise = await db('friendships').join('posts', function () {
-              this.on('friendships.friend_id', '=','posts.user_id').orOn('posts.user_id', '=', user_id)
-            }).where('friendships.user_id', user_id).orWhere('posts.user_id', '=', user_id).select('posts.user_id', 'post_url', 'title','description', 'thumbnail_url', 'posts.created_at', 'posts.updated_at').distinct();
-      if (newsFeedPromise) {
-        console.log(newsFeedPromise);
-        res.status(200).json(newsFeedPromise);
+      const newsFeedPromise = await db('friendships')
+        .join('posts', function() {
+          this.on('friendships.friend_id', '=', 'posts.user_id').orOn(
+            'posts.user_id',
+            '=',
+            user_id
+          );
+        })
+        .where('friendships.user_id', user_id)
+        .orWhere('posts.user_id', '=', user_id)
+        .select(
+          'users.username',
+          'posts.user_id',
+          'post_url',
+          'title',
+          'description',
+          'thumbnail_url',
+          'posts.created_at',
+          'posts.updated_at'
+        )
+        .distinct().join('users', 'users.id', 'posts.user_id');
+
+      let friendArray = await db('friendships').where('user_id', user_id).select('friend_id')
+      friendArray = friendArray.map(friend => friend.friend_id)
+      friendArray.push(user_id)
+      console.log(friendArray, user_id)
+      const commentsPromise = await db('comments').join('users','comments.user_id', 'users.id').whereIn('user_id', friendArray)
+
+      if (commentsPromise && newsFeedPromise) {
+        res.status(200).json({commentsPromise, newsFeedPromise});
       } else {
         res.status(404).json({msg: 'looks like you need some friends'});
       }

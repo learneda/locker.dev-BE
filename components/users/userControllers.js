@@ -127,7 +127,7 @@ module.exports = {
   },
 
   /* ===== USER FOLLOWERS AND FOLLOWING COUNT ===== */
-  async getUserTotalFollowers(req, res, next) {
+  async getUserFollowStats(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
     try {
       const totalUserFollowers = await db('friendships')

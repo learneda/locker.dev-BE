@@ -93,7 +93,6 @@ module.exports = {
       friendArray.push(user_id)
       console.log(friendArray, user_id)
       const commentsPromise = await db('comments').join('users','comments.user_id', 'users.id').whereIn('user_id', friendArray)
-
       if (commentsPromise && newsFeedPromise) {
         res.status(200).json({commentsPromise, newsFeedPromise});
       } else {

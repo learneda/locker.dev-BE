@@ -94,6 +94,7 @@ module.exports = {
         .orWhere('posts.user_id', '=', user_id)
         .select(
           'users.username',
+          'posts.id as post_id',
           'posts.user_id',
           'post_url',
           'title',

@@ -6,6 +6,11 @@ const controllers = require('./userControllers');
 // database accordingly (for example, getUsers
 // requests all the users in the users database)
 // ==============================================
+
+router.get('/followersCount', controllers.getUserTotalFollowers);
+
+router.get('/followingCount', controllers.getUserTotalFollowing);
+
 router.get('/newsfeed', controllers.getUserNewsFeed);
 
 router.post('/details', controllers.postUserDetails);
@@ -15,7 +20,5 @@ router.get('/:username', controllers.getUserDetailsByUserName);
 router.post('/subscribe', controllers.subscribetoUser);
 
 router.delete('/unsubscribe', controllers.unsubscribetoUser);
-
-
 
 module.exports = router;

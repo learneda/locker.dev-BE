@@ -13,9 +13,9 @@ exports.up = function(knex, Promise) {
     tbl.boolean('liked').defaultTo(false);
     tbl.boolean('completed').defaultTo(false);
     tbl.integer('rating').nullable();
-    tbl.string('title').nullable();
-    tbl.string('description').nullable();
-    tbl.string('thumbnail_url').nullable();
+    tbl.text('title').nullable();
+    tbl.text('description').nullable();
+    tbl.text('thumbnail_url').nullable();
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.timestamp('updated_at').defaultTo(knex.fn.now());
   });

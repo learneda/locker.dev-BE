@@ -13,7 +13,9 @@ router.get('/newsfeed', controllers.getUserNewsFeed);
 
 router.put('/edit', controllers.editProfile);
 
-router.get('/:username', controllers.getUserDetailsByUserName);
+router.get('/id/:id', controllers.getUserDetailsById);
+
+router.get('/username/:username', controllers.getUserDetailsByUserName);
 
 router.post('/subscribe', controllers.subscribetoUser);
 

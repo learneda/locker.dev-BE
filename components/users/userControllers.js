@@ -36,6 +36,29 @@ module.exports = {
       res.status(400).json({ err: 'not allowed' });
     }
   },
+  async getUserDetailsById(req, res, next) {
+    const id = req.params.id;
+    try {
+      const selectPromise = await db('users')
+        .where({ id: id })
+        .select(
+          'username',
+          'display_name',
+          'profile_picture',
+          'bio',
+          'location',
+          'website_url'
+        );
+      if (selectPromise) {
+        res.status(200).json(selectPromise);
+      } else {
+        res.status(404).json({ msg: 'user not found..' });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
   async getUserDetailsByUserName(req, res, next) {
     const username = req.params.username;
     try {
@@ -122,25 +145,28 @@ module.exports = {
         .distinct()
         .join('users', 'users.id', 'posts.user_id');
 
-      let friendArray = await db('friendships').where('user_id', user_id).select('friend_id')
-      friendArray = friendArray.map(friend => friend.friend_id)
-      friendArray.push(user_id)
-      console.log(friendArray, user_id)
-      const commentsPromise = await db('comments').join('users','comments.user_id', 'users.id').whereIn('user_id', friendArray)
-      
+      let friendArray = await db('friendships')
+        .where('user_id', user_id)
+        .select('friend_id');
+      friendArray = friendArray.map(friend => friend.friend_id);
+      friendArray.push(user_id);
+      console.log(friendArray, user_id);
+      const commentsPromise = await db('comments')
+        .join('users', 'comments.user_id', 'users.id')
+        .whereIn('user_id', friendArray);
 
       const newResponse = newsFeedPromise.map((post, index) => {
         post.comments = [];
         for (let i = 0; i < commentsPromise.length; i++) {
           if (commentsPromise[i].post_id === post.post_id) {
-            post.comments.push(commentsPromise[i])
+            post.comments.push(commentsPromise[i]);
           }
         }
-        return post
+        return post;
       });
- 
+
       if (commentsPromise && newsFeedPromise) {
-        res.status(200).json({newResponse});
+        res.status(200).json({ newResponse });
       } else {
         res.status(404).json({ msg: 'looks like you need some friends' });
       }

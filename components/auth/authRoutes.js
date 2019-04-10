@@ -25,6 +25,4 @@ router.get('/logout', controllers.logoutHandler);
 
 router.get('/current_user', (req, res) => res.send(req.user));
 
-router.put('/current_user/:id', controllers.editProfile);
-
 module.exports = router;

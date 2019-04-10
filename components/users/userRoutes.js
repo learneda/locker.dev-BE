@@ -7,13 +7,11 @@ const controllers = require('./userControllers');
 // requests all the users in the users database)
 // ==============================================
 
-router.get('/followersCount', controllers.getUserTotalFollowers);
-
-router.get('/followingCount', controllers.getUserTotalFollowing);
+router.get('/followStats', controllers.getUserFollowStats);
 
 router.get('/newsfeed', controllers.getUserNewsFeed);
 
-router.post('/details', controllers.postUserDetails);
+router.put('/edit', controllers.editProfile);
 
 router.get('/:username', controllers.getUserDetailsByUserName);
 

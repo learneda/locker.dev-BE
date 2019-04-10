@@ -1,13 +1,28 @@
 const db = require('../../dbConfig');
 module.exports = {
-  async postUserDetails(req, res, next) {
+  async editProfile(req, res, next) {
     const user = req.body.id;
-    const { bio, location, website_url } = req.body;
+    const {
+      profile_picture,
+      display_name,
+      username,
+      bio,
+      location,
+      website_url
+    } = req.body;
+    console.log('REQ.BODY', req.body);
     if (user) {
       try {
         const postPromise = await db('users')
           .where({ id: user })
-          .update({ bio, location, website_url });
+          .update({
+            profile_picture,
+            display_name,
+            username,
+            bio,
+            location,
+            website_url
+          });
         if (postPromise) {
           res.status(200).json({ msg: 'success' });
         } else {
@@ -104,7 +119,8 @@ module.exports = {
           'posts.created_at',
           'posts.updated_at'
         )
-        .distinct().join('users', 'users.id', 'posts.user_id');
+        .distinct()
+        .join('users', 'users.id', 'posts.user_id');
 
       let friendArray = await db('friendships').where('user_id', user_id).select('friend_id')
       friendArray = friendArray.map(friend => friend.friend_id)
@@ -135,58 +151,60 @@ module.exports = {
     }
   },
 
-  /* ===== TOTAL USER FOLLOWERS ===== */
-  async getUserTotalFollowers(req, res, next) {
+  /* ===== USER FOLLOWERS AND FOLLOWING COUNT ===== */
+  async getUserFollowStats(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
-    console.log(req.user);
-    // const friend_id = req.body.user_id;
     try {
       const totalUserFollowers = await db('friendships')
         .where('friend_id', user_id)
         .countDistinct('user_id', 'friend_id')
         .first();
 
+      const totalUserFollowing = await db('friendships')
+        .where('user_id', user_id)
+        .countDistinct('user_id', 'friend_id')
+        .first();
+
       if (totalUserFollowers) {
-        console.log(totalUserFollowers);
-        res.status(200).json({ followers: totalUserFollowers.count });
+        res.status(200).json({
+          followers: totalUserFollowers.count,
+          following: totalUserFollowing.count
+        });
       } else {
-        console.log(totalUserFollowers);
-        res.status(201).json({ error: 'dis shit broke' });
+        res.status(201).json({ error: 'BROKEN' });
       }
     } catch (err) {
-      console.log('broken yo');
-      console.log(err);
       res.status(500).json(err);
     }
-  },
-
-  /* ===== TOTAL USER FOLLOWING ===== */
-  async getUserTotalFollowing(req, res, next) {
-    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
-    // const friend_id = req.body.user_id;
-    if (user_id) {
-      try {
-        const totalUserFollowing = await db('friendships')
-          .where('user_id', user_id)
-          .countDistinct('user_id', 'friend_id')
-          .first();
-
-        if (totalUserFollowing) {
-          console.log(totalUserFollowing);
-          res.status(200).json({ following: totalUserFollowing.count });
-        } else {
-          console.log(totalUserFollowing);
-          res.status(201).json({ error: 'dis shit broke' });
-        }
-      } catch (err) {
-        console.log('broken yo');
-        console.log(err);
-        res.status(500).json(err);
-      }
-    } else {
-      console.log('not auth');
-    }
   }
+
+  // /* ===== TOTAL USER FOLLOWING ===== */
+  // async getUserTotalFollowing(req, res, next) {
+  //   const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+  //   // const friend_id = req.body.user_id;
+  //   if (user_id) {
+  //     try {
+  //       const totalUserFollowing = await db('friendships')
+  //         .where('user_id', user_id)
+  //         .countDistinct('user_id', 'friend_id')
+  //         .first();
+
+  //       if (totalUserFollowing) {
+  //         console.log(totalUserFollowing);
+  //         res.status(200).json({ following: totalUserFollowing.count });
+  //       } else {
+  //         console.log(totalUserFollowing);
+  //         res.status(201).json({ error: 'dis shit broke' });
+  //       }
+  //     } catch (err) {
+  //       console.log('broken yo');
+  //       console.log(err);
+  //       res.status(500).json(err);
+  //     }
+  //   } else {
+  //     console.log('not auth');
+  //   }
+  // }
 };
 
 // A USER'S TOTAL FOLLOWERS COUNT = SELECT COUNT(DISTINCT user_id) FROM public.friendships WHERE friend_id = 503

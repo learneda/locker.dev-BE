@@ -95,6 +95,7 @@ module.exports = {
         .select(
           'users.username',
           'posts.id as post_id',
+          'users.profile_picture',
           'posts.user_id',
           'post_url',
           'title',
@@ -110,8 +111,21 @@ module.exports = {
       friendArray.push(user_id)
       console.log(friendArray, user_id)
       const commentsPromise = await db('comments').join('users','comments.user_id', 'users.id').whereIn('user_id', friendArray)
+      
+
+      const newResponse = newsFeedPromise.map((post, index) => {
+        post.comments = [];
+        for (let i = 0; i < commentsPromise.length; i++) {
+          if (commentsPromise[i].post_id === post.post_id) {
+            console.log('HERE ERHERE HRERE',commentsPromise[i])
+            post.comments.push(commentsPromise[i])
+          }
+        }
+        return post
+      });
+ 
       if (commentsPromise && newsFeedPromise) {
-        res.status(200).json({commentsPromise, newsFeedPromise});
+        res.status(200).json({newResponse});
       } else {
         res.status(404).json({ msg: 'looks like you need some friends' });
       }

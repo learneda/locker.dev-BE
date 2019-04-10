@@ -133,7 +133,6 @@ module.exports = {
         post.comments = [];
         for (let i = 0; i < commentsPromise.length; i++) {
           if (commentsPromise[i].post_id === post.post_id) {
-            console.log('HERE ERHERE HRERE',commentsPromise[i])
             post.comments.push(commentsPromise[i])
           }
         }

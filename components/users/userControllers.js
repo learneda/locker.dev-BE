@@ -66,8 +66,6 @@ module.exports = {
         .countDistinct('user_id', 'friend_id')
         .first();
 
-      console.log(totalUserFollowers, totalUserFollowing);
-
       selectPromise[0].post_count = selectCountPromise.count;
       selectPromise[0].followers_count = totalUserFollowers.count;
       selectPromise[0].following_count = totalUserFollowing.count

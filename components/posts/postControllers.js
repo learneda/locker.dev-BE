@@ -175,5 +175,25 @@ module.exports = {
         res.status(500).json({ err });
       }
     }
+  },
+  async getUserPostsCount(req, res, next) {
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    if (user_id) {
+      try {
+        const selectCountPromise = await db('posts')
+          .where({user_id: user_id})
+          .count()
+        if (selectCountPromise) {
+          res.status(200).json(selectCountPromise);
+        } else {
+          res.status(303).json({err: 'couldnt find user'});
+        }
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    } else {
+      res.status(417).json({err: '<user_id>'});
+    }
   }
 };

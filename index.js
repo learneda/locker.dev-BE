@@ -30,7 +30,8 @@ io.on('connection', (socket) => {
           post_id: msg.post_id
         })
         .then((res) =>{
-          socket.broadcast.emit('comments', msg);        
+          socket.broadcast.emit('comments', msg);  
+          socket.emit('comments', msg);        
         });
     }
     // io.emit('comments', msg);

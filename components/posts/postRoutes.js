@@ -8,6 +8,9 @@ const controllers = require('./postControllers');
 // ==============================================
 
 router.get('/', controllers.getAllUserPosts);
+
+router.get('/count',controllers.getUserPostsCount);
+
 router.get('/likes', controllers.getAllUserPostsLiked);
 
 router.get('/shared', controllers.getAllSharedPost);

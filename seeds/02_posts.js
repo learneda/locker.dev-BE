@@ -9,7 +9,8 @@ const posts_array = [
     liked: true,
     completed: true,
     rating: 3,
-    description: 'wanna get stuff done ? hmu . checkout my work at my own domain. lmk i got websites on decc.',
+    description:
+      'wanna get stuff done ? hmu . checkout my work at my own domain. lmk i got websites on decc.',
     title: 'Riley.gg',
     thumbnail_url: 'https://riley.gg/img/seo-landing.jpg'
   },
@@ -20,7 +21,7 @@ const posts_array = [
     liked: true,
     rating: 5,
     description: 'oughta make those big moves hawmies',
-    title: '10 things to be more productive',
+    title: '10 things to be more productive'
   },
   {
     post_url: 'https://www.youtube.com/watch?v=qtURixlmp6M',
@@ -41,7 +42,7 @@ const posts_array = [
     rating: 2,
     description: 'I TRAP HARD',
     title: 'COOKIES'
-    },
+  },
   {
     post_url: 'http://www.thinklikeahorse.org',
     user_id: 2,
@@ -55,17 +56,21 @@ const posts_array = [
   }
 ];
 
-fakeInsertData.push(...posts_array)
+fakeInsertData.push(...posts_array);
 
 for (let i = 1; i < 500; i++) {
-  const post_url = faker.internet.url()
+  const post_url = faker.internet.url();
+  const title = faker.lorem.sentence();
+  const description = faker.lorem.paragraph();
   const user = {
     post_url,
-    user_id: i
+    user_id: i,
+    title: title,
+    description: description
   };
 
   fakeInsertData.push(user);
-};
+}
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
   return knex('posts')

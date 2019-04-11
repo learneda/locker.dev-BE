@@ -38,6 +38,7 @@ module.exports = {
   },
   async getUserDetailsById(req, res, next) {
     const id = req.params.id;
+    console.log(typeof id)
     try {
       const selectPromise = await db('users')
         .where({ id: id })
@@ -49,7 +50,13 @@ module.exports = {
           'location',
           'website_url'
         );
-      if (selectPromise) {
+      const selectCountPromise = await db('posts')
+        .where({user_id: id})
+        .count()
+
+      selectPromise[0].post_count = selectCountPromise[0].count;
+
+      if (selectPromise && selectCountPromise) {
         res.status(200).json(selectPromise);
       } else {
         res.status(404).json({ msg: 'user not found..' });

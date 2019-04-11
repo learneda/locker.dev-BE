@@ -2,7 +2,7 @@ const db = require('../../dbConfig');
 const urlMetadata = require('url-metadata');
 
 module.exports = {
-  async getAllUserPosts(req, res, next) {
+  async getAllCurrentUserPost(req, res, next) {
     try {
       const posts = await db('posts')
         .where({ user_id: req.user.id })
@@ -12,6 +12,18 @@ module.exports = {
       console.log(err);
     }
   },
+    async getAllUserPosts(req, res, next) {
+      const user_id = req.params.id;
+    try {
+      const posts = await db('posts')
+        .where({ user_id: user_id })
+        .orderBy('id', 'asc');
+      return res.status(200).json(posts);
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
   async getAllUserPostsLiked(req, res, next) {
     if (req.user) {
       try {

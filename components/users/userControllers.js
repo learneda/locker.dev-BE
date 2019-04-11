@@ -48,15 +48,31 @@ module.exports = {
           'profile_picture',
           'bio',
           'location',
-          'website_url'
+          'website_url',
+          'created_at'
         );
       const selectCountPromise = await db('posts')
         .where({user_id: id})
         .count()
+        .first();
 
-      selectPromise[0].post_count = selectCountPromise[0].count;
+      const totalUserFollowers = await db('friendships')
+        .where('friend_id', id)
+        .countDistinct('user_id', 'friend_id')
+        .first();
 
-      if (selectPromise && selectCountPromise) {
+      const totalUserFollowing = await db('friendships')
+        .where('user_id', id)
+        .countDistinct('user_id', 'friend_id')
+        .first();
+
+      console.log(totalUserFollowers, totalUserFollowing);
+
+      selectPromise[0].post_count = selectCountPromise.count;
+      selectPromise[0].followers_count = totalUserFollowers.count;
+      selectPromise[0].following_count = totalUserFollowing.count
+
+      if (selectPromise) {
         res.status(200).json(selectPromise);
       } else {
         res.status(404).json({ msg: 'user not found..' });

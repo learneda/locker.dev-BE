@@ -7,7 +7,7 @@ const controllers = require('./postControllers');
 // requests all the users in the users database)
 // ==============================================
 
-router.get('/', controllers.getAllUserPosts);
+router.get('/', controllers.getAllCurrentUserPost);
 
 router.get('/count',controllers.getUserPostsCount);
 
@@ -16,6 +16,9 @@ router.get('/likes', controllers.getAllUserPostsLiked);
 router.get('/shared', controllers.getAllSharedPost);
 
 router.get('/:id', controllers.getPost);
+
+router.get('/all/:id', controllers.getAllUserPosts);
+
 
 router.post('/', controllers.createNewPost);
 

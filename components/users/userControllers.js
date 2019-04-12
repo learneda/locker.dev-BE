@@ -226,9 +226,13 @@ module.exports = {
 
   async getFollowing(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
-
+    const friend_id = req.params.id;
+    console.log('FRIEND_ID', friend_id);
     try {
-      const following = await db('friendships').where('user_id', user_id);
+      const following = await db('friendships').where({
+        user_id: user_id,
+        friend_id: friend_id
+      });
       console.log('FOLLOWING', following);
       if (following) {
         res.status(200).json({

@@ -21,6 +21,6 @@ router.post('/subscribe', controllers.subscribetoUser);
 
 router.delete('/unsubscribe', controllers.unsubscribetoUser);
 
-router.get('/following', controllers.getFollowing);
+router.get('/following/:id', controllers.getFollowing);
 
 module.exports = router;

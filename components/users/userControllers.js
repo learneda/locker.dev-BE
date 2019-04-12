@@ -38,7 +38,7 @@ module.exports = {
   },
   async getUserDetailsById(req, res, next) {
     const id = req.params.id;
-    console.log(typeof id)
+    console.log(typeof id);
     try {
       const selectPromise = await db('users')
         .where({ id: id })
@@ -52,7 +52,7 @@ module.exports = {
           'created_at'
         );
       const selectCountPromise = await db('posts')
-        .where({user_id: id})
+        .where({ user_id: id })
         .count()
         .first();
 
@@ -68,7 +68,7 @@ module.exports = {
 
       selectPromise[0].post_count = selectCountPromise.count;
       selectPromise[0].followers_count = totalUserFollowers.count;
-      selectPromise[0].following_count = totalUserFollowing.count
+      selectPromise[0].following_count = totalUserFollowing.count;
 
       if (selectPromise) {
         res.status(200).json(selectPromise);
@@ -215,6 +215,26 @@ module.exports = {
         res.status(200).json({
           followers: totalUserFollowers.count,
           following: totalUserFollowing.count
+        });
+      } else {
+        res.status(201).json({ error: 'BROKEN' });
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  async getFollowing(req, res, next) {
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    const friend_id = req.params.id;
+    try {
+      const following = await db('friendships').where({
+        user_id: user_id,
+        friend_id: friend_id
+      });
+      if (following) {
+        res.status(200).json({
+          following: following
         });
       } else {
         res.status(201).json({ error: 'BROKEN' });

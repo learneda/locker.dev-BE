@@ -9,6 +9,8 @@ const controllers = require('./userControllers');
 
 router.get('/followStats', controllers.getUserFollowStats);
 
+router.get('/recomendedFollow', controllers.recomendedFollow);
+
 router.get('/newsfeed', controllers.getUserNewsFeed);
 
 router.put('/edit', controllers.editProfile);

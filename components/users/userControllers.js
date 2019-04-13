@@ -175,7 +175,7 @@ module.exports = {
       const commentsPromise = await db('comments')
         .join('posts', 'posts.id', 'comments.post_id')
         .join('users', 'users.id', 'comments.user_id');
-      
+
       const newResponse = newsFeedPromise.map((post, index) => {
         post.comments = [];
         for (let i = 0; i < commentsPromise.length; i++) {
@@ -242,37 +242,31 @@ module.exports = {
     } catch (err) {
       res.status(500).json(err);
     }
+  },
+
+  async recomendedFollow(req, res, next) {
+    const user_id = req.query.id;
+    let recomendedFollowArray = [];
+
+    // gets users that user_id var is following
+    const following = await db('friendships').where('user_id', user_id);
+
+    // generates an array of users that people I follow are following
+    for (let i = 0; i < 3; i++) {
+      let randomNumber = Math.floor(Math.random() * following.length);
+
+      // picks 3 random users that I follow
+      let randomFollowing = following[randomNumber];
+
+      // checks the following of 3 random people that I follow
+      randomRecomendedFollow = await db('friendships').where(
+        'user_id',
+        randomFollowing.friend_id
+      );
+
+      // pushes data using random index
+      recomendedFollowArray.push(randomRecomendedFollow[randomNumber]);
+    }
+    res.json(recomendedFollowArray);
   }
-
-  // /* ===== TOTAL USER FOLLOWING ===== */
-  // async getUserTotalFollowing(req, res, next) {
-  //   const user_id = req.user === undefined ? req.body.user_id : req.user.id;
-  //   // const friend_id = req.body.user_id;
-  //   if (user_id) {
-  //     try {
-  //       const totalUserFollowing = await db('friendships')
-  //         .where('user_id', user_id)
-  //         .countDistinct('user_id', 'friend_id')
-  //         .first();
-
-  //       if (totalUserFollowing) {
-  //         console.log(totalUserFollowing);
-  //         res.status(200).json({ following: totalUserFollowing.count });
-  //       } else {
-  //         console.log(totalUserFollowing);
-  //         res.status(201).json({ error: 'dis shit broke' });
-  //       }
-  //     } catch (err) {
-  //       console.log('broken yo');
-  //       console.log(err);
-  //       res.status(500).json(err);
-  //     }
-  //   } else {
-  //     console.log('not auth');
-  //   }
-  // }
 };
-
-// A USER'S TOTAL FOLLOWERS COUNT = SELECT COUNT(DISTINCT user_id) FROM public.friendships WHERE friend_id = 503
-
-// A USER'S TOTAL FOLLOWING COUNT = SELECT COUNT(DISTINCT friend_id) FROM public.friendships WHERE user_id = 503

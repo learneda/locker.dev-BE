@@ -244,9 +244,9 @@ module.exports = {
     }
   },
 
-  async recomendedFollow(req, res, next) {
+  async recommendedFollow(req, res, next) {
     const user_id = req.query.id;
-    let recomendedFollowArray = [];
+    let recommendedFollowArray = [];
     let followArray = [];
 
     // makes an array with user_id's that I follow
@@ -266,9 +266,9 @@ module.exports = {
       let randomFollowing = followArray[randomIndex];
 
       // checks the following of thr random person that I follow
-      randomRecomendedFollow = await db('friendships')
+      randomRecommendedFollow = await db('friendships')
         .select(
-          'friendships.friend_id as recomended_follow_id',
+          'friendships.friend_id as recommended_follow_id',
           'friendships.user_id as followed_by_id',
           'users.profile_picture',
           'users.display_name',
@@ -286,8 +286,8 @@ module.exports = {
               .where('id', user.followed_by_id)
               .then(followedByData => {
                 followedByData.forEach(followedBy => {
-                  recomendedFollowArray.push({
-                    recomended_follow_id: user.recomended_follow_id,
+                  recommendedFollowArray.push({
+                    recommended_follow_id: user.recommended_follow_id,
                     followed_by_id: user.followed_by_id,
                     followed_by_username: followedBy.username,
                     followed_by_display_name: followedBy.display_name,
@@ -304,14 +304,14 @@ module.exports = {
     }
 
     // picks 3 random users to follow from the follow array
-    let recomendedFollow = [];
+    let recommendedFollow = [];
     for (let i = 0; i < 3; i++) {
       let randomIndex = Math.floor(
-        Math.random() * recomendedFollowArray.length
+        Math.random() * recommendedFollowArray.length
       );
-      recomendedFollow.push(recomendedFollowArray[randomIndex]);
+      recommendedFollow.push(recommendedFollowArray[randomIndex]);
     }
 
-    res.json(recomendedFollow);
+    res.json(recommendedFollow);
   }
 };

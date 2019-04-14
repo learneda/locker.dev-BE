@@ -261,17 +261,16 @@ module.exports = {
     // generates an array of users that people I follow are following
     for (let i = 0; i < 3; i++) {
       let randomIndex = Math.floor(Math.random() * followArray.length);
-      // console.log('random Index:', randomIndex);
-      // console.log('random user_id that I follow:', followArray[randomIndex]);
 
-      // picks 3 random users that I follow
+      // picks a random user that I follow
       let randomFollowing = followArray[randomIndex];
 
-      // checks the following of 3 random people that I follow
+      // checks the following of thr random person that I follow
       randomRecomendedFollow = await db('friendships')
         .select(
           'friendships.friend_id as recomended_follow_id',
           'friendships.user_id as followed_by_id',
+          // 'users.profile_picture as followed_by_picture WHERE users.id = friendships.user_id',
           'users.profile_picture',
           'users.display_name',
           'users.username',
@@ -279,41 +278,25 @@ module.exports = {
           'users.location'
         )
         .where('user_id', randomFollowing)
-        .join('users', 'users.id', 'friendships.friend_id')
-        .then(data =>
-          // data.map(user => {
-          //   // let randomUserToFollow = {
-          //   //   recomended_follow_id: user.recomended_follow_id,
-          //   //   followed_by_id: user.followed_by_id
-          //   // };
-          //   console.log(user);
-          //   // recomendedFollowArray.push(randomUserToFollow);
-          //   // console.log(randomUserToFollow);
-          // })
-          {
-            data.map(user =>
-              recomendedFollowArray.push({
-                recomended_follow_id: user.recomended_follow_id,
-                followed_by_id: user.followed_by_id,
-                image: user.profile_picture,
-                display_name: user.display_name,
-                username: user.username,
-                bio: user.bio,
-                location: user.location
-              })
-            );
-          }
-        );
-
-      // pushes data using random index
-      // recomendedFollowArray.push(randomRecomendedFollow);
+        .join('users', 'users.id', 'friendships.friend_id') // joins user table
+        .then(data => {
+          // creates object and pushed to array with needed data
+          data.map(user =>
+            recomendedFollowArray.push({
+              recomended_follow_id: user.recomended_follow_id,
+              followed_by_id: user.followed_by_id,
+              image: user.profile_picture,
+              display_name: user.display_name,
+              username: user.username,
+              bio: user.bio,
+              location: user.location
+              // followed_by_picture: user.followed_by_picture
+            })
+          );
+        });
     }
-    // console.log(recomendedFollowArray.length);
-    // recomendedFollowArray.forEach(array =>
-    //   array.forEach(user => console.log(user))
-    // );
-    // console.log(recomendedFollowArray[2][4]);
-    console.log('recomended follow:', recomendedFollowArray.length);
+
+    // picks 3 random users to follow from the follow array
     let recomendedFollow = [];
     for (let i = 0; i < 3; i++) {
       let randomIndex = Math.floor(
@@ -321,6 +304,6 @@ module.exports = {
       );
       recomendedFollow.push(recomendedFollowArray[randomIndex]);
     }
-    res.send(recomendedFollow);
+    res.json(recomendedFollow);
   }
 };

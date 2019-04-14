@@ -256,7 +256,7 @@ module.exports = {
         users.map(user => followArray.push(user.friend_id));
       });
 
-    console.log(followArray);
+    // console.log(followArray);
 
     // generates an array of users that people I follow are following
     for (let i = 0; i < 3; i++) {
@@ -270,29 +270,36 @@ module.exports = {
         .select(
           'friendships.friend_id as recomended_follow_id',
           'friendships.user_id as followed_by_id',
-          // 'users.profile_picture as followed_by_picture WHERE users.id = friendships.user_id',
           'users.profile_picture',
           'users.display_name',
           'users.username',
           'users.bio',
           'users.location'
         )
+        .join('users', 'friendships.friend_id', 'users.id') // joins user table
         .where('user_id', randomFollowing)
-        .join('users', 'users.id', 'friendships.friend_id') // joins user table
+
         .then(data => {
           // creates object and pushed to array with needed data
-          data.map(user =>
-            recomendedFollowArray.push({
-              recomended_follow_id: user.recomended_follow_id,
-              followed_by_id: user.followed_by_id,
-              image: user.profile_picture,
-              display_name: user.display_name,
-              username: user.username,
-              bio: user.bio,
-              location: user.location
-              // followed_by_picture: user.followed_by_picture
-            })
-          );
+          data.map(user => {
+            db('users')
+              .where('id', user.followed_by_id)
+              .then(followedByData => {
+                followedByData.forEach(followedBy => {
+                  recomendedFollowArray.push({
+                    recomended_follow_id: user.recomended_follow_id,
+                    followed_by_id: user.followed_by_id,
+                    followed_by_username: followedBy.username,
+                    followed_by_display_name: followedBy.display_name,
+                    image: user.profile_picture,
+                    display_name: user.display_name,
+                    username: user.username,
+                    bio: user.bio,
+                    location: user.location
+                  });
+                });
+              });
+          });
         });
     }
 
@@ -304,6 +311,7 @@ module.exports = {
       );
       recomendedFollow.push(recomendedFollowArray[randomIndex]);
     }
+
     res.json(recomendedFollow);
   }
 };

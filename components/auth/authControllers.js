@@ -20,9 +20,9 @@ module.exports = {
       res.redirect('https://learnedadev.netlify.com');
     } else res.redirect('http://localhost:3000');
   },
-  async getOauthAccounts(req, res, next) {
+  async getSocialNetworkIDs(req, res, next) {
     const user_id = req.user.id;
-    const selectPromise = await db('users').select('github_id', 'google_id');
+    const selectPromise = await db('users').select('github_id', 'google_id').where('id', user_id);
     try {
       if (selectPromise) {
         res.status(200).json(selectPromise);

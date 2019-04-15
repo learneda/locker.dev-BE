@@ -164,8 +164,8 @@ module.exports = {
           'posts.updated_at'
         )
         .distinct()
-        .join('users', 'users.id', 'posts.user_id');
-
+        .join('users', 'users.id', 'posts.user_id')
+        .orderBy('created_at', 'desc');
       let friendArray = await db('friendships')
         .where('user_id', user_id)
         .select('friend_id');

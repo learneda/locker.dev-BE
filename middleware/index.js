@@ -17,7 +17,7 @@ module.exports = server => {
     cookieSession({
       name: 'learned-a',
       keys: [process.env.COOKIE_KEY],
-      maxAge: 60 * 60 * 1000
+      maxAge: 3 * 60 * 60 * 1000
     })
   );
   server.use(cors(corsOptions));

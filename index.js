@@ -28,10 +28,12 @@ io.on('connection', (socket) => {
           content:msg.content,
           user_id: msg.user_id,
           post_id: msg.post_id
-        })
+        }).returning('*')
         .then((res) =>{
-          socket.broadcast.emit('comments', msg);  
-          socket.emit('comments', msg);        
+          res[0]['username'] = msg.username;
+          console.log('make sure this is res',res[0])
+          socket.broadcast.emit('comments', res[0]);  
+          socket.emit('comments', res[0]);        
         });
     }
     // io.emit('comments', msg);

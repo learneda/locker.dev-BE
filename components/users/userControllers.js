@@ -172,7 +172,8 @@ module.exports = {
       friendArray = friendArray.map(friend => friend.friend_id);
       friendArray.push(user_id);
       console.log(friendArray, user_id);
-      const commentsPromise = await db('comments')
+
+      const commentsPromise = await db('comments').select('comments.id', 'comments.content', 'posts.id as post_id', 'users.id as user_id', 'users.username', 'comments.created_at')
         .join('posts', 'posts.id', 'comments.post_id')
         .join('users', 'users.id', 'comments.user_id');
 
@@ -180,6 +181,7 @@ module.exports = {
         post.comments = [];
         for (let i = 0; i < commentsPromise.length; i++) {
           if (commentsPromise[i].post_id === post.post_id) {
+            console.log('obj getting pushed to comments arr', commentsPromise[i])
             post.comments.push(commentsPromise[i]);
           }
         }

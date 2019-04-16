@@ -1,24 +1,25 @@
 const db = require('../../dbConfig');
 require('dotenv').config();
+const localhost_url = 'http://localhost:3000';
 
 module.exports = {
   gitHubHandler(req, res, next) {
     if (process.env.NODE_ENV === 'production') {
       res.redirect('https://learnedadev.netlify.com/profile');
-    } else res.redirect('http://localhost:3000/profile');
+    } else res.redirect(`${localhost_url}/home`);
   },
 
   googleHandler(req, res, next) {
     if (process.env.NODE_ENV === 'production') {
       res.redirect('https://learnedadev.netlify.com/profile');
-    } else res.redirect('http://localhost:3000/profile');
+    } else res.redirect(`${localhost_url}/home`);
   },
   logoutHandler(req, res, next) {
     req.session = null;
 
     if (process.env.NODE_ENV === 'production') {
       res.redirect('https://learnedadev.netlify.com');
-    } else res.redirect('http://localhost:3000');
+    } else res.redirect(`${localhost_url}`);
   },
   async getSocialNetworkIDs(req, res, next) {
     const user_id = req.user.id;

@@ -5,4 +5,6 @@ router.get('/', controllers.getAllComments);
 
 router.post('/', controllers.insertComment);
 
+router.delete('/:id', controllers.deleteComment);
+
 module.exports = router;

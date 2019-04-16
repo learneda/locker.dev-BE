@@ -44,7 +44,7 @@ module.exports = {
     const user_id = req.user.id
     if (user_id) {
       try {
-        const deletePromise = await db('comments').where('id', req.body.comment_id).del();
+        const deletePromise = await db('comments').where('id', req.params.id).del();
         if (deletePromise) {
           res.status(200).json({msg: 'comment successfully deleted'});
         } else {

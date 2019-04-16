@@ -5,13 +5,13 @@ const localhost_url = 'http://localhost:3000';
 module.exports = {
   gitHubHandler(req, res, next) {
     if (process.env.NODE_ENV === 'production') {
-      res.redirect('https://learnedadev.netlify.com/profile');
+      res.redirect('https://learnedadev.netlify.com/home');
     } else res.redirect(`${localhost_url}/home`);
   },
 
   googleHandler(req, res, next) {
     if (process.env.NODE_ENV === 'production') {
-      res.redirect('https://learnedadev.netlify.com/profile');
+      res.redirect('https://learnedadev.netlify.com/home');
     } else res.redirect(`${localhost_url}/home`);
   },
   logoutHandler(req, res, next) {

@@ -1,5 +1,20 @@
 const db = require('../../dbConfig');
 module.exports = {
+  async getAllUsers(req, res, next) {
+    const user = req.user;
+    if (user) {
+      try {
+        const users = await db('users');
+        console.log('users', users);
+        return res.status(200).json(users);
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    } else {
+      res.status(400).json({ err: 'not allowed' });
+    }
+  },
   async editProfile(req, res, next) {
     const user = req.body.id;
     const {
@@ -173,7 +188,15 @@ module.exports = {
       friendArray.push(user_id);
       console.log(friendArray, user_id);
 
-      const commentsPromise = await db('comments').select('comments.id', 'comments.content', 'posts.id as post_id', 'users.id as user_id', 'users.username', 'comments.created_at')
+      const commentsPromise = await db('comments')
+        .select(
+          'comments.id',
+          'comments.content',
+          'posts.id as post_id',
+          'users.id as user_id',
+          'users.username',
+          'comments.created_at'
+        )
         .join('posts', 'posts.id', 'comments.post_id')
         .join('users', 'users.id', 'comments.user_id');
 
@@ -181,7 +204,10 @@ module.exports = {
         post.comments = [];
         for (let i = 0; i < commentsPromise.length; i++) {
           if (commentsPromise[i].post_id === post.post_id) {
-            console.log('obj getting pushed to comments arr', commentsPromise[i])
+            console.log(
+              'obj getting pushed to comments arr',
+              commentsPromise[i]
+            );
             post.comments.push(commentsPromise[i]);
           }
         }
@@ -258,62 +284,92 @@ module.exports = {
         users.map(user => followArray.push(user.friend_id));
       });
 
-    // console.log(followArray);
+    if (followArray.length > 0) {
+      // generates an array of users that people I follow are following
+      for (let i = 0; i < 3; i++) {
+        let randomIndex = Math.floor(Math.random() * followArray.length);
 
-    // generates an array of users that people I follow are following
-    for (let i = 0; i < 3; i++) {
-      let randomIndex = Math.floor(Math.random() * followArray.length);
+        // picks a random user that I follow
+        let randomFollowing = followArray[randomIndex];
 
-      // picks a random user that I follow
-      let randomFollowing = followArray[randomIndex];
+        // checks the following of thr random person that I follow
+        randomRecommendedFollow = await db('friendships')
+          .select(
+            'friendships.friend_id as recommended_follow_id',
+            'friendships.user_id as followed_by_id',
+            'users.profile_picture',
+            'users.display_name',
+            'users.username',
+            'users.bio',
+            'users.location'
+          )
+          .join('users', 'friendships.friend_id', 'users.id') // joins user table
+          .where('user_id', randomFollowing)
 
-      // checks the following of thr random person that I follow
-      randomRecommendedFollow = await db('friendships')
-        .select(
-          'friendships.friend_id as recommended_follow_id',
-          'friendships.user_id as followed_by_id',
-          'users.profile_picture',
-          'users.display_name',
-          'users.username',
-          'users.bio',
-          'users.location'
-        )
-        .join('users', 'friendships.friend_id', 'users.id') // joins user table
-        .where('user_id', randomFollowing)
-
-        .then(data => {
-          // creates object and pushed to array with needed data
-          data.map(user => {
-            db('users')
-              .where('id', user.followed_by_id)
-              .then(followedByData => {
-                followedByData.forEach(followedBy => {
-                  recommendedFollowArray.push({
-                    recommended_follow_id: user.recommended_follow_id,
-                    followed_by_id: user.followed_by_id,
-                    followed_by_username: followedBy.username,
-                    followed_by_display_name: followedBy.display_name,
-                    image: user.profile_picture,
-                    display_name: user.display_name,
-                    username: user.username,
-                    bio: user.bio,
-                    location: user.location
+          .then(data => {
+            // creates object and pushed to array with needed data
+            data.map(user => {
+              db('users')
+                .where('id', user.followed_by_id)
+                .then(followedByData => {
+                  followedByData.forEach(followedBy => {
+                    recommendedFollowArray.push({
+                      recommended_follow_id: user.recommended_follow_id,
+                      followed_by_id: user.followed_by_id,
+                      followed_by_username: followedBy.username,
+                      followed_by_display_name: followedBy.display_name,
+                      image: user.profile_picture,
+                      display_name: user.display_name,
+                      username: user.username,
+                      bio: user.bio,
+                      location: user.location
+                    });
                   });
                 });
-              });
+            });
           });
-        });
-    }
+      }
 
-    // picks 3 random users to follow from the follow array
-    let recommendedFollow = [];
-    for (let i = 0; i < 3; i++) {
-      let randomIndex = Math.floor(
-        Math.random() * recommendedFollowArray.length
-      );
-      recommendedFollow.push(recommendedFollowArray[randomIndex]);
-    }
+      // picks 3 random users to follow from the follow array
+      let recommendedFollow = [];
+      for (let i = 0; i < 3; i++) {
+        let randomIndex = Math.floor(
+          Math.floor(Math.random() * recommendedFollowArray.length)
+        );
+        recommendedFollow.push(recommendedFollowArray[randomIndex]);
+      }
 
-    res.json(recommendedFollow);
+      res.json(recommendedFollow);
+    } else {
+      // base case for a user that doesn't follow anyone
+      const users = await db('friendships')
+        .select(
+          'friendships.friend_id as user_id',
+          'users.display_name',
+          'users.profile_picture',
+          'users.username'
+        )
+        .join('users', 'friendships.friend_id', 'users.id')
+        .groupBy(
+          'friendships.friend_id',
+          'users.display_name',
+          'users.username',
+          'users.profile_picture'
+        )
+        .having('friendships.friend_id', '>', '2')
+        .count('friendships.friend_id as followers')
+        .limit(20);
+
+      users.map(user => recommendedFollowArray.push(user));
+      console.log(recommendedFollowArray[6]);
+      let recommendedFollow = [];
+      for (let i = 0; i < 3; i++) {
+        let randomIndex = Math.floor(
+          Math.random() * recommendedFollowArray.length
+        );
+        recommendedFollow.push(recommendedFollowArray[randomIndex]);
+      }
+      res.json(recommendedFollow);
+    }
   }
 };

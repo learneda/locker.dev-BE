@@ -372,5 +372,25 @@ module.exports = {
       }
       res.json(recommendedFollow);
     }
+  },
+
+  // gets all user following with user data
+  async getUserFollowing(req, res) {
+    const id = req.query.id;
+
+    try {
+      const following = await db('friendships')
+        .select(
+          'users.id',
+          'users.profile_picture',
+          'users.display_name',
+          'users.username'
+        )
+        .join('users', 'friendships.friend_id', '=', 'users.id')
+        .where('friendships.user_id', id);
+      res.status(200).json(following);
+    } catch (err) {
+      res.status(400).json({ error: 'There was an error' });
+    }
   }
 };

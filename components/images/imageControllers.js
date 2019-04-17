@@ -1,4 +1,6 @@
 const multer  = require('multer')
+const cloudinaryStorage = require("multer-storage-cloudinary");
+
 const storage = multer.diskStorage({
   destination (req, file, cb) {
     cb(null, 'public/uploads')

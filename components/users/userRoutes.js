@@ -11,6 +11,10 @@ router.get('/all', controllers.getAllUsers);
 
 router.get('/followStats', controllers.getUserFollowStats);
 
+router.get('/following', controllers.getUserFollowing);
+
+router.get('/followers', controllers.getUserFollowers);
+
 router.get('/recommendedFollow', controllers.recommendedFollow);
 
 router.get('/newsfeed', controllers.getUserNewsFeed);

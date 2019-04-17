@@ -273,6 +273,7 @@ module.exports = {
   },
 
   async recommendedFollow(req, res, next) {
+    console.log('🛰',req.query.id)
     const user_id = req.query.id;
     let recommendedFollowArray = [];
     let followArray = [];
@@ -361,7 +362,7 @@ module.exports = {
         .limit(20);
 
       users.map(user => recommendedFollowArray.push(user));
-      console.log(recommendedFollowArray[6]);
+      // console.log(recommendedFollowArray[6]);
       let recommendedFollow = [];
       for (let i = 0; i < 3; i++) {
         let randomIndex = Math.floor(

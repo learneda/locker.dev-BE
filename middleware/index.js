@@ -12,12 +12,6 @@ const corsOptions = {
   origin: ['http://localhost:3000', 'https://learnedadev.netlify.com']
 };
 
-const publicOptions = {
-  origin (origin, callback) {
-    callback(null, true)
-  },
-  methods: "GET"
-};
 console.log(path.join(__dirname, '..', 'public'))
 module.exports = server => {
   server.use(express.json());
@@ -30,7 +24,6 @@ module.exports = server => {
     })
   );
   server.use(cors(corsOptions));
-  server.use('../public', cors(publicOptions));
   server.use(helmet());
   server.use(logger('dev'));
   server.use(passport.initialize());

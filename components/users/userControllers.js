@@ -273,7 +273,7 @@ module.exports = {
   },
 
   async recommendedFollow(req, res, next) {
-    console.log('🛰',req.query.id)
+    console.log('🛰', req.query.id);
     const user_id = req.query.id;
     let recommendedFollowArray = [];
     let followArray = [];
@@ -345,7 +345,7 @@ module.exports = {
       // base case for a user that doesn't follow anyone
       const users = await db('friendships')
         .select(
-          'friendships.friend_id as user_id',
+          'friendships.friend_id as recommended_follow_id',
           'users.display_name',
           'users.profile_picture as image',
           'users.username'

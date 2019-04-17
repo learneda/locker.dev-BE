@@ -36,6 +36,5 @@ io.on('connection', (socket) => {
           socket.emit('comments', res[0]);        
         });
     }
-    // io.emit('comments', msg);
   });
 });

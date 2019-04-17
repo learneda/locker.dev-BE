@@ -347,7 +347,7 @@ module.exports = {
         .select(
           'friendships.friend_id as user_id',
           'users.display_name',
-          'users.profile_picture',
+          'users.profile_picture as image',
           'users.username'
         )
         .join('users', 'friendships.friend_id', 'users.id')

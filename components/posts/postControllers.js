@@ -194,7 +194,7 @@ module.exports = {
       console.log(err);
       res.status(500).json(err);
     }
-  }
+  },
 
   async editPost(req, res, next) {
     const id = req.params.id;

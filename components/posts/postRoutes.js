@@ -17,7 +17,9 @@ router.get('/shared', controllers.getAllSharedPost);
 
 router.get('/like/count', controllers.getPostLikeCount);
 
-router.post('like', constrollers.socialLikePost);
+router.post('like', controllers.socialLikePost);
+
+router.get('like/users', controllers.getUsersWhoLikedPost);
 
 router.get('/:id', controllers.getPost);
 

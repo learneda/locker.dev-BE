@@ -183,6 +183,19 @@ module.exports = {
     }
   },
 
+  async getUsersWhoLikedPost(req, res, next) {
+    const post_id = req.body.post_id
+    try {
+      const selectPromise = await db('posts_likes').where({post_id}).distinct('user_id')
+      if (selectPromise) {
+        res.status(200).json(selectPromise);
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  }
+
   async editPost(req, res, next) {
     const id = req.params.id;
     const { post_url, title, description } = req.body;

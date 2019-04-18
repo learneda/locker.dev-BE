@@ -153,6 +153,49 @@ module.exports = {
       res.status(500).json({ error: 'There was an error on the server' });
     }
   },
+  async socialLikePost(req, res, next) {
+    const user_id = req.user.id;
+    const post_id = req.body.post_id;
+    if (req.user) {
+      try {
+        const insertPromise = await db('posts_likes').insert({user_id, post_id});
+        if (insertPromise) {
+          res.status(200).json({msg: 'success'});
+        } else {
+          res.status(200).json({msg: 'requires user_id & post_id'});
+        }
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    }
+  },
+  async getPostLikeCount(req, res, next) {
+    const post_id = req.body.post_id
+    try {
+      const selectPromise = await db('posts_likes').where({post_id}).countDistinct('user_id')
+      if (selectPromise) {
+        res.status(200).json(selectPromise);
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
+
+  async getUsersWhoLikedPost(req, res, next) {
+    const post_id = req.body.post_id
+    try {
+      const selectPromise = await db('posts_likes').where({post_id}).distinct('user_id')
+      if (selectPromise) {
+        res.status(200).json(selectPromise);
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
+
   async editPost(req, res, next) {
     const id = req.params.id;
     const { post_url, title, description } = req.body;

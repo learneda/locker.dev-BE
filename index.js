@@ -31,10 +31,23 @@ io.on('connection', (socket) => {
         }).returning('*')
         .then((res) =>{
           res[0]['username'] = msg.username;
-          console.log('make sure this is res',res[0])
           socket.broadcast.emit('comments', res[0]);  
           socket.emit('comments', res[0]);        
         });
     }
   });
+  socket.on('like', (data) => {
+    if (data.action === 'unlike') {
+      db('posts_likes').del().where({user_id: data.user_id, post_id: data.post_id}).then((res) => {
+        socket.broadcast.emit('like', data)
+        socket.emit('like', data)
+      })
+    } else {
+      db('posts_likes').insert({user_id: data.user_id, post_id: data.post_id}).then((res) => {
+        // 
+        socket.broadcast.emit('like', data)
+        socket.emit('like', data)
+      })
+    }
+  })
 });

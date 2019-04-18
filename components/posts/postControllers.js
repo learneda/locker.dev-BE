@@ -177,6 +177,8 @@ module.exports = {
         console.log(err);
         res.status(500).json(err);
       }
+    } else {
+      res.status(401).json({msg: 'unauthorized'});
     }
   },
   async getPostLikeCount(req, res, next) {

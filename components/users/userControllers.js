@@ -181,6 +181,7 @@ module.exports = {
         .distinct()
         .join('users', 'users.id', 'posts.user_id')
         .orderBy('created_at', 'desc');
+
       let friendArray = await db('friendships')
         .where('user_id', user_id)
         .select('friend_id');
@@ -204,21 +205,25 @@ module.exports = {
         post.comments = [];
         for (let i = 0; i < commentsPromise.length; i++) {
           if (commentsPromise[i].post_id === post.post_id) {
-            console.log(
-              'obj getting pushed to comments arr',
-              commentsPromise[i]
-            );
             post.comments.push(commentsPromise[i]);
           }
         }
         return post;
       });
-
-      if (newResponse) {
-        res.status(200).json({ newResponse });
-      } else {
-        res.status(404).json({ msg: 'looks like you need some friends' });
+      
+      const likeLoop = async() => {
+        for (let post of newsFeedPromise)  {
+          const likeCount = await db('posts_likes').where('post_id', post.post_id).countDistinct('user_id')
+          post.likes = Number(likeCount[0].count)
+        }
+        if (newResponse) {
+          console.log(newResponse)
+          res.status(200).json({ newResponse });
+        } else {
+          res.status(404).json({ msg: 'looks like you need some friends' });
+        }
       }
+    likeLoop()
     } catch (err) {
       console.log(err);
       res.status(500).json(err);

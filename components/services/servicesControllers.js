@@ -2,16 +2,16 @@ const request = require('request');
 const Feed = require('rss-to-json');
 const urlMetadata = require('url-metadata');
 
-
 module.exports = {
-  getCourses (req, res, next) {
+  getCourses(req, res, next) {
+    const page = req.query.page;
     let queryParams = {
       'fields[course]': 'title,headline,image_480x270,url'
     };
     request(
       {
         method: 'GET',
-        uri: 'https://www.udemy.com/api-2.0/courses',
+        uri: `https://www.udemy.com/api-2.0/courses?page=${page}`,
         qs: queryParams,
         auth: {
           username: process.env.UDEMY_ID,
@@ -25,7 +25,7 @@ module.exports = {
       }
     );
   },
-  getArticles (req, res, next) {
+  getArticles(req, res, next) {
     // fetch articles from fcc feed
     Feed.load('https://medium.freecodecamp.org/feed', function(err, rss) {
       const tempo_articles = rss.items.map(item => {
@@ -48,4 +48,4 @@ module.exports = {
       });
     });
   }
-}
+};

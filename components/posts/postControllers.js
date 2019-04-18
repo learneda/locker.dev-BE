@@ -12,8 +12,8 @@ module.exports = {
       console.log(err);
     }
   },
-    async getAllUserPosts(req, res, next) {
-      const user_id = req.params.id;
+  async getAllUserPosts(req, res, next) {
+    const user_id = req.params.id;
     try {
       const posts = await db('posts')
         .where({ user_id: user_id })
@@ -83,6 +83,15 @@ module.exports = {
               ? req.body.post_url
               : `http://${req.body.post_url}`;
           const metadata = await urlMetadata(newUrl);
+          metadata.description === null
+            ? (metadata.description = 'No description')
+            : (metadata.description = metadata.description);
+          metadata.title === null
+            ? (metadata.title = 'No title')
+            : (metadata.title = metadata.title);
+          metadata.image === null
+            ? (metadata.image = '')
+            : (metadata.image = metadata.image);
           try {
             const newInsert = await db('posts').insert({
               post_url: req.body.post_url,
@@ -193,19 +202,19 @@ module.exports = {
     if (user_id) {
       try {
         const selectCountPromise = await db('posts')
-          .where({user_id: user_id})
-          .count()
+          .where({ user_id: user_id })
+          .count();
         if (selectCountPromise) {
           res.status(200).json(selectCountPromise);
         } else {
-          res.status(303).json({err: 'couldnt find user'});
+          res.status(303).json({ err: 'couldnt find user' });
         }
       } catch (err) {
         console.log(err);
         res.status(500).json(err);
       }
     } else {
-      res.status(417).json({err: '<user_id>'});
+      res.status(417).json({ err: '<user_id>' });
     }
   }
 };

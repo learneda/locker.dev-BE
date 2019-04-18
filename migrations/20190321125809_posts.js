@@ -10,7 +10,6 @@ exports.up = function(knex, Promise) {
       .onUpdate('cascade')
       .unsigned();
     tbl.integer('folder_id');
-    tbl.integer('likes');
     tbl.boolean('liked').defaultTo(false);
     tbl.boolean('completed').defaultTo(false);
     tbl.integer('rating').nullable();

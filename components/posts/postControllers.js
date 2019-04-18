@@ -154,6 +154,8 @@ module.exports = {
     }
   },
   async socialLikePost(req, res, next) {
+    const user_id = req.user.id;
+    const post_id = req.body.post_id;
     if (req.user) {
       try {
         const insertPromise = await db('posts_likes').insert({user_id, post_id});

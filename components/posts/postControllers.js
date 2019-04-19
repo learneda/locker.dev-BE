@@ -196,8 +196,9 @@ module.exports = {
 
   async getUsersWhoLikedPost(req, res, next) {
     const post_id = req.body.post_id
+    console.log(post_id, '⛵️', req.body);
     try {
-      const selectPromise = await db('posts_likes').where({post_id}).distinct('user_id')
+      const selectPromise = await db('posts_likes').where('post_id', post_id).distinct('user_id')
       if (selectPromise) {
         res.status(200).json(selectPromise);
       }

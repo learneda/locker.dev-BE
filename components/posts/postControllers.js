@@ -28,7 +28,7 @@ module.exports = {
     if (req.user) {
       try {
         const posts = await db('posts')
-          .where({ user_id: req.user.id, liked: true })
+          .where({ liked: true })
           .orderBy('id', 'asc');
         return res.status(200).json(posts);
       } catch (err) {
@@ -167,24 +167,29 @@ module.exports = {
     const post_id = req.body.post_id;
     if (req.user) {
       try {
-        const insertPromise = await db('posts_likes').insert({user_id, post_id});
+        const insertPromise = await db('posts_likes').insert({
+          user_id,
+          post_id
+        });
         if (insertPromise) {
-          res.status(200).json({msg: 'success'});
+          res.status(200).json({ msg: 'success' });
         } else {
-          res.status(200).json({msg: 'requires user_id & post_id'});
+          res.status(200).json({ msg: 'requires user_id & post_id' });
         }
       } catch (err) {
         console.log(err);
         res.status(500).json(err);
       }
     } else {
-      res.status(401).json({msg: 'unauthorized'});
+      res.status(401).json({ msg: 'unauthorized' });
     }
   },
   async getPostLikeCount(req, res, next) {
-    const post_id = req.body.post_id
+    const post_id = req.body.post_id;
     try {
-      const selectPromise = await db('posts_likes').where({post_id}).countDistinct('user_id')
+      const selectPromise = await db('posts_likes')
+        .where({ post_id })
+        .countDistinct('user_id');
       if (selectPromise) {
         res.status(200).json(selectPromise);
       }
@@ -195,10 +200,12 @@ module.exports = {
   },
 
   async getUsersWhoLikedPost(req, res, next) {
-    const post_id = req.body.post_id
+    const post_id = req.body.post_id;
     console.log(post_id, '⛵️', req.body);
     try {
-      const selectPromise = await db('posts_likes').where('post_id', post_id).distinct('user_id')
+      const selectPromise = await db('posts_likes')
+        .where('post_id', post_id)
+        .distinct('user_id');
       if (selectPromise) {
         res.status(200).json(selectPromise);
       }

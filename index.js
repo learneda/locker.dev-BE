@@ -21,7 +21,6 @@ const io = require('socket.io')(myServer)
 io.on('connection', (socket) => {
   socket.on('comments', (msg) => {
     console.log('response',msg);
-    // emit them right back to all the users listening to this connection
     if (msg.action === 'create') {
       db('comments')
         .insert({
@@ -29,13 +28,26 @@ io.on('connection', (socket) => {
           user_id: msg.user_id,
           post_id: msg.post_id
         }).returning('*')
-        .then((res) =>{
+        .then((res) => {
           res[0]['username'] = msg.username;
-          socket.broadcast.emit('comments', res[0]);  
+          res[0]['action'] = msg.action;
+          console.log(res[0], 'response after inserting')
+          socket.broadcast.emit('comments', res[0]);
           socket.emit('comments', res[0]);        
         });
+    } 
+    if (msg.action === 'destroy') {
+      console.log('inside destroy')
+      db('comments').where('id', msg.comment_id).del().returning('*').then((res) => {
+        console.log(res,'after del()')
+        res[0]['action'] = msg.action;
+        console.log(res[0], 'response after inserting')
+        socket.emit('comments', res[0]);
+        socket.broadcast.emit('comments', res[0]);
+      });
     }
   });
+
   socket.on('like', (data) => {
     if (data.action === 'unlike') {
       db('posts_likes').del().where({user_id: data.user_id, post_id: data.post_id}).then((res) => {
@@ -44,7 +56,6 @@ io.on('connection', (socket) => {
       })
     } else {
       db('posts_likes').insert({user_id: data.user_id, post_id: data.post_id}).then((res) => {
-        // 
         socket.broadcast.emit('like', data)
         socket.emit('like', data)
       })

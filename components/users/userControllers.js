@@ -210,20 +210,22 @@ module.exports = {
         }
         return post;
       });
-      
-      const likeLoop = async() => {
-        for (let post of newsFeedPromise)  {
-          const likeCount = await db('posts_likes').where('post_id', post.post_id).countDistinct('user_id')
-          post.likes = Number(likeCount[0].count)
+
+      const likeLoop = async () => {
+        for (let post of newsFeedPromise) {
+          const likeCount = await db('posts_likes')
+            .where('post_id', post.post_id)
+            .countDistinct('user_id');
+          post.likes = Number(likeCount[0].count);
         }
         if (newResponse) {
-          console.log(newResponse)
+          console.log(newResponse);
           res.status(200).json({ newResponse });
         } else {
           res.status(404).json({ msg: 'looks like you need some friends' });
         }
-      }
-    likeLoop()
+      };
+      likeLoop();
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -278,7 +280,6 @@ module.exports = {
   },
 
   async recommendedFollow(req, res, next) {
-    console.log('🛰', req.query.id);
     const user_id = req.query.id;
     let recommendedFollowArray = [];
     let followArray = [];
@@ -292,13 +293,13 @@ module.exports = {
 
     if (followArray.length > 0) {
       // generates an array of users that people I follow are following
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < followArray.length; i++) {
         let randomIndex = Math.floor(Math.random() * followArray.length);
 
         // picks a random user that I follow
         let randomFollowing = followArray[randomIndex];
 
-        // checks the following of thr random person that I follow
+        // checks the following of the random person that I follow
         randomRecommendedFollow = await db('friendships')
           .select(
             'friendships.friend_id as recommended_follow_id',
@@ -311,6 +312,7 @@ module.exports = {
           )
           .join('users', 'friendships.friend_id', 'users.id') // joins user table
           .where('user_id', randomFollowing)
+          .distinct()
 
           .then(data => {
             // creates object and pushed to array with needed data
@@ -336,13 +338,16 @@ module.exports = {
           });
       }
 
-      // picks 3 random users to follow from the follow array
+      //  uses Fisher-Yates shuffle algorithm to generate 3 unique indexes
       let recommendedFollow = [];
-      for (let i = 0; i < 3; i++) {
-        let randomIndex = Math.floor(
-          Math.floor(Math.random() * recommendedFollowArray.length)
+      const n1 = recommendedFollowArray.length;
+      let pool = [...Array(n1).keys()];
+
+      while (recommendedFollow.length < 3) {
+        let randomIndex = Math.floor(Math.random() * pool.length);
+        recommendedFollow.push(
+          recommendedFollowArray[pool.splice(randomIndex, 1)]
         );
-        recommendedFollow.push(recommendedFollowArray[randomIndex]);
       }
 
       res.json(recommendedFollow);
@@ -366,8 +371,7 @@ module.exports = {
         .count('friendships.friend_id as followers')
         .limit(20);
 
-      users.map(user => recommendedFollowArray.push(user));
-      // console.log(recommendedFollowArray[6]);
+      users.map(user => console.log(user), recommendedFollowArray.push(user));
       let recommendedFollow = [];
       for (let i = 0; i < 3; i++) {
         let randomIndex = Math.floor(

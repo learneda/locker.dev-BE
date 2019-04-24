@@ -5,7 +5,7 @@ module.exports = {
     if (user) {
       try {
         const users = await db('users');
-        console.log('users', users);
+        // console.log('users', users);
         return res.status(200).json(users);
       } catch (err) {
         console.log(err);
@@ -25,7 +25,7 @@ module.exports = {
       location,
       website_url
     } = req.body;
-    console.log('REQ.BODY', req.body);
+    // console.log('REQ.BODY', req.body);
     if (user) {
       try {
         const postPromise = await db('users')
@@ -53,7 +53,7 @@ module.exports = {
   },
   async getUserDetailsById(req, res, next) {
     const id = req.params.id;
-    console.log(typeof id);
+    // console.log(typeof id);
     try {
       const selectPromise = await db('users')
         .where({ id: id })
@@ -187,7 +187,7 @@ module.exports = {
         .select('friend_id');
       friendArray = friendArray.map(friend => friend.friend_id);
       friendArray.push(user_id);
-      console.log(friendArray, user_id);
+      // console.log(friendArray, user_id);
 
       const commentsPromise = await db('comments')
         .select(
@@ -219,7 +219,7 @@ module.exports = {
           post.likes = Number(likeCount[0].count);
         }
         if (newResponse) {
-          console.log(newResponse);
+          // console.log(newResponse);
           res.status(200).json({ newResponse });
         } else {
           res.status(404).json({ msg: 'looks like you need some friends' });
@@ -282,78 +282,49 @@ module.exports = {
   async recommendedFollow(req, res, next) {
     // console.log('🛰', req.query.id);
     const user_id = req.query.id;
-    let recommendedFollowArray = [];
-    let followArray = [];
+    let friendsOfFriends = [];
 
     // makes an array with user_id's that I follow
-    const following = await db('friendships')
-      .where('user_id', user_id)
-      .then(users => {
-        // console.log('users im following:', users);
-        users.map(user => followArray.push(user.friend_id));
-      });
-      console.log(followArray, 'FOLLOW_ARRAY\n')
-    if (followArray.length > 0) {
+    const friends = await db('friendships').where('user_id', user_id);
+    const friendsId = friends.map(friend => friend.friend_id);
+    const friendsIdWithUserId = [...friendsId, user_id];
+
+    //* Creates a new array with random elements from ARR (no duplicates) [should be a utily import]
+    const pickRandom = (arr, count) => {
+      let _arr = [...arr];
+      return [...Array(count)].map(
+        () => _arr.splice(Math.floor(Math.random() * _arr.length), 1)[0]
+      );
+    };
+
+    if (friendsId.length) {
       // generates an array of users that people I follow are following
-      for (let i = 0; i < followArray.length; i++) {
-        let randomIndex = Math.floor(Math.random() * followArray.length);
-
-        // picks a random user that I follow
-        let randomFollowing = followArray[randomIndex];
-
-        // checks the following of the random person that I follow
-        const followArrayWithMe = [...followArray, user_id]
-        randomRecommendedFollow = await db('friendships')
+      for (let i = 0; i < friendsId.length; i++) {
+        const friendsOfFriend = await db('friendships')
           .select(
             'friendships.friend_id as recommended_follow_id',
             'friendships.user_id as followed_by_id',
-            'users.profile_picture',
+            'users.profile_picture as image',
             'users.display_name',
             'users.username',
             'users.bio',
             'users.location'
           )
           .join('users', 'friendships.friend_id', 'users.id') // joins user table
-          .where('user_id', randomFollowing)
-          .whereNotIn('friend_id', followArrayWithMe)
-          .distinct('friend_id', 'user_id')
-          .then(data => {
-            // creates pushed to array with needed data
-            data.map(user => {
-              db('users')
-                .where('id', user.followed_by_id)
-                .then(followedByData => {
-                  followedByData.forEach(followedBy => {
-                    recommendedFollowArray.push({
-                      recommended_follow_id: user.recommended_follow_id,
-                      followed_by_id: user.followed_by_id,
-                      followed_by_username: followedBy.username,
-                      followed_by_display_name: followedBy.display_name,
-                      image: user.profile_picture,
-                      display_name: user.display_name,
-                      username: user.username,
-                      bio: user.bio,
-                      location: user.location
-                    });
-                  });
-                });
-            });
-          });
+          .where('user_id', friendsId[i])
+          .whereNotIn('friend_id', friendsIdWithUserId);
+        friendsOfFriends = [...friendsOfFriends, ...friendsOfFriend];
       }
-
-      //  uses Fisher-Yates shuffle algorithm to generate 3 unique indexes
-      let recommendedFollow = [];
-      const n1 = recommendedFollowArray.length;
-      let pool = [...Array(n1).keys()];
-
-      while (recommendedFollow.length < 3) {
-        let randomIndex = Math.floor(Math.random() * pool.length);
-        recommendedFollow.push(
-          recommendedFollowArray[pool.splice(randomIndex, 1)]
-        );
+      for (let i = 0; i < friendsOfFriends.length; i++) {
+        const friendOfFriendsDetails = await db('users')
+          .where('id', friendsOfFriends[i].followed_by_id)
+          .first();
+        friendsOfFriends[i].followed_by_username =
+          friendOfFriendsDetails.username;
+        friendsOfFriends[i].followed_by_display_name =
+          friendOfFriendsDetails.followed_by_display_name;
       }
-
-      res.json(recommendedFollow);
+      res.json(pickRandom(friendsOfFriends, 3));
     } else {
       // base case for a user that doesn't follow anyone
       const users = await db('friendships')
@@ -373,16 +344,7 @@ module.exports = {
         .having('friendships.friend_id', '>', '2')
         .count('friendships.friend_id as followers')
         .limit(20);
-
-      users.map(user => recommendedFollowArray.push(user));
-      let recommendedFollow = [];
-      for (let i = 0; i < 3; i++) {
-        let randomIndex = Math.floor(
-          Math.random() * recommendedFollowArray.length
-        );
-        recommendedFollow.push(recommendedFollowArray[randomIndex]);
-      }
-      res.json(recommendedFollow);
+      res.json(pickRandom(users, 3));
     }
   },
 

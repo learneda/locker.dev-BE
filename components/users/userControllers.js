@@ -155,6 +155,8 @@ module.exports = {
   },
   async getUserNewsFeed(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
+    const offset = req.query.offset;
+    console.log(req.query.offset);
     try {
       const newsFeedPromise = await db('friendships')
         .join('posts', function() {
@@ -180,7 +182,9 @@ module.exports = {
         )
         .distinct()
         .join('users', 'users.id', 'posts.user_id')
-        .orderBy('created_at', 'desc');
+        .orderBy('created_at', 'desc')
+        .offset(req.query.offset)
+        .limit(5);
 
       let friendArray = await db('friendships')
         .where('user_id', user_id)

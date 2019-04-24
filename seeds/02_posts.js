@@ -56,17 +56,34 @@ const posts_array = [
   }
 ];
 
+const hardCodedImages = [
+  'https://images.pexels.com/photos/169573/pexels-photo-169573.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/1714208/pexels-photo-1714208.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/1714205/pexels-photo-1714205.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/4158/apple-iphone-smartphone-desk.jpg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/434090/pexels-photo-434090.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/257540/pexels-photo-257540.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/2127931/pexels-photo-2127931.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+];
+
 fakeInsertData.push(...posts_array);
 
 for (let i = 1; i < 500; i++) {
-  const post_url = faker.internet.url();
+  let randomIndex = Math.floor(Math.random() * hardCodedImages.length);
+  // const post_url = faker.internet.url();
+  // console.log(randomIndex);
+  const post_url = hardCodedImages[randomIndex];
+  const thumbnail_url = hardCodedImages[randomIndex];
   const title = faker.lorem.sentence();
   const description = faker.lorem.paragraph();
   const user = {
     post_url,
     user_id: i,
     title: title,
-    description: description
+    description: description,
+    thumbnail_url
   };
 
   fakeInsertData.push(user);

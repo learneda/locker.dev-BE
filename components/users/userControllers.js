@@ -280,6 +280,7 @@ module.exports = {
   },
 
   async recommendedFollow(req, res, next) {
+    // console.log('🛰', req.query.id);
     const user_id = req.query.id;
     let recommendedFollowArray = [];
     let followArray = [];
@@ -288,6 +289,7 @@ module.exports = {
     const following = await db('friendships')
       .where('user_id', user_id)
       .then(users => {
+        // console.log('users im following:', users);
         users.map(user => followArray.push(user.friend_id));
       });
       console.log(followArray, 'FOLLOW_ARRAY\n')
@@ -372,7 +374,7 @@ module.exports = {
         .count('friendships.friend_id as followers')
         .limit(20);
 
-      users.map(user => console.log(user), recommendedFollowArray.push(user));
+      users.map(user => recommendedFollowArray.push(user));
       let recommendedFollow = [];
       for (let i = 0; i < 3; i++) {
         let randomIndex = Math.floor(

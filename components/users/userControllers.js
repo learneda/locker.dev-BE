@@ -290,7 +290,7 @@ module.exports = {
       .then(users => {
         users.map(user => followArray.push(user.friend_id));
       });
-
+      console.log(followArray, 'FOLLOW_ARRAY\n')
     if (followArray.length > 0) {
       // generates an array of users that people I follow are following
       for (let i = 0; i < followArray.length; i++) {
@@ -300,6 +300,7 @@ module.exports = {
         let randomFollowing = followArray[randomIndex];
 
         // checks the following of the random person that I follow
+        const followArrayWithMe = [...followArray, user_id]
         randomRecommendedFollow = await db('friendships')
           .select(
             'friendships.friend_id as recommended_follow_id',
@@ -312,10 +313,10 @@ module.exports = {
           )
           .join('users', 'friendships.friend_id', 'users.id') // joins user table
           .where('user_id', randomFollowing)
-          .distinct()
-
+          .whereNotIn('friend_id', followArrayWithMe)
+          .distinct('friend_id', 'user_id')
           .then(data => {
-            // creates object and pushed to array with needed data
+            // creates pushed to array with needed data
             data.map(user => {
               db('users')
                 .where('id', user.followed_by_id)

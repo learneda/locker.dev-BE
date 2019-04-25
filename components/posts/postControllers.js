@@ -25,11 +25,15 @@ module.exports = {
   },
 
   async getAllUserPostsLiked(req, res, next) {
-    if (req.user) {
+    // const user_id = req.user === 'undefined' ? req.body.user_id : req.user.id
+    const user_id = req.body.user_id || 503
+    if (user_id) {
       try {
-        const posts = await db('posts')
-          .where({ liked: true })
-          .orderBy('id', 'asc');
+        const posts = await db('posts_likes')
+          .where({ 'posts_likes.user_id': user_id })
+          .join('posts', 'posts.id', 'posts_likes.post_id')
+          .join('users', 'posts.user_id', 'users.id')
+          // .orderBy('posts_likes.created_at', 'asc');
         return res.status(200).json(posts);
       } catch (err) {
         console.log(err);

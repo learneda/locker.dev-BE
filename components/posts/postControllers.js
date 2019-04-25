@@ -25,8 +25,7 @@ module.exports = {
   },
 
   async getAllUserPostsLiked(req, res, next) {
-    // const user_id = req.user === 'undefined' ? req.body.user_id : req.user.id
-    const user_id = req.body.user_id || 503
+    const user_id = req.user === 'undefined' ? req.body.user_id : req.user.id
     if (user_id) {
       try {
         const posts = await db('posts_likes')

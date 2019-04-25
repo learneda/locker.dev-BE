@@ -103,7 +103,7 @@ module.exports = {
             const newInsert = await db('posts').insert(newPost);
             console.log(newPost);
             if (newInsert) {
-              res.status(201).json(newInsert);
+              res.status(201).json(newPost);
             } else {
               res.status(300).json({ err: 'couldnt add new entry' });
             }

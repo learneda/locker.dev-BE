@@ -93,17 +93,17 @@ module.exports = {
             ? (metadata.image = '')
             : (metadata.image = metadata.image);
           try {
-            const newInsert = await db('posts').insert({
+            const newPost = {
               post_url: req.body.post_url,
               user_id: req.body.id,
               title: metadata.title,
               description: metadata.description,
               thumbnail_url: metadata.image
-            });
+            };
+            const newInsert = await db('posts').insert(newPost);
+            console.log(newPost);
             if (newInsert) {
-              res
-                .status(201)
-                .json({ message: 'Post was successfully added :)' });
+              res.status(201).json(newPost);
             } else {
               res.status(300).json({ err: 'couldnt add new entry' });
             }
@@ -201,7 +201,7 @@ module.exports = {
 
   async getUsersWhoLikedPost(req, res, next) {
     const post_id = req.body.post_id;
-    console.log(post_id, '⛵️', req.body);
+    // console.log(post_id, '⛵️', req.body);
     try {
       const selectPromise = await db('posts_likes')
         .where('post_id', post_id)

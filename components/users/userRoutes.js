@@ -31,4 +31,6 @@ router.delete('/unsubscribe', controllers.unsubscribetoUser);
 
 router.get('/following/:id', controllers.getFollowing);
 
+router.get('/avatars', controllers.fixAvatars);
+
 module.exports = router;

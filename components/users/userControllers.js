@@ -1,4 +1,6 @@
 const db = require('../../dbConfig');
+const faker = require('faker');
+
 module.exports = {
   async getAllUsers(req, res, next) {
     const user = req.user;
@@ -393,5 +395,20 @@ module.exports = {
     } catch (err) {
       res.status(400).json({ error: 'There was an error' });
     }
+  },
+
+  async fixAvatars(req, res) {
+    const users = await db('users');
+    users.forEach(user => {
+      if (!user.github_id && !user.google_id) {
+        const avatarImageURL = faker.image.avatar();
+        db('users')
+          .update({ profile_picture: avatarImageURL })
+          .where({ id: user.id })
+          .returning('id')
+          .then(user => console.log(user));
+      }
+    });
+    res.send('done');
   }
 };

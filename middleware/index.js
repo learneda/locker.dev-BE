@@ -12,10 +12,8 @@ const corsOptions = {
   origin: ['http://localhost:3000', 'https://learnedadev.netlify.com']
 };
 
-console.log(path.join(__dirname, '..', 'public'))
 module.exports = server => {
   server.use(express.json());
-  server.use(express.static(path.join(__dirname, '..', 'public')));
   server.use(
     cookieSession({
       name: 'learned-a',

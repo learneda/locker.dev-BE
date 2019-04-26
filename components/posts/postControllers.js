@@ -18,6 +18,7 @@ module.exports = {
       const posts = await db('posts')
         .where({ user_id: user_id })
         .orderBy('id', 'asc');
+
       return res.status(200).json(posts);
     } catch (err) {
       console.log(err);
@@ -25,14 +26,19 @@ module.exports = {
   },
 
   async getAllUserPostsLiked(req, res, next) {
-    const user_id = req.user === 'undefined' ? req.body.user_id : req.user.id
+    const user_id = req.user === 'undefined' ? req.body.user_id : req.user.id;
     if (user_id) {
       try {
-        const posts = await db('posts_likes')
-          .where({ 'posts_likes.user_id': user_id })
-          .join('posts', 'posts.id', 'posts_likes.post_id')
-          .join('users', 'posts.user_id', 'users.id')
-          // .orderBy('posts_likes.created_at', 'asc');
+        const posts = await db('posts')
+          .where({
+            liked: true,
+            user_id: user_id
+          })
+          .orderBy('id', 'asc');
+        // .join('posts', 'posts.id', 'posts_likes.post_id')
+        // .join('users', 'posts.user_id', 'users.id');
+        // .orderBy('posts_likes.created_at', 'asc');
+        console.log(posts);
         return res.status(200).json(posts);
       } catch (err) {
         console.log(err);

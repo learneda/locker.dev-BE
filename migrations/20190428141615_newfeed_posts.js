@@ -15,6 +15,8 @@ exports.up = function(knex, Promise) {
       .onDelete('cascade')
       .onUpdate('cascade')
       .unsigned();
+      tbl.timestamp('created_at').defaultTo(knex.fn.now());
+      tbl.timestamp('updated_at').defaultTo(knex.fn.now());
   })
 };
 

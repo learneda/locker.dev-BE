@@ -240,6 +240,7 @@ module.exports = {
   async editPost(req, res, next) {
     const id = req.params.id;
     const { post_url, title, description } = req.body;
+    console.log(req.body, req.params.id, 'HEREHRHEHHEHE')
     try {
       const editPromise = await db('posts')
         .where({ id })
@@ -290,6 +291,17 @@ module.exports = {
       }
     } else {
       res.status(417).json({ err: '<user_id>' });
+    }
+  },
+
+  async shareBookmark(req, res, next) {
+    console.log('in share bookmarks', req.body, req.user.id)
+    try {
+      const insertToNewsfeedPosts = await db('newsfeed_posts')
+      .insert({'user_id':req.user.id, 'post_id': req.body.id})
+    } catch (err) {
+      console.log(err)
+      res.status(500).json(err)
     }
   }
 };

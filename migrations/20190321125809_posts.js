@@ -16,6 +16,7 @@ exports.up = function(knex, Promise) {
     tbl.text('title').nullable();
     tbl.text('description').nullable();
     tbl.text('thumbnail_url').nullable();
+    tbl.text('user_thoughts').nullable();
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.timestamp('updated_at').defaultTo(knex.fn.now());
   });

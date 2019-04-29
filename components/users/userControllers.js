@@ -155,83 +155,50 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+
   async getUserNewsFeed(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
     const offset = req.query.offset;
     console.log(req.query.offset);
     try {
-      const newsFeedPromise = await db('friendships')
-        .join('posts', function() {
-          this.on('friendships.friend_id', '=', 'posts.user_id').orOn(
-            'posts.user_id',
-            '=',
-            user_id
-          );
-        })
-        .where('friendships.user_id', user_id)
-        .orWhere('posts.user_id', '=', user_id)
-        .select(
-          'users.username',
-          'posts.id as post_id',
-          'users.profile_picture',
-          'posts.user_id',
-          'post_url',
-          'title',
-          'description',
-          'thumbnail_url',
-          'posts.created_at',
-          'posts.updated_at'
-        )
-        .distinct()
-        .join('users', 'users.id', 'posts.user_id')
-        .orderBy('created_at', 'desc')
-        .offset(req.query.offset)
-        .limit(5);
+      let friends = await db('friendships').where({user_id}).select('friend_id')
+      
+      friends = friends.map(friend => friend.friend_id)
 
-      let friendArray = await db('friendships')
-        .where('user_id', user_id)
-        .select('friend_id');
-      friendArray = friendArray.map(friend => friend.friend_id);
-      friendArray.push(user_id);
-      // console.log(friendArray, user_id);
+      const friendsAndCurrentUser = [ ...friends, Number(user_id)]
 
-      const commentsPromise = await db('comments')
-        .select(
-          'comments.id',
-          'comments.content',
-          'posts.id as post_id',
-          'users.id as user_id',
-          'users.username',
-          'comments.created_at'
-        )
-        .join('posts', 'posts.id', 'comments.post_id')
-        .join('users', 'users.id', 'comments.user_id');
+      console.log(friends, 'friends')
 
-      const newResponse = newsFeedPromise.map((post, index) => {
-        post.comments = [];
-        for (let i = 0; i < commentsPromise.length; i++) {
-          if (commentsPromise[i].post_id === post.post_id) {
-            post.comments.push(commentsPromise[i]);
-          }
-        }
-        return post;
-      });
+      const newsFeed = await db('newsfeed_posts')
+      .whereIn('newsfeed_posts.user_id', friendsAndCurrentUser)
+      .join('users', 'newsfeed_posts.user_id', '=', 'users.id')
+      .join('posts', 'newsfeed_posts.post_id', '=', 'posts.id' )
+      .orderBy('posts.created_at', 'desc')
+      .offset(req.query.offset)
+      .limit(5);
+      
+      const commentLoop = async () => {
+        for (let post of newsFeed) {
+          post.comments = []
 
-      const likeLoop = async () => {
-        for (let post of newsFeedPromise) {
+          const commentArray = await db('comments').where('comments.post_id', '=', post.post_id)
+          post.comments.push(...commentArray)
+
           const likeCount = await db('posts_likes')
             .where('post_id', post.post_id)
             .countDistinct('user_id');
           post.likes = Number(likeCount[0].count);
+
         }
-        if (newResponse) {
-          // console.log(newResponse);
-          res.status(200).json({ newResponse });
-        } else {
-          res.status(404).json({ msg: 'looks like you need some friends' });
+        if (newsFeed) {
+          res.status(200).json(newsFeed)
         }
-      };
-      likeLoop();
+        else {
+          throw new Error('newsFeedError');
+        }
+      }
+      commentLoop()
+
     } catch (err) {
       console.log(err);
       res.status(500).json(err);

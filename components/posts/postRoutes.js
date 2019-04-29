@@ -37,4 +37,8 @@ router.put('/like/:id', controllers.likePost);
 /* ===== EDIT POST ===== */
 router.put('/:id', controllers.editPost);
 
+/* ===== SHARE BOOKMARK ===== */
+router.post('/share', controllers.shareBookmark)
+
+
 module.exports = router;

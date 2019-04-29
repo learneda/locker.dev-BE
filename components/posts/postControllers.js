@@ -239,12 +239,12 @@ module.exports = {
 
   async editPost(req, res, next) {
     const id = req.params.id;
-    const { post_url, title, description } = req.body;
+    const { post_url, title, description, user_thoughts } = req.body;
     console.log(req.body, req.params.id, 'HEREHRHEHHEHE')
     try {
       const editPromise = await db('posts')
         .where({ id })
-        .update({ post_url, title, description });
+        .update({ post_url, title, description, user_thoughts });
       if (editPromise) {
         res.status(200).json({ success: 'post updated' });
       } else {
@@ -299,6 +299,9 @@ module.exports = {
     try {
       const insertToNewsfeedPosts = await db('newsfeed_posts')
       .insert({'user_id':req.user.id, 'post_id': req.body.id})
+      if (insertToNewsfeedPosts) {
+        res.status(200).json({success: 'posted'})
+      }
     } catch (err) {
       console.log(err)
       res.status(500).json(err)

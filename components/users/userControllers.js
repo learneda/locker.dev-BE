@@ -173,6 +173,7 @@ module.exports = {
       .whereIn('newsfeed_posts.user_id', friendsAndCurrentUser)
       .join('users', 'newsfeed_posts.user_id', '=', 'users.id')
       .join('posts', 'newsfeed_posts.post_id', '=', 'posts.id' )
+      .orderBy('posts.created_at', 'desc')
       .offset(req.query.offset)
       .limit(5);
       

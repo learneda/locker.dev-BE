@@ -240,11 +240,12 @@ module.exports = {
   async editPost(req, res, next) {
     const id = req.params.id;
     const { post_url, title, description, user_thoughts } = req.body;
+    const shared = req.body.shared || false
     console.log(req.body, req.params.id, 'HEREHRHEHHEHE')
     try {
       const editPromise = await db('posts')
         .where({ id })
-        .update({ post_url, title, description, user_thoughts });
+        .update({ post_url, title, description, user_thoughts, shared });
       if (editPromise) {
         res.status(200).json({ success: 'post updated' });
       } else {

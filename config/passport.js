@@ -23,7 +23,6 @@ passport.use(
         )
         console.log(passwordCheck === true)
         if (passwordCheck === true) {
-          console.log('here true')
           done(null, existingUser)
         } else {
           done(new Error('credentials wrong'))

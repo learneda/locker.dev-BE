@@ -240,12 +240,12 @@ module.exports = {
         user_id: user_id,
         friend_id: friend_id
       });
-      if (following) {
+      if (following.length) {
         res.status(200).json({
-          following: following
+          following: true
         });
       } else {
-        res.status(201).json({ error: 'BROKEN' });
+        res.status(200).json({ following: false });
       }
     } catch (err) {
       res.status(500).json(err);

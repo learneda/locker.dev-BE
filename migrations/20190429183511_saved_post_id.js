@@ -1,21 +1,14 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('saved_post_id', tbl => {
     tbl.increments('id');
-    tbl
-      .integer('user_id')
-      .references('id')
-      .inTable('users')
-      .onDelete('cascade')
-      .onUpdate('cascade');
+    tbl.integer('user_id');
     tbl
       .integer('post_id')
       .references('id')
-      .inTable('posts');
+      .inTable('posts')
+      .onDelete('cascade');
 
-    tbl
-      .integer('saved_from_id')
-      .references('id')
-      .inTable('users');
+    tbl.integer('saved_from_id');
 
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.timestamp('updated_at').defaultTo(knex.fn.now());

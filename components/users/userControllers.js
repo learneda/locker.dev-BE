@@ -161,46 +161,45 @@ module.exports = {
     const offset = req.query.offset;
     console.log(req.query.offset);
     try {
-      let friends = await db('friendships').where({user_id}).select('friend_id')
-      
-      friends = friends.map(friend => friend.friend_id)
+      let friends = await db('friendships')
+        .where({ user_id })
+        .select('friend_id');
 
-      const friendsAndCurrentUser = [ ...friends, Number(user_id)]
+      friends = friends.map(friend => friend.friend_id);
 
-      console.log(friends, 'friends')
+      const friendsAndCurrentUser = [...friends, Number(user_id)];
+
+      console.log(friends, 'friends');
 
       const newsFeed = await db('newsfeed_posts')
-      .whereIn('newsfeed_posts.user_id', friendsAndCurrentUser)
-      .join('users', 'newsfeed_posts.user_id', '=', 'users.id')
-      .join('posts', 'newsfeed_posts.post_id', '=', 'posts.id' )
-      .orderBy('posts.created_at', 'desc')
-      .offset(req.query.offset)
-      .limit(5);
-      
+        .whereIn('newsfeed_posts.user_id', friendsAndCurrentUser)
+        .join('users', 'newsfeed_posts.user_id', '=', 'users.id')
+        .join('posts', 'newsfeed_posts.post_id', '=', 'posts.id')
+        .orderBy('posts.created_at', 'desc')
+        .offset(req.query.offset)
+        .limit(5);
+
       const commentLoop = async () => {
         for (let post of newsFeed) {
-          post.comments = []
+          post.comments = [];
 
           const commentArray = await db('comments as c')
-          .where('c.post_id', '=', post.post_id)
-          .join('users as u', 'c.user_id', 'u.id')
-          post.comments.push(...commentArray)
+            .where('c.post_id', '=', post.post_id)
+            .join('users as u', 'c.user_id', 'u.id');
+          post.comments.push(...commentArray);
 
           const likeCount = await db('posts_likes')
             .where('post_id', post.post_id)
             .countDistinct('user_id');
           post.likes = Number(likeCount[0].count);
-
         }
         if (newsFeed) {
-          res.status(200).json(newsFeed)
-        }
-        else {
+          res.status(200).json(newsFeed);
+        } else {
           throw new Error('newsFeedError');
         }
-      }
-      commentLoop()
-
+      };
+      commentLoop();
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -379,5 +378,38 @@ module.exports = {
       }
     });
     res.send('done');
+  },
+  async getSavedPostIds(req, res) {
+    const user_id = req.query.user_id;
+    const saved_from_id = req.query.saved_from_id;
+    try {
+      const savedPostIds = await db('saved_post_id')
+        .where('user_id', user_id)
+        .andWhere('saved_from_id', saved_from_id);
+
+      res.json(savedPostIds);
+    } catch (err) {
+      res
+        .status(400)
+        .json({ error: 'there was an error due to my sloppy code' });
+      console.log(err);
+    }
+  },
+  async savePostId(req, res) {
+    const user_id = req.user ? req.user.id : req.body.user_id;
+    const post_id = req.body.post_id;
+    const saved_from_id = req.body.saved_from_id;
+    const post = {
+      post_id,
+      user_id,
+      saved_from_id
+    };
+    try {
+      const saveNewPostId = await db('saved_post_id').insert(post);
+      res.status(200).json('post saved');
+    } catch (err) {
+      res.status(400).json(err);
+      console.log(err);
+    }
   }
 };

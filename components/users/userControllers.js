@@ -256,8 +256,8 @@ module.exports = {
   },
 
   async recommendedFollow(req, res, next) {
-    // console.log('🛰', req.query.id);
     const user_id = req.query.id;
+    const count = 3;
     let friendsOfFriends = [];
 
     // makes an array with user_id's that I follow
@@ -265,7 +265,7 @@ module.exports = {
     const friendsId = friends.map(friend => friend.friend_id);
     const friendsIdWithUserId = [...friendsId, user_id];
 
-    //* Creates a new array with random elements from ARR (no duplicates) [should be a utily import]
+    //* Creates a new array with random elements from ARR (no duplicates) [should be a utility import]
     const pickRandom = (arr, count) => {
       let _arr = [...arr];
       return [...Array(count)].map(
@@ -300,7 +300,27 @@ module.exports = {
         friendsOfFriends[i].followed_by_display_name =
           friendOfFriendsDetails.followed_by_display_name;
       }
-      res.json(pickRandom(friendsOfFriends, 3));
+      if (friendsOfFriends.length < count) {
+        const users = await db('friendships')
+          .select(
+            'friendships.friend_id as recommended_follow_id',
+            'users.display_name',
+            'users.profile_picture as image',
+            'users.username'
+          )
+          .join('users', 'friendships.friend_id', 'users.id')
+          .groupBy(
+            'friendships.friend_id',
+            'users.display_name',
+            'users.username',
+            'users.profile_picture'
+          )
+          .having('friendships.friend_id', '>', '2')
+          .count('friendships.friend_id as followers')
+          .limit(20);
+        return res.json(pickRandom(users, count));
+      }
+      return res.json(pickRandom(friendsOfFriends, count));
     } else {
       // base case for a user that doesn't follow anyone
       const users = await db('friendships')
@@ -320,7 +340,8 @@ module.exports = {
         .having('friendships.friend_id', '>', '2')
         .count('friendships.friend_id as followers')
         .limit(20);
-      res.json(pickRandom(users, 3));
+
+      res.json(pickRandom(users, count));
     }
   },
 

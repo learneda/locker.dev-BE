@@ -98,12 +98,13 @@ module.exports = {
   },
   async createNewPost(req, res, next) {
     if (req.user) {
-      if (req.body.post_url && req.body.id) {
+      if (req.body.post_url) {
         try {
           const newUrl =
             req.body.post_url.indexOf('http') > -1
               ? req.body.post_url
               : `http://${req.body.post_url}`;
+
           const metadata = await urlMetadata(newUrl);
           metadata.description === null
             ? (metadata.description = 'No description')
@@ -112,18 +113,17 @@ module.exports = {
             ? (metadata.title = 'No title')
             : (metadata.title = metadata.title);
           metadata.image === null
-            ? (metadata.image = '')
+            ? (metadata.image = null)
             : (metadata.image = metadata.image);
           try {
             const newPost = {
               post_url: req.body.post_url,
-              user_id: req.body.id,
+              user_id: req.user.id,
               title: metadata.title,
               description: metadata.description,
               thumbnail_url: metadata.image
             };
             const newInsert = await db('posts').insert(newPost);
-            console.log(newPost);
             if (newInsert) {
               res.status(201).json(newPost);
             } else {
@@ -140,7 +140,7 @@ module.exports = {
       } else {
         res
           .status(400)
-          .json({ message: 'Please provide a post url and a user id :)' });
+          .json({ message: 'Please provide a post url ' });
       }
     } else {
       res.status(403).json({ error: 'Not authorized' });
@@ -167,23 +167,7 @@ module.exports = {
       res.status(403).json({ error: 'Not authorized' });
     }
   },
-  async likePost(req, res, next) {
-    const id = req.params.id;
-    const status = req.body.status;
-    try {
-      const likePromise = await db('posts')
-        .where({ id })
-        .update({ liked: status });
-      if (likePromise) {
-        res.status(200).json({ success: 'posted liked' });
-      } else {
-        res.status(404).json({ error: 'Post not found' });
-      }
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: 'There was an error on the server' });
-    }
-  },
+
   async socialLikePost(req, res, next) {
     const user_id = req.user.id;
     const post_id = req.body.post_id;

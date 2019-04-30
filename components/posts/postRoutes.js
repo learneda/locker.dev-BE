@@ -30,10 +30,6 @@ router.post('/', controllers.createNewPost);
 
 /* ===== DELETE POST ===== */
 router.delete('/:id', controllers.deletePost);
-
-/* ===== TOGGLE LIKE BOOLEAN ===== */
-router.put('/like/:id', controllers.likePost);
-
 /* ===== EDIT POST ===== */
 router.put('/:id', controllers.editPost);
 

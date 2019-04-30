@@ -183,11 +183,9 @@ module.exports = {
         for (let post of newsFeed) {
           post.comments = [];
 
-          const commentArray = await db('comments').where(
-            'comments.post_id',
-            '=',
-            post.post_id
-          );
+          const commentArray = await db('comments as c')
+            .where('c.post_id', '=', post.post_id)
+            .join('users as u', 'c.user_id', 'u.id');
           post.comments.push(...commentArray);
 
           const likeCount = await db('posts_likes')

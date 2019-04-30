@@ -19,6 +19,17 @@ module.exports = {
         .where({ user_id: user_id })
         .orderBy('id', 'asc');
 
+      const savedPostIds = await db('saved_post_id')
+        .where('user_id', req.user.id)
+        .andWhere('saved_from_id', user_id);
+
+      for (id in posts) {
+        for (post_id in savedPostIds) {
+          if (posts[id].id === savedPostIds[post_id].post_id) {
+            posts[id].saved_to_profile = true;
+          }
+        }
+      }
       return res.status(200).json(posts);
     } catch (err) {
       console.log(err);
@@ -138,9 +149,7 @@ module.exports = {
           res.status(300).json({ err: 'couldnt add new entry' });
         }
       } else {
-        res
-          .status(400)
-          .json({ message: 'Please provide a post url ' });
+        res.status(400).json({ message: 'Please provide a post url ' });
       }
     } else {
       res.status(403).json({ error: 'Not authorized' });
@@ -224,8 +233,8 @@ module.exports = {
   async editPost(req, res, next) {
     const id = req.params.id;
     const { post_url, title, description, user_thoughts } = req.body;
-    const shared = req.body.shared || false
-    console.log(req.body, req.params.id, 'HEREHRHEHHEHE')
+    const shared = req.body.shared || false;
+    console.log(req.body, req.params.id, 'HEREHRHEHHEHE');
     try {
       const editPromise = await db('posts')
         .where({ id })
@@ -280,16 +289,18 @@ module.exports = {
   },
 
   async shareBookmark(req, res, next) {
-    console.log('in share bookmarks', req.body, req.user.id)
+    console.log('in share bookmarks', req.body, req.user.id);
     try {
-      const insertToNewsfeedPosts = await db('newsfeed_posts')
-      .insert({'user_id':req.user.id, 'post_id': req.body.id})
+      const insertToNewsfeedPosts = await db('newsfeed_posts').insert({
+        user_id: req.user.id,
+        post_id: req.body.id
+      });
       if (insertToNewsfeedPosts) {
-        res.status(200).json({success: 'posted'})
+        res.status(200).json({ success: 'posted' });
       }
     } catch (err) {
-      console.log(err)
-      res.status(500).json(err)
+      console.log(err);
+      res.status(500).json(err);
     }
   }
 };

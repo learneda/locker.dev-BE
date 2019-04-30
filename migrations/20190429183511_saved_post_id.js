@@ -9,6 +9,7 @@ exports.up = function(knex, Promise) {
       .onDelete('cascade');
 
     tbl.integer('saved_from_id');
+    tbl.boolean('saved_to_profile').defaultTo(true);
 
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.timestamp('updated_at').defaultTo(knex.fn.now());

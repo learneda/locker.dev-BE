@@ -15,21 +15,26 @@ module.exports = {
   async getAllUserPosts(req, res, next) {
     const user_id = req.params.id;
     try {
-      const posts = await db('posts')
-        .where({ user_id: user_id })
-        .orderBy('id', 'asc');
+      const posts = await db('posts AS p')
+        .select(
+          'p.id',
+          'p.post_url',
+          'p.user_id',
+          'p.title',
+          'p.description',
+          'p.user_thoughts',
+          'p.created_at',
+          'p.updated_at',
+          'p.thumbnail_url',
+          'sp.saved_to_profile'
+        )
+        // joins saved_post_id boolean
+        .leftJoin('saved_post_id AS sp', function() {
+          this.on('p.id', 'sp.post_id');
+        })
+        .where({ 'p.user_id': user_id })
+        .orderBy('p.id', 'asc');
 
-      const savedPostIds = await db('saved_post_id')
-        .where('user_id', req.user.id)
-        .andWhere('saved_from_id', user_id);
-
-      for (id in posts) {
-        for (post_id in savedPostIds) {
-          if (posts[id].id === savedPostIds[post_id].post_id) {
-            posts[id].saved_to_profile = true;
-          }
-        }
-      }
       return res.status(200).json(posts);
     } catch (err) {
       console.log(err);

@@ -155,6 +155,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  /* ===== GENERATING USER NEWS FEED ===== */
 
   async getUserNewsFeed(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id;
@@ -184,6 +185,7 @@ module.exports = {
           post.comments = [];
 
           const commentArray = await db('comments as c')
+            .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'uç.username')
             .where('c.post_id', '=', post.post_id)
             .join('users as u', 'c.user_id', 'u.id');
           post.comments.push(...commentArray);

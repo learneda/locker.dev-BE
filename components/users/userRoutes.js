@@ -21,6 +21,10 @@ router.get('/newsfeed', controllers.getUserNewsFeed);
 
 router.put('/edit', controllers.editProfile);
 
+router.get('/saved-post-ids', controllers.getSavedPostIds);
+
+router.post('/saved-post-ids', controllers.savePostId);
+
 router.get('/id/:id', controllers.getUserDetailsById);
 
 router.get('/username/:username', controllers.getUserDetailsByUserName);

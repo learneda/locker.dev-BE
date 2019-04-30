@@ -185,7 +185,7 @@ module.exports = {
           post.comments = [];
 
           const commentArray = await db('comments as c')
-            .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'uç.username')
+            .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'u.username')
             .where('c.post_id', '=', post.post_id)
             .join('users as u', 'c.user_id', 'u.id');
           post.comments.push(...commentArray);

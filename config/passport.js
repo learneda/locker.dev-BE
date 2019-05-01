@@ -125,7 +125,7 @@ passport.use(
           const msg = {
             to: profile.emails[0].value,
             from: 'do-not-reply@LearnLocker.com',
-            subject: 'Sign up with learnLocker',
+            subject: 'Welcome to LearnLocker!',
             text: 'and easy to do anywhere.',
             html: html(profile.displayName),
           };

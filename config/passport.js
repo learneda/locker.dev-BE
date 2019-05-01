@@ -1,10 +1,13 @@
 require('dotenv').config();
-
+const sgMail = require('@sendgrid/mail');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
+const html = require('./html')
+console.log(process.env.SENDGRID_API_KEY)
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 passport.use(
   new LocalStrategy(
@@ -67,9 +70,21 @@ passport.use(
         const existingUser = await db('users')
           .where('github_id', profile.id)
           .first()
+          console.log(html(profile.username))
         if (existingUser) {
           return done(null, existingUser)
         } else {
+          if (profile.emails) {
+            const email = profile.emails[0].value
+            const msg = {
+              to: email,
+              from: 'do-not-reply@LearnLocker.com',
+              subject: 'Welcome to LearnLocker!',
+              text: 'and easy to do anywhere, even with Node.js',
+              html: html(profile.username),
+            };
+            sgMail.send(msg);
+          }
           await db('users').insert({
             github_id: profile.id,
             username: profile.username,
@@ -106,6 +121,16 @@ passport.use(
         if (existingUser) {
           return done(null, existingUser)
         } else {
+
+          const msg = {
+            to: profile.emails[0].value,
+            from: 'do-not-reply@LearnLocker.com',
+            subject: 'Welcome to LearnLocker!',
+            text: 'and easy to do anywhere.',
+            html: html(profile.displayName),
+          };
+          sgMail.send(msg);
+
           await db('users').insert({
             google_id: profile.id,
             username: profile.displayName,

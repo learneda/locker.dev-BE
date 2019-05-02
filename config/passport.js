@@ -5,8 +5,7 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
-const html = require('./html')
-console.log(process.env.SENDGRID_API_KEY)
+const html = require('./html');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 passport.use(
@@ -15,30 +14,32 @@ passport.use(
       usernameField: 'email',
       passwordField: 'password'
     },
-    async function (email, password, done) {
-      console.log(email, password)
-      const existingUser = await db('users').where('email', email).first()
+    async function(email, password, done) {
+      const existingUser = await db('users')
+        .where('email', email)
+        .first();
       if (existingUser) {
-        console.log(existingUser)
+        console.log(existingUser);
         const passwordCheck = bcrypt.compareSync(
           password,
           existingUser.password
-        )
-        console.log(passwordCheck === true)
+        );
         if (passwordCheck === true) {
-          done(null, existingUser)
+          done(null, existingUser);
         } else {
-          done(new Error('credentials wrong'))
+          done(new Error('credentials wrong'));
         }
       } else {
-        password = bcrypt.hashSync(password, 10)
+        password = bcrypt.hashSync(password, 10);
         await db('users').insert({
           email: email,
           password: password,
           display_name: 'a dynamic name'
-        })
-        const user = await db('users').where({ email: email }).first()
-        done(null, user)
+        });
+        const user = await db('users')
+          .where({ email: email })
+          .first();
+        done(null, user);
       }
     }
   )
@@ -49,12 +50,15 @@ const db = require('../dbConfig');
 passport.serializeUser((user, done) => done(null, user.id));
 
 passport.deserializeUser((id, done) => {
-  db('users').where({ id: id }).first().then((user) => {
-    if (!user) {
-      done(new Error('User not found ' + id))
-    }
-    done(null, user)
-  })
+  db('users')
+    .where({ id: id })
+    .first()
+    .then(user => {
+      if (!user) {
+        done(new Error('User not found ' + id));
+      }
+      done(null, user);
+    });
 });
 
 passport.use(
@@ -69,19 +73,17 @@ passport.use(
       try {
         const existingUser = await db('users')
           .where('github_id', profile.id)
-          .first()
-          console.log(html(profile.username))
+          .first();
         if (existingUser) {
-          return done(null, existingUser)
+          return done(null, existingUser);
         } else {
           if (profile.emails) {
-            const email = profile.emails[0].value
+            const email = profile.emails[0].value;
             const msg = {
               to: email,
-              from: 'do-not-reply@LearnLocker.com',
+              from: 'do-not-reply@learnlocker.com',
               subject: 'Welcome to LearnLocker!',
-              text: 'and easy to do anywhere, even with Node.js',
-              html: html(profile.username),
+              html: html(profile.username)
             };
             sgMail.send(msg);
           }
@@ -90,14 +92,14 @@ passport.use(
             username: profile.username,
             display_name: profile.username,
             profile_picture: profile.photos[0].value
-          })
+          });
           const user = await db('users')
             .where({ github_id: profile.id })
-            .first()
-          return done(null, user)
+            .first();
+          return done(null, user);
         }
       } catch (err) {
-        return done(err)
+        return done(err);
       }
     }
   )
@@ -114,20 +116,18 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const google_id = profile.id
+        const google_id = profile.id;
         const existingUser = await db('users')
           .where('google_id', google_id)
-          .first()
+          .first();
         if (existingUser) {
-          return done(null, existingUser)
+          return done(null, existingUser);
         } else {
-
           const msg = {
             to: profile.emails[0].value,
             from: 'do-not-reply@LearnLocker.com',
             subject: 'Welcome to LearnLocker!',
-            text: 'and easy to do anywhere.',
-            html: html(profile.displayName),
+            html: html(profile.displayName)
           };
           sgMail.send(msg);
 
@@ -137,14 +137,14 @@ passport.use(
             display_name: profile.displayName,
             email: profile.emails[0].value,
             profile_picture: profile.photos[0].value
-          })
+          });
           const user = await db('users')
             .where({ google_id: profile.id })
-            .first()
-          return done(null, user)
+            .first();
+          return done(null, user);
         }
       } catch (err) {
-        return done(err)
+        return done(err);
       }
     }
   )

@@ -307,5 +307,19 @@ module.exports = {
       console.log(err);
       res.status(500).json(err);
     }
+  },
+
+  async unshareBookmark(req, res, next) {
+    console.log('req.body ==>', req.body)
+    try {
+      await db('newsfeed_posts').del().where({
+        user_id: req.user.id,
+        post_id: req.body.id
+      });
+      res.status(200).json({success: 'deleted'})
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   }
 };

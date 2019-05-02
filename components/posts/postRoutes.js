@@ -28,13 +28,19 @@ router.get('/all/:id', controllers.getAllUserPosts);
 
 router.post('/', controllers.createNewPost);
 
-/* ===== DELETE POST ===== */
+/* ===== DELETE SHARED BOOKMARK ===== */
+router.delete('/unshare', controllers.unshareBookmark)
+
+/* ===== DELETE BOOKMARK ===== */
 router.delete('/:id', controllers.deletePost);
-/* ===== EDIT POST ===== */
+
+/* ===== EDIT BOOKMARK ===== */
 router.put('/:id', controllers.editPost);
 
 /* ===== SHARE BOOKMARK ===== */
 router.post('/share', controllers.shareBookmark)
+
+
 
 
 module.exports = router;

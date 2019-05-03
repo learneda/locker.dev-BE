@@ -321,5 +321,17 @@ module.exports = {
       console.log(err);
       res.status(500).json(err);
     }
+  },
+  async getSharedBookmark(req, res, next) {
+    const bookmarkPost = await db('newsfeed_posts')
+    .where({post_id: req.params.id})
+    .join('posts', 'posts.id', 'newsfeed_posts.post_id')
+    .join('users', 'posts.user_id', 'users.id')
+
+    if (bookmarkPost) {
+      console.log(bookmarkPost)
+      res.status(200).json(bookmarkPost)
+    }
+
   }
 };

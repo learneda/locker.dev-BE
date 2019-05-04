@@ -20,7 +20,6 @@ const io = require('socket.io')(myServer)
 
 io.on('connection', (socket) => {
   // console.log(io.engine.clients)
-
   socket.on('join', async function (data) {
     console.log(data, 'DATA', socket.id)
     const online_user = await db('online_users')
@@ -28,19 +27,21 @@ io.on('connection', (socket) => {
 
     if (online_user) {
       console.log('what online_user returns', online_user)
-      const notificationPromise = await db('notifications')
+      const notifications = await db('notifications')
       .where({read: false, user_id: data.user_id})
-      if (notificationPromise.length) {
-        console.log(notificationPromise, 'notificationPRomise, you got some notifications :)')
-        // io.to(socket.id).emit('join', 'for your eyes only');
+      if (notifications.length) {
+        console.log(notifications, 'notificationPRomise, you got some notifications :)')
+        io.to(socket.id).emit('join', notifications)
       } else {
-        console.log(notificationPromise, 'you aint got no notifications')
+        console.log(notifications, 'you aint got no notifications')
       }
     }
   });
 
-  socket.on('disconnect', (reason) => {
+  socket.on('disconnect', async (reason) => {
     console.log(reason, socket.id)
+    const deleteInsert = await db('online_users').del().where({socket_id: socket.id});
+    console.log(deleteInsert);
   })
 
   socket.on('comments', (msg) => {
@@ -57,7 +58,23 @@ io.on('connection', (socket) => {
           res[0]['action'] = msg.action;
           console.log(res[0], 'response after inserting')
           socket.broadcast.emit('comments', res[0]);
-          socket.emit('comments', res[0]);        
+          socket.emit('comments', res[0]);  
+          
+
+          db('notifications').insert({user_id: msg.postOwnerId, post_id: msg.post_id, type: 'comment'})
+      .then((res) => {
+        return db('online_users').where({user_id: msg.postOwnerId})
+      }).then((online_data) => {
+        console.log(online_data, 'is user online?')
+        if (online_data.length) {
+          db('notifications').where({read: false, user_id: online_data[0].user_id}).then((notificationRes) => {
+            console.log('here', notificationRes)
+            if (notificationRes.length) {
+              io.to(online_data[0].socket_id).emit('join', notificationRes);
+            }
+          })
+        }
+      })
         });
     } 
     if (msg.action === 'destroy') {
@@ -82,6 +99,20 @@ io.on('connection', (socket) => {
       db('posts_likes').insert({user_id: data.user_id, post_id: data.post_id}).then((res) => {
         socket.broadcast.emit('like', data)
         socket.emit('like', data)
+      })
+      db('notifications').insert({user_id: data.postOwnerId, post_id: data.post_id, type: 'like'})
+      .then((res) => {
+        return db('online_users').where({user_id: data.postOwnerId})
+      }).then((online_data) => {
+        console.log(online_data, 'is user online?')
+        if (online_data.length) {
+          db('notifications').where({read: false, user_id: online_data[0].user_id}).then((notificationRes) => {
+            console.log('here', notificationRes)
+            if (notificationRes.length) {
+              io.to(online_data[0].socket_id).emit('join', notificationRes);
+            }
+          })
+        }
       })
     }
   })

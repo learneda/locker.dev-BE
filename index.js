@@ -19,6 +19,26 @@ server.get('/', (req, res) => {
 const io = require('socket.io')(myServer)
 
 io.on('connection', (socket) => {
+  // console.log(io.engine.clients)
+
+  socket.on('join', async function (data) {
+    console.log(data, 'DATA', socket.id) // We are using room of socket io
+    const online_user = await db('online_users')
+    .insert({user_id: data.user_id, socket_id: socket.id})
+
+    if (online_user) {
+      console.log('what online_user returns', online_user)
+      const notificationPromise = await db('notifications')
+      .where({read: false, user_id: data.user_id})
+      if (notificationPromise.length) {
+        console.log(notificationPromise, 'notificationPRomise, you got some notifications :)')
+        // io.to(socket.id).emit('join', 'for your eyes only');
+      } else {
+        console.log(notificationPromise, 'you aint got no notifications')
+      }
+    }
+  });
+
   socket.on('comments', (msg) => {
     console.log('response',msg);
     if (msg.action === 'create') {

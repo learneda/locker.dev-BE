@@ -22,7 +22,7 @@ io.on('connection', (socket) => {
   // console.log(io.engine.clients)
 
   socket.on('join', async function (data) {
-    console.log(data, 'DATA', socket.id) // We are using room of socket io
+    console.log(data, 'DATA', socket.id)
     const online_user = await db('online_users')
     .insert({user_id: data.user_id, socket_id: socket.id})
 
@@ -38,6 +38,10 @@ io.on('connection', (socket) => {
       }
     }
   });
+
+  socket.on('disconnect', (reason) => {
+    console.log(reason, socket.id)
+  })
 
   socket.on('comments', (msg) => {
     console.log('response',msg);

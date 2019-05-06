@@ -176,16 +176,25 @@ module.exports = {
         .whereIn('newsfeed_posts.user_id', friendsAndCurrentUser)
         .join('users', 'newsfeed_posts.user_id', '=', 'users.id')
         .join('posts', 'newsfeed_posts.post_id', '=', 'posts.id')
-        .orderBy('posts.created_at', 'desc')
+        .orderBy('newsfeed_posts.created_at', 'desc')
         .offset(req.query.offset)
+        .select('*', 'newsfeed_posts.created_at AS posted_at_date')
         .limit(5);
+      console.log(newsFeed);
 
       const commentLoop = async () => {
         for (let post of newsFeed) {
           post.comments = [];
 
           const commentArray = await db('comments as c')
-            .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'u.username')
+            .select(
+              'c.id',
+              'c.created_at',
+              'c.content',
+              'c.user_id',
+              'c.post_id',
+              'u.username'
+            )
             .where('c.post_id', '=', post.post_id)
             .join('users as u', 'c.user_id', 'u.id');
           post.comments.push(...commentArray);

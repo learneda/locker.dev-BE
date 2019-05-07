@@ -21,5 +21,6 @@ module.exports = (server) => {
   require('./users')(server);
   require('./comments')(server);
   require('./images')(server);
+  require('./notifications')(server)
 }
 

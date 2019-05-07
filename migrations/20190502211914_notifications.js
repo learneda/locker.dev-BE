@@ -16,6 +16,12 @@ exports.up = function(knex, Promise) {
       tbl.boolean('read').defaultTo(false)
 
       tbl.string('type')
+
+      tbl.string('invoker')
+
+      tbl.timestamp('created_at').defaultTo(knex.fn.now());
+
+      tbl.timestamp('updated_at').defaultTo(knex.fn.now());
   })
 };
 

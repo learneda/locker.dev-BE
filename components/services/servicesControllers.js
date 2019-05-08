@@ -1,6 +1,7 @@
 const request = require('request');
 const Feed = require('rss-to-json');
 const urlMetadata = require('url-metadata');
+const db = require('../../dbConfig');
 
 module.exports = {
   getCourses(req, res, next) {
@@ -43,7 +44,11 @@ module.exports = {
             console.log(err);
           });
       });
-      Promise.all(tempo_articles).then(articles => {
+      Promise.all(tempo_articles).then(async articles => {
+        for (let article of articles) {
+          await db('articles')
+          .insert({article_url: article.url, title: article.title, thumbnail_url: article.thumbnail, description: article.description,created: article.created})
+        }
         res.json(articles);
       });
     });

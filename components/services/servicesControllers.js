@@ -26,9 +26,15 @@ module.exports = {
       }
     );
   },
-  getArticles(req, res, next) {
-    // fetch articles from fcc feed
-    Feed.load('https://medium.freecodecamp.org/feed', function(err, rss) {
+  async getArticles(req, res, next) {
+   const articles = await db('articles').select()
+   if (articles) {
+    res.json(articles);
+  }
+  }
+};
+setInterval(() => {
+ Feed.load('https://medium.freecodecamp.org/feed', function(err, rss) {
       const tempo_articles = rss.items.map(item => {
         // for each article, get its url and parse it
         let url = item.url;
@@ -47,10 +53,8 @@ module.exports = {
       Promise.all(tempo_articles).then(async articles => {
         for (let article of articles) {
           await db('articles')
-          .insert({article_url: article.url, title: article.title, thumbnail_url: article.thumbnail, description: article.description,created: article.created})
+          .insert({url: article.url, title: article.title, thumbnail: article.thumbnail, description: article.description, created: article.created})
         }
-        res.json(articles);
       });
     });
-  }
-};
+}, 86400000)

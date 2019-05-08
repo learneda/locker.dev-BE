@@ -364,7 +364,8 @@ module.exports = {
           'users.id',
           'users.profile_picture',
           'users.display_name',
-          'users.username'
+          'users.username',
+          'users.bio'
         )
         .join('users', 'friendships.friend_id', '=', 'users.id')
         .where('friendships.user_id', id)
@@ -386,6 +387,7 @@ module.exports = {
           'users.profile_picture',
           'users.display_name',
           'users.username',
+          'users.bio',
           'friendships.created_at'
         )
         .join('users', 'friendships.user_id', '=', 'users.id')

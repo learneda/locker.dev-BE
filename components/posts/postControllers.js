@@ -121,7 +121,14 @@ module.exports = {
               ? req.body.post_url
               : `http://${req.body.post_url}`;
 
+          // gets root hostname for a URL
+          let rootUrl = new URL(newUrl);
+          rootUrl = rootUrl.hostname
+            .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
+            .split('/')[0];
+
           const metadata = await urlMetadata(newUrl);
+          // console.log(metadata);
           metadata.description === null
             ? (metadata.description = 'No description')
             : (metadata.description = metadata.description);
@@ -137,7 +144,8 @@ module.exports = {
               user_id: req.user.id,
               title: metadata.title,
               description: metadata.description,
-              thumbnail_url: metadata.image
+              thumbnail_url: metadata.image,
+              root_url: rootUrl
             };
             const newInsert = await db('posts').insert(newPost);
             if (newInsert) {
@@ -310,31 +318,40 @@ module.exports = {
   },
 
   async unshareBookmark(req, res, next) {
-    console.log('req.body ==>', req.body)
+    console.log('req.body ==>', req.body);
     try {
-      await db('newsfeed_posts').del().where({
-        user_id: req.user.id,
-        post_id: req.body.id
-      });
-      res.status(200).json({success: 'deleted'})
+      await db('newsfeed_posts')
+        .del()
+        .where({
+          user_id: req.user.id,
+          post_id: req.body.id
+        });
+      res.status(200).json({ success: 'deleted' });
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
     }
   },
-  
+
   async getSharedBookmark(req, res, next) {
     const bookmarkPost = await db('newsfeed_posts')
-    .where({post_id: req.params.id})
-    .join('posts', 'posts.id', 'newsfeed_posts.post_id')
-    .join('users', 'posts.user_id', 'users.id')
+      .where({ post_id: req.params.id })
+      .join('posts', 'posts.id', 'newsfeed_posts.post_id')
+      .join('users', 'posts.user_id', 'users.id');
 
     const attachingCommentsNLikesLoop = async () => {
       for (let post of bookmarkPost) {
         post.comments = [];
 
         const commentArray = await db('comments as c')
-          .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'u.username')
+          .select(
+            'c.id',
+            'c.created_at',
+            'c.content',
+            'c.user_id',
+            'c.post_id',
+            'u.username'
+          )
           .where('c.post_id', '=', post.post_id)
           .join('users as u', 'c.user_id', 'u.id');
         post.comments.push(...commentArray);
@@ -342,7 +359,7 @@ module.exports = {
         const likeCount = await db('posts_likes')
           .where('post_id', post.post_id)
           .countDistinct('user_id');
-        console.log(likeCount[0].count)
+        console.log(likeCount[0].count);
         post.likes = Number(likeCount[0].count);
       }
       if (bookmarkPost) {
@@ -353,6 +370,5 @@ module.exports = {
     };
 
     attachingCommentsNLikesLoop();
-
   }
 };

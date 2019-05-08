@@ -1,6 +1,7 @@
 const request = require('request');
 const Feed = require('rss-to-json');
 const urlMetadata = require('url-metadata');
+const db = require('../../dbConfig');
 
 module.exports = {
   getCourses(req, res, next) {
@@ -25,9 +26,15 @@ module.exports = {
       }
     );
   },
-  getArticles(req, res, next) {
-    // fetch articles from fcc feed
-    Feed.load('https://medium.freecodecamp.org/feed', function(err, rss) {
+  async getArticles(req, res, next) {
+   const articles = await db('articles').select()
+   if (articles) {
+    res.json(articles);
+  }
+  }
+};
+setInterval(() => {
+ Feed.load('https://medium.freecodecamp.org/feed', function(err, rss) {
       const tempo_articles = rss.items.map(item => {
         // for each article, get its url and parse it
         let url = item.url;
@@ -43,9 +50,11 @@ module.exports = {
             console.log(err);
           });
       });
-      Promise.all(tempo_articles).then(articles => {
-        res.json(articles);
+      Promise.all(tempo_articles).then(async articles => {
+        for (let article of articles) {
+          await db('articles')
+          .insert({url: article.url, title: article.title, thumbnail: article.thumbnail, description: article.description, created: article.created})
+        }
       });
     });
-  }
-};
+}, 86400000)

@@ -26,6 +26,7 @@ module.exports = {
           'p.created_at',
           'p.updated_at',
           'p.thumbnail_url',
+          'p.root_url',
           'sp.saved_to_profile'
         )
         // joins saved_post_id boolean

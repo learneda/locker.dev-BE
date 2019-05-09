@@ -114,6 +114,37 @@ module.exports = {
     }
   },
   async createNewPost(req, res, next) {
+    const {
+      type,
+      post_url,
+      user_id,
+      title,
+      description,
+      thumbnail_url
+    } = req.body;
+    if (type) {
+      try {
+        const newPost = {
+          post_url,
+          user_id,
+          title,
+          description,
+          thumbnail_url
+        };
+        const newInsert = await db('posts')
+          .insert(newPost)
+          .returning('*');
+        if (newInsert) {
+          return res.status(201).json(newInsert);
+        } else {
+          return res.status(300).json({ err: 'couldnt add new entry' });
+        }
+      } catch (err) {
+        console.log('META ERROR', err);
+        return res.status(500).json(err);
+      }
+    }
+
     if (req.user) {
       if (req.body.post_url) {
         try {

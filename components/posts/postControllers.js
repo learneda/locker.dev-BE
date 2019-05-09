@@ -179,9 +179,11 @@ module.exports = {
               thumbnail_url: metadata.image,
               root_url: rootUrl
             };
-            const newInsert = await db('posts').insert(newPost);
+            const newInsert = await db('posts')
+              .insert(newPost)
+              .returning('*');
             if (newInsert) {
-              res.status(201).json(newPost);
+              res.status(201).json(newInsert);
             } else {
               res.status(300).json({ err: 'couldnt add new entry' });
             }

@@ -24,6 +24,7 @@ module.exports = {
         const idsArr = xpath.select('//best_book/id', doc);
         const titlesArr = xpath.select('//title', doc);
         const namesArr = xpath.select('//name', doc);
+
         for (let i = 0; i < idsArr.length; i++) {
           const bookObject = {
             id: idsArr[i].firstChild.data,
@@ -32,7 +33,7 @@ module.exports = {
           };
           booksArray.push(bookObject);
         }
-        const urls = idsArr.map((id, index) => {
+        const urls = idsArr.map(id => {
           return `https://www.goodreads.com/book/show/${id.firstChild.data}`;
         });
         return urls;
@@ -45,7 +46,6 @@ module.exports = {
           const imgUrl = $('#coverImage').attr('src');
           return imgUrl;
         });
-        console.log('here', imgUrls, booksArray);
         for (let i = 0; i < imgUrls.length; i++) {
           booksArray[i].image = imgUrls[i];
         }

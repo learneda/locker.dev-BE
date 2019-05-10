@@ -1,8 +1,7 @@
-const request = require('request');
+require('dotenv').config();
 const cheerio = require('cheerio');
 const axios = require('axios');
 
-require('dotenv').config();
 var xpath = require('xpath'),
   dom = require('xmldom').DOMParser;
 
@@ -25,34 +24,28 @@ module.exports = {
         const idsArr = xpath.select('//best_book/id', doc);
         const titlesArr = xpath.select('//title', doc);
         const namesArr = xpath.select('//name', doc);
-        const image_urlsArr = xpath.select('//image_url', doc);
-        const urls = idsArr.map((id, index) => {
+        for (let i = 0; i < idsArr.length; i++) {
           const bookObject = {
-            id: id.firstChild.data,
-            title: titlesArr[index].firstChild.data,
-            author: namesArr[index].firstChild.data
+            id: idsArr[i].firstChild.data,
+            title: titlesArr[i].firstChild.data,
+            author: namesArr[i].firstChild.data
           };
           booksArray.push(bookObject);
-          // return bookObject;
+        }
+        const urls = idsArr.map((id, index) => {
           return `https://www.goodreads.com/book/show/${id.firstChild.data}`;
         });
         return urls;
       })
       .then(async urls => {
-        console.log('URLS', urls);
         const promiseArray = urls.map(url => axios.get(url));
-        console.log(promiseArray);
         const results = await Promise.all(promiseArray);
-        // console.log(results);
-        // console.log(results);
         const imgUrls = results.map((result, index) => {
           const $ = cheerio.load(result.data);
-          const img = $('#coverImage').attr('src');
-          return img;
+          const imgUrl = $('#coverImage').attr('src');
+          return imgUrl;
         });
-        return imgUrls;
-      })
-      .then(imgUrls => {
+        console.log('here', imgUrls, booksArray);
         for (let i = 0; i < imgUrls.length; i++) {
           booksArray[i].image = imgUrls[i];
         }

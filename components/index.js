@@ -22,5 +22,6 @@ module.exports = (server) => {
   require('./comments')(server);
   require('./images')(server);
   require('./notifications')(server)
+  require('./goodreads')(server)
 }
 

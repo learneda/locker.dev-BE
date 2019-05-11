@@ -8,7 +8,7 @@ module.exports = {
       key: process.env.GOOGLE_BOOKS_API_KEY,
       limit: 12,
       type: 'books',
-      offset
+      offset: offset || 0
     };
     if (q) {
       books.search(q, options, function(error, results) {

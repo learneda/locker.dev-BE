@@ -3,22 +3,22 @@ const db = require('../../dbConfig');
 const localhost_url = 'http://localhost:3000';
 const url = 'https://learnlocker.dev';
 
-const selectRedirect = route => {
+const selectRedirect = (res, route) => {
   process.env.NODE_ENV === 'production'
-    ? res.redirect(`${url}/${route}`)
-    : res.redirect(`${localhost_url}/${route}`);
+    ? res.redirect(`${url}${route}`)
+    : res.redirect(`${localhost_url}${route}`);
 };
 
 module.exports = {
   gitHubHandler(req, res, next) {
-    selectRedirect('home');
+    selectRedirect(res, '/home');
   },
   googleHandler(req, res, next) {
-    selectRedirect('home');
+    selectRedirect(res, '/home');
   },
   logoutHandler(req, res, next) {
     req.session = null;
-    selectRedirect();
+    selectRedirect(res, '/');
   },
   async getSocialNetworkIDs(req, res, next) {
     const id = req.user.id;

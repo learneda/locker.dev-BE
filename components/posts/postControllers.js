@@ -4,10 +4,13 @@ const urlMetadata = require('url-metadata');
 module.exports = {
   async getAllCurrentUserPost(req, res, next) {
     try {
-      const posts = await db('posts')
-        .where({ user_id: req.user.id })
-        .orderBy('id', 'asc');
-      return res.status(200).json(posts);
+      //* Prevents error on accessing req.user.id if req.user == undefined
+      if (req.user) {
+        const posts = await db('posts')
+          .where({ user_id: req.user.id })
+          .orderBy('id', 'asc');
+        return res.status(200).json(posts);
+      }
     } catch (err) {
       console.log(err);
     }

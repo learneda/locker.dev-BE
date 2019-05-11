@@ -9,7 +9,7 @@ const path = require('path');
 
 const corsOptions = {
   credentials: true,
-  origin: ['http://localhost:3000', 'https://learnedadev.netlify.com']
+  origin: ['http://localhost:3000', 'https://learnedadev.netlify.com', 'https://learnlocker.dev']
 };
 
 module.exports = server => {

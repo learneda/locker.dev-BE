@@ -10,15 +10,18 @@ var xpath = require('xpath'),
 
 module.exports = {
   async searchBooks(req, res, next) {
-    books.search('harryPotter', function(error, results) {
-      if ( ! error ) {
-          console.log(results);
-          res.status(200).json(results)
-      } else {
-          console.log(error);
-      }
-    });
-
+    if (req.body.q) {
+      books.search(req.body.q, function(error, results) {
+        if ( ! error ) {
+            console.log(results);
+            res.status(200).json(results)
+        } else {
+            console.log(error);
+        }
+      });
+    } else {
+      res.json({err: 'q required in body of post request'})
+    }
   },
 }
 

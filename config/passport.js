@@ -81,7 +81,7 @@ passport.use(
             const email = profile.emails[0].value;
             const msg = {
               to: email,
-              from: 'do-not-reply@learnlocker.com',
+              from: 'do-not-reply@email.learnlocker.dev',
               subject: 'Welcome to LearnLocker!',
               html: html(profile.username)
             };
@@ -125,7 +125,7 @@ passport.use(
         } else {
           const msg = {
             to: profile.emails[0].value,
-            from: 'do-not-reply@LearnLocker.com',
+            from: 'do-not-reply@email.learnlocker.dev',
             subject: 'Welcome to LearnLocker!',
             html: html(profile.displayName)
           };

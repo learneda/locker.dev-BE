@@ -1,15 +1,17 @@
 require('dotenv').config();
-const cheerio = require('cheerio');
-const axios = require('axios');
-const xpath = require('xpath');
-const dom = require('xmldom').DOMParser;
-const db = require('../../dbConfig');
-var books = require('google-books-search');
+const books = require('google-books-search');
 
 module.exports = {
   async searchBooks(req, res, next) {
-    if (req.body.q) {
-      books.search(req.body.q, function(error, results) {
+    const { q, offset } = req.body;
+    const options = {
+      key: process.env.GOOGLE_BOOKS_API_KEY,
+      limit: 12,
+      type: 'books',
+      offset
+    };
+    if (q) {
+      books.search(q, options, function(error, results) {
         if (!error) {
           console.log(results);
           res.status(200).json(results);

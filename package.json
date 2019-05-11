@@ -20,13 +20,13 @@
     "article-parser": "^2.4.0",
     "axios": "^0.18.0",
     "bcrypt": "^3.0.5",
-    "cheerio": "^1.0.0-rc.3",
     "cloudinary": "^1.14.0",
     "cookie-session": "^1.3.3",
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "faker": "^4.1.0",
+    "google-books-search": "^0.3.1",
     "helmet": "^3.16.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.16.3",
@@ -42,9 +42,7 @@
     "route-cache": "^0.4.4",
     "rss-to-json": "^1.0.4",
     "socket.io": "^2.2.0",
-    "url-metadata": "^2.4.0",
-    "xmldom": "^0.1.27",
-    "xpath": "0.0.27"
+    "url-metadata": "^2.4.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"

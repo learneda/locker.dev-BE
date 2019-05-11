@@ -6,7 +6,7 @@ const url = 'https://learnlocker.dev';
 const selectRedirect = route => {
   process.env.NODE_ENV === 'production'
     ? res.redirect(`${url}/${route}`)
-    : res.redirect(`${localhost_url}/home`);
+    : res.redirect(`${localhost_url}/${route}`);
 };
 
 module.exports = {

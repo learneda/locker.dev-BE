@@ -1,9 +1,8 @@
 require('dotenv').config();
 const cheerio = require('cheerio');
 const axios = require('axios');
-
-var xpath = require('xpath'),
-  dom = require('xmldom').DOMParser;
+const xpath = require('xpath');
+const dom = require('xmldom').DOMParser;
 
 module.exports = {
   async searchBooks(req, res, next) {

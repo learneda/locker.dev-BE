@@ -1,33 +1,30 @@
-const db = require('../../dbConfig');
 require('dotenv').config();
-
+const db = require('../../dbConfig');
 const localhost_url = 'http://localhost:3000';
 const url = 'https://learnlocker.dev';
 
+const selectRedirect = route => {
+  process.env.NODE_ENV === 'production'
+    ? res.redirect(`${url}/${route}`)
+    : res.redirect(`${localhost_url}/home`);
+};
+
 module.exports = {
   gitHubHandler(req, res, next) {
-    if (process.env.NODE_ENV === 'production') {
-      res.redirect(`${url}/home`);
-    } else res.redirect(`${localhost_url}/home`);
+    selectRedirect('home');
   },
-
   googleHandler(req, res, next) {
-    if (process.env.NODE_ENV === 'production') {
-      res.redirect(`${url}/home`);
-    } else res.redirect(`${localhost_url}/home`);
+    selectRedirect('home');
   },
   logoutHandler(req, res, next) {
     req.session = null;
-
-    if (process.env.NODE_ENV === 'production') {
-      res.redirect(`${url}`);
-    } else res.redirect(`${localhost_url}`);
+    selectRedirect();
   },
   async getSocialNetworkIDs(req, res, next) {
-    const user_id = req.user.id;
+    const id = req.user.id;
     const selectPromise = await db('users')
       .select('github_id', 'google_id')
-      .where('id', user_id);
+      .where({ id });
     try {
       if (selectPromise) {
         res.status(200).json(selectPromise);

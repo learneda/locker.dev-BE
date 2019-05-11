@@ -3,7 +3,7 @@ const books = require('google-books-search');
 
 module.exports = {
   async searchBooks(req, res, next) {
-    const { q, offset } = req.body;
+    const { q, offset } = req.query;
     const options = {
       key: process.env.GOOGLE_BOOKS_API_KEY,
       limit: 12,

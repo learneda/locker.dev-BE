@@ -22,9 +22,10 @@ gr.initOAuth(callbackURL)
 
 module.exports = {
     async login(req, res, next) {
+        console.log('this got hit')
         gr.getRequestToken().then(url => { 
             /* redirect your user to this url to ask for permission */ 
-            // console.log('😝 getRequestTOkenURL',url)
+            console.log('😝 getRequestTOkenURL',url)
 
             res.redirect(url)
         });
@@ -124,8 +125,8 @@ module.exports = {
                             })
                         }
                         if (bookArr) {
-                            const books = await db('goodreads').where({user_id: userId})
-                            res.status(200).json(books)
+                            // const books = await db('goodreads').where({user_id: userId})
+                            res.redirect('http://localhost:3000/home')
                         } else {
                             throw new Error('newsFeedError');
                         }

@@ -27,7 +27,7 @@ module.exports = {
     );
   },
   async getArticles(req, res, next) {
-    const articles = await db('articles').select();
+    const articles = await db('articles').orderBy('created_at', 'desc');
     if (articles) {
       res.json(articles);
     }
@@ -37,7 +37,7 @@ module.exports = {
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======
 setInterval(async () => {
   // GETTING ALL DB ARTICLES TO AVOID ADDING DUBLICATES
-  const existingArticles = await db('articles').select();
+  const existingArticles = await db('articles');
 
   // FILTERING TITLE
   let existingTitles = existingArticles.map((article, index) => {

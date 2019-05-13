@@ -13,7 +13,10 @@ module.exports = {
     if (q) {
       books.search(q, options, function(error, results) {
         if (!error) {
-          console.log(results);
+          results.map(result => {
+            result.thumbnail = result.thumbnail.replace('http', 'https');
+            return result;
+          });
           res.status(200).json(results);
         } else {
           console.log(error);

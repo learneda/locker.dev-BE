@@ -135,5 +135,11 @@ module.exports = {
                 })
             })
         }).catch(err => console.log('ERROR ERROR ',err))
+    },
+    async getUserShelf(req, res, next) { 
+        const collections = await db('goodreads').where('user_id', req.user.id)
+        if (collections) {
+            res.json(collections)
+        }
     }
 };

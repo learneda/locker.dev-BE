@@ -3,6 +3,7 @@ const goodreads = require('goodreads-api-node');
 const axios = require('axios')
 const xpath = require('xpath')
 const dom = require('xmldom').DOMParser
+
 const db = require('../../dbConfig');
 
 
@@ -66,7 +67,7 @@ module.exports = {
                         if (descriptions[i].firstChild != null) {
                             const description = descriptions[i].firstChild.data
                             const cleanDescription = description.replace(/<\/?[^>]+(>|$)/g, "")
-
+                        
                             bookObj = {
                                 id: ids[i].firstChild.data,
                                 title: titles[i].firstChild.data,
@@ -100,8 +101,6 @@ module.exports = {
                     if (existingRecords.length) {
 
                         const existingBookIds = existingRecords.map(record => record.book_id)
-
-                        console.log(existingBookIds, 'HERE HERE HERE')
 
                         bookArr = bookArr.filter((book) => {
                             return !existingBookIds.includes(book.id)

@@ -23,4 +23,5 @@ module.exports = server => {
   require('./notifications')(server);
   require('./goodreads')(server);
   require('./books')(server);
+  require('./pocket')(server);
 };

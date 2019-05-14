@@ -48,15 +48,23 @@ module.exports = {
 						.then(async (result) => {
 							for (post in result.data.list) {
 								const obj = result.data.list[post];
-								await db('pocket').insert({
-									resolved_title: obj.resolved_title,
-									resolved_url: obj.resolved_url,
-									excerpt: obj.excerpt,
-									top_image_url: obj.top_image_url,
-									favorited: +obj.time_favorited === 0 ? false : true,
-									top_image_url: obj.top_image_url,
-									user_id: req.user.id
-								});
+								await db('pocket')
+									.insert({
+										resolved_title: obj.resolved_title,
+										resolved_url: obj.resolved_url,
+										excerpt: obj.excerpt,
+										top_image_url: obj.top_image_url,
+										favorited: +obj.time_favorited === 0 ? false : true,
+										top_image_url: obj.top_image_url,
+										user_id: req.user.id
+									})
+									.returning('*')
+									.then(async (result) => {
+										await db('locker').insert({
+											user_id: req.user.id,
+											pocket_id: result[0].id
+										});
+									});
 							}
 							res.redirect('http://localhost:3000/home/locker');
 						});

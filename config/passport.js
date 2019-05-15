@@ -140,7 +140,7 @@ passport.use(
 					await db('users')
 						.insert({
 							google_id: profile.id,
-							username: profile.displayName,
+							username: profile.emails[0].value.split('@')[0],
 							display_name: profile.displayName,
 							email: profile.emails[0].value,
 							profile_picture: profile.photos[0].value

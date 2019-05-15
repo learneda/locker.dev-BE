@@ -85,16 +85,36 @@ passport.use(
             };
             sgMail.send(msg);
           }
-          await db('users').insert({
-            github_id: profile.id,
-            username: profile.username,
-            display_name: profile.username,
-            profile_picture: profile.photos[0].value
-          });
-          const user = await db('users')
-            .where({ github_id: profile.id })
-            .first();
-          return done(null, user);
+          await db('users')
+            .insert({
+              github_id: profile.id,
+              username: profile.username,
+              display_name: profile.username,
+              profile_picture: profile.photos[0].value
+            })
+            .returning('*')
+            .then(async user_obj => {
+              user_obj = user_obj[0];
+              if (process.env.NODE_ENV === 'production') {
+                console.log('user_obj', user_obj);
+
+                await db('friendships').insert({
+                  user_id: user_obj.id,
+                  friend_id: 504
+                });
+
+                await db('friendships').insert({
+                  user_id: user_obj.id,
+                  friend_id: 505
+                });
+
+                await db('friendships').insert({
+                  user_id: user_obj.id,
+                  friend_id: 506
+                });
+              }
+              return done(null, user_obj);
+            });
         }
       } catch (err) {
         return done(err);
@@ -129,17 +149,37 @@ passport.use(
           };
           sgMail.send(msg);
 
-          await db('users').insert({
-            google_id: profile.id,
-            username: profile.displayName,
-            display_name: profile.displayName,
-            email: profile.emails[0].value,
-            profile_picture: profile.photos[0].value
-          });
-          const user = await db('users')
-            .where({ google_id: profile.id })
-            .first();
-          return done(null, user);
+          await db('users')
+            .insert({
+              google_id: profile.id,
+              username: profile.displayName,
+              display_name: profile.displayName,
+              email: profile.emails[0].value,
+              profile_picture: profile.photos[0].value
+            })
+            .returning('*')
+            .then(async user_obj => {
+              user_obj = user_obj[0];
+              if (process.env.NODE_ENV === 'production') {
+                console.log('user_obj', user_obj);
+
+                await db('friendships').insert({
+                  user_id: user_obj.id,
+                  friend_id: 504
+                });
+
+                await db('friendships').insert({
+                  user_id: user_obj.id,
+                  friend_id: 505
+                });
+
+                await db('friendships').insert({
+                  user_id: user_obj.id,
+                  friend_id: 506
+                });
+              }
+              return done(null, user_obj);
+            });
         }
       } catch (err) {
         return done(err);

@@ -25,7 +25,8 @@ module.exports = {
       username,
       bio,
       location,
-      website_url
+      website_url,
+      email
     } = req.body;
     // console.log('REQ.BODY', req.body);
     if (user) {
@@ -38,7 +39,8 @@ module.exports = {
             username,
             bio,
             location,
-            website_url
+            website_url,
+            email
           });
         if (postPromise) {
           res.status(200).json({ msg: 'success' });

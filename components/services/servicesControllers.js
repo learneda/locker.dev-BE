@@ -37,7 +37,7 @@ module.exports = {
   },
   async launchCheerio(req, res, next) {
     console.log(' 🦄');
-    for (let num = 2; num <= 7; num++) {
+    for (let num = 8; num <= 13; num++) {
       const url = `https://www.robinwieruch.de//page/${num}/`;
       const response = await axios.get(url);
       const $ = cheerio.load(response.data);

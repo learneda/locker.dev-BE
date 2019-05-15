@@ -83,8 +83,8 @@ passport.use(
 							profile_picture: profile.photos[0].value
 						})
 						.returning('*')
-						.first()
 						.then(async (user_obj) => {
+							user_obj = user_obj[0]
 							if (process.env.NODE_ENV === 'production') {
 								console.log('user_obj', user_obj)
 
@@ -146,8 +146,8 @@ passport.use(
 							profile_picture: profile.photos[0].value
 						})
 						.returning('*')
-						.first()
 						.then(async (user_obj) => {
+							user_obj = user_obj[0]
 							if (process.env.NODE_ENV === 'production') {
 								console.log('user_obj', user_obj)
 

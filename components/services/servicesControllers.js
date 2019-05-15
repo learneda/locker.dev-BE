@@ -29,7 +29,7 @@ module.exports = {
   async getArticles(req, res, next) {
     const articles = await db('articles').orderBy('created_at', 'desc');
     if (articles) {
-      res.json(articles);
+      return res.json(articles);
     }
   }
 };

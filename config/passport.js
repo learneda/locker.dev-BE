@@ -1,10 +1,11 @@
 require('dotenv').config();
-const sgMail = require('@sendgrid/mail');
-const bcrypt = require('bcrypt');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcrypt');
+const sgMail = require('@sendgrid/mail');
+const db = require('../dbConfig');
 const html = require('./html');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -19,7 +20,6 @@ passport.use(
         .where('email', email)
         .first();
       if (existingUser) {
-        console.log(existingUser);
         const passwordCheck = bcrypt.compareSync(
           password,
           existingUser.password
@@ -44,8 +44,6 @@ passport.use(
     }
   )
 );
-
-const db = require('../dbConfig');
 
 passport.serializeUser((user, done) => done(null, user.id));
 

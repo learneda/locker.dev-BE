@@ -36,6 +36,7 @@ module.exports = {
     return res.status(500).send('no articles found');
   },
   async launchCheerio(req, res, next) {
+    console.log(' 🦄');
     for (let num = 2; num <= 7; num++) {
       const url = `https://www.robinwieruch.de//page/${num}/`;
       const response = await axios.get(url);
@@ -59,8 +60,10 @@ module.exports = {
         return article;
       });
       await db('articles').insert(responses);
+
       console.log(responses, num, '\n\n 🦄');
     }
+    res.send('all okay');
   }
 };
 

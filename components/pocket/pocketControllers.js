@@ -55,7 +55,7 @@ module.exports = {
 										favorited: +obj.time_favorited === 0 ? false : true,
 										top_image_url: obj.top_image_url,
 										user_id: req.user.id,
-										item_id: +obj.item_id
+										item_id: obj.item_id
 									})
 									.returning('*')
 									.then(async (result) => {

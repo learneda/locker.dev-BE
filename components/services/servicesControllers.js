@@ -1,6 +1,8 @@
 const request = require('request');
+const axios = require('axios');
 const Feed = require('rss-to-json');
 const urlMetadata = require('url-metadata');
+const cheerio = require('cheerio');
 const db = require('../../dbConfig');
 
 module.exports = {
@@ -29,7 +31,35 @@ module.exports = {
   async getArticles(req, res, next) {
     const articles = await db('articles').orderBy('created_at', 'desc');
     if (articles) {
-      return res.json(articles);
+      return res.status(200).json(articles);
+    }
+    return res.status(500).send('no articles found');
+  },
+  async launchCheerio(req, res, next) {
+    for (let num = 2; num <= 7; num++) {
+      const url = `https://www.robinwieruch.de//page/${num}/`;
+      const response = await axios.get(url);
+      const $ = cheerio.load(response.data);
+      const urls = [];
+      $('section[class="post"]')
+        .find('div > div > div > a')
+        .each(function(i, ele) {
+          urls[i] = $(this).attr('href');
+        });
+      const metaPromises = urls.map(url => urlMetadata(url));
+      let responses = await axios.all(metaPromises);
+      responses = responses.map(response => {
+        const { url, title, image, description } = response;
+        const article = {
+          url,
+          title,
+          thumbnail: image,
+          description
+        };
+        return article;
+      });
+      await db('articles').insert(responses);
+      console.log(responses, num, '\n\n 🦄');
     }
   }
 };

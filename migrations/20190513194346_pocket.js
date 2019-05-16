@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
 		tbl.boolean('favorited').defaultTo(false) // if !0 => true
 		tbl.text('top_image_url') // img
 		tbl.text('excerpt') // description
-		tbl.integer('item_id')
+		tbl.text('item_id')
 		tbl.timestamp('created_at').defaultTo(knex.fn.now())
 		tbl.timestamp('updated_at').defaultTo(knex.fn.now())
 	})

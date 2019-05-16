@@ -1,5 +1,5 @@
-const authRoutes = require('./authRoutes');
+const authRoutes = require('./authRoutes')
 
 module.exports = (server) => {
-  server.use('/auth', authRoutes)
+	server.use('/auth', authRoutes)
 }

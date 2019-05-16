@@ -1,5 +1,5 @@
-const imageRoutes = require('./imageRoutes');
+const imageRoutes = require('./imageRoutes')
 
 module.exports = (server) => {
-  server.use('/api/images', imageRoutes)
+	server.use('/api/images', imageRoutes)
 }

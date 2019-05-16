@@ -9,7 +9,10 @@ var token
 
 module.exports = {
 	async login(req, res, next) {
-		const redirect_uri = 'http://localhost:8000/api/pocket/cb'
+		const redirect_uri =
+			process.env.NODE_ENV === 'production'
+				? 'https://learned-a.herokuapp.com/api/pocket/cb'
+				: 'http://localhost:8000/api/pocket/cb'
 		axios
 			.post('https://getpocket.com/v3/oauth/request', {
 				consumer_key: process.env.POCKET_KEY,
@@ -45,6 +48,7 @@ module.exports = {
 						})
 						.then(async (result) => {
 							for (post in result.data.list) {
+								console.log(result.data.list[post], '🦄')
 								const obj = result.data.list[post]
 								await db('pocket')
 									.insert({
@@ -65,7 +69,11 @@ module.exports = {
 										})
 									})
 							}
-							res.redirect('http://localhost:3000/home/locker')
+							const redirectUrl =
+								process.env.NODE_ENV === 'production'
+									? 'https://learnlocker.dev/home/locker'
+									: 'http://localhost:3000/home/locker'
+							res.redirect(redirectUrl)
 						})
 				})
 		}

@@ -16,26 +16,25 @@ const gr = goodreads(myCredentials)
 const callbackURL =
 	process.env.NODE_ENV === 'production'
 		? 'https://learned-a.herokuapp.com/api/pocket/cb'
-		: 'http://localhost:8000/api/pocket/cb'
+		: 'http://localhost:8000/api/goodreads/cb'
 
 gr.initOAuth(callbackURL)
 
 module.exports = {
 	async login(req, res, next) {
-		console.log('this got hit')
-		gr.getRequestToken().then((url) => {
-			/* redirect your user to this url to ask for permission */
-
-			console.log('😝 getRequestTOkenURL', url)
-
-			res.redirect(url)
-		})
+		gr
+			.getRequestToken()
+			.then((url) => {
+				console.log('😝 getRequestTOkenURL', url)
+				res.redirect(url)
+			})
+			.catch((err) => console.error(err))
 	},
 
 	async goodreadsCB(req, res, next) {
-		// console.log(req.query)
+		console.log('this got hit')
 		var userId = req.user ? req.user.id : req.body.id
-		console.log(userId)
+		console.log(userId, 'is user defined ?')
 		gr
 			.getAccessToken()
 			.then(() => {
@@ -45,7 +44,7 @@ module.exports = {
 					// gr.getOwnedBooks(results.user.id).then((res) => {
 					//     console.log(results)
 					// })
-
+					console.log(results.user.id, 'how about good reads id ?')
 					axios
 						.get('https://www.goodreads.com/review/list?v=2', {
 							params: {

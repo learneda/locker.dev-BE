@@ -4,14 +4,21 @@ const passport = require('passport')
 
 router.get('/github', passport.authenticate('github'))
 
-router.get('/github/cb', passport.authenticate('github'), controllers.gitHubHandler)
-
-router.get('/google', passport.authenticate('google', { scope: [ 'profile', 'email' ] }))
+router.get(
+  '/github/cb',
+  passport.authenticate('github'),
+  controllers.gitHubHandler
+)
 
 router.get(
-	'/google/callback',
-	passport.authenticate('google', { failureRedirect: '/failed' }),
-	controllers.googleHandler
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+)
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { failureRedirect: '/failed' }),
+  controllers.googleHandler
 )
 
 router.get('/logout', controllers.logoutHandler)

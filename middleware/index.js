@@ -8,22 +8,26 @@ const cors = require('cors')
 const path = require('path')
 
 const corsOptions = {
-	credentials: true,
-	origin: [ 'http://localhost:3000', 'https://learnedadev.netlify.com', 'https://learnlocker.dev' ]
+  credentials: true,
+  origin: [
+    'http://localhost:3000',
+    'https://learnedadev.netlify.com',
+    'https://learnlocker.dev',
+  ],
 }
 
-module.exports = (server) => {
-	server.use(express.json())
-	server.use(
-		cookieSession({
-			name: 'learned-a',
-			keys: [ process.env.COOKIE_KEY ],
-			maxAge: 3 * 60 * 60 * 1000
-		})
-	)
-	server.use(cors(corsOptions))
-	server.use(helmet())
-	server.use(logger('dev'))
-	server.use(passport.initialize())
-	server.use(passport.session())
+module.exports = server => {
+  server.use(express.json())
+  server.use(
+    cookieSession({
+      name: 'learned-a',
+      keys: [process.env.COOKIE_KEY],
+      maxAge: 3 * 60 * 60 * 1000,
+    })
+  )
+  server.use(cors(corsOptions))
+  server.use(helmet())
+  server.use(logger('dev'))
+  server.use(passport.initialize())
+  server.use(passport.session())
 }

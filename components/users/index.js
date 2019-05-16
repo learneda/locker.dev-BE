@@ -1,5 +1,5 @@
-const userRoutes = require('./userRoutes');
+const userRoutes = require('./userRoutes')
 
 module.exports = (server) => {
-  server.use('/api/users', userRoutes);
+	server.use('/api/users', userRoutes)
 }

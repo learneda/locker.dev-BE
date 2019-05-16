@@ -1,5 +1,5 @@
-const postRoutes = require('./postRoutes');
+const postRoutes = require('./postRoutes')
 
 module.exports = (server) => {
-  server.use('/api/posts', postRoutes)
+	server.use('/api/posts', postRoutes)
 }

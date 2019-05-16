@@ -1,6 +1,5 @@
-const folderRoutes = require('./folderRoutes');
+const folderRoutes = require('./folderRoutes')
 
 module.exports = (server) => {
-  server.use('/api/folders', folderRoutes)
+	server.use('/api/folders', folderRoutes)
 }
-

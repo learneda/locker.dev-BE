@@ -22,17 +22,15 @@ module.exports = {
   },
   async getSocialNetworkIDs(req, res, next) {
     const id = req.user.id
-    const selectPromise = await db('users')
+    const socialIds = await db('users')
       .select('github_id', 'google_id')
       .where({ id })
+      .first()
     try {
-      if (selectPromise) {
-        res.status(200).json(selectPromise)
-      } else {
-        res.status(200).json({ msg: 'something went wrong' })
+      if (socialIds) {
+        res.status(200).json(socialIds)
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },

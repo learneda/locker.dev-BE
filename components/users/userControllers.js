@@ -83,25 +83,6 @@ module.exports = {
           'created_at as createdAt'
         )
         .first()
-      // const selectCountPromise = await db('posts')
-      //   .where({ user_id: id })
-      //   .count()
-      //   .first()
-
-      // const totalUserFollowers = await db('friendships')
-      //   .where('friend_id', id)
-      //   .countDistinct('user_id', 'friend_id')
-      //   .first()
-
-      // const totalUserFollowing = await db('friendships')
-      //   .where('user_id', id)
-      //   .countDistinct('user_id', 'friend_id')
-      //   .first()
-
-      // selectPromise[0].post_count = selectCountPromise.count
-      // selectPromise[0].followers_count = totalUserFollowers.count
-      // selectPromise[0].following_count = totalUserFollowing.count
-
       if (user) {
         res.status(200).json(user)
       } else {

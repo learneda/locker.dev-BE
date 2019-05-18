@@ -53,7 +53,6 @@ module.exports = {
             'created_at as createdAt',
           ])
         if (user) {
-          console.log(' 🦄', user)
           res.status(200).json(user[0])
         } else {
           res.status(400).json({ err: 'something went wrong' })

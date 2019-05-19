@@ -11,8 +11,6 @@ router.get('/', controllers.getAllCurrentUserPost)
 
 router.get('/count', controllers.getUserPostsCount)
 
-router.get('/likes', controllers.getAllUserPostsLiked)
-
 router.get('/shared', controllers.getAllSharedPost)
 
 router.get('/like/count', controllers.getPostLikeCount)

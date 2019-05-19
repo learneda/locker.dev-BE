@@ -45,42 +45,6 @@ module.exports = {
     }
   },
 
-  async getAllUserPostsLiked(req, res, next) {
-    // const authUserId = req.user.id;
-    // const userId = req.body.user_id;
-    if (req.user) {
-      try {
-        const posts = await db('posts')
-          .where({
-            liked: true,
-            user_id: req.user.id,
-          })
-          .orderBy('id', 'asc')
-        // .join('posts', 'posts.id', 'posts_likes.post_id')
-        // .join('users', 'posts.user_id', 'users.id');
-        // .orderBy('posts_likes.created_at', 'asc');
-        console.log(posts)
-        return res.status(200).json(posts)
-      } catch (err) {
-        console.log(err)
-      }
-    } else if (req.body.user_id) {
-      try {
-        const posts = await db('posts')
-          .where({
-            liked: true,
-            user_id: req.body.user_id,
-          })
-          .orderBy('id', 'asc')
-        return res.status(200).json(posts)
-      } catch (err) {
-        console.log(err)
-      }
-    } else {
-      res.status(403).json({ error: 'Not authorized' })
-    }
-  },
-
   async getAllSharedPost(req, res, next) {
     if (req.user) {
       const user_id = req.user.id
@@ -281,7 +245,6 @@ module.exports = {
     const id = req.params.id
     const { post_url, title, description, user_thoughts } = req.body
     const shared = req.body.shared || false
-    console.log(req.body, req.params.id, 'HEREHRHEHHEHE')
     try {
       const editPromise = await db('posts')
         .where({ id })

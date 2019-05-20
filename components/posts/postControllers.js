@@ -91,7 +91,19 @@ module.exports = {
     } = req.body
     if (type) {
       try {
+        //TODO: Gets root hostname for a URL
+        const newUrl =
+          req.body.post_url.indexOf('http') > -1
+            ? req.body.post_url
+            : `http://${req.body.post_url}`
+
+        let rootUrl = new URL(newUrl)
+        rootUrl = rootUrl.hostname
+          .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
+          .split('/')[0]
+
         const newPost = {
+          root_url: rootUrl,
           post_url,
           user_id,
           title,

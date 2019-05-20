@@ -30,11 +30,22 @@ module.exports = {
   },
   async getArticles(req, res, next) {
     const limit = 12
-    const { offset } = req.query
-    const articles = await db('articles')
-      .orderBy('created_at', 'desc')
-      .limit(limit)
-      .offset(offset)
+    const { offset, q } = req.query
+    let articles
+    console.log(' 🦄', q)
+    if (!q) {
+      articles = await db('articles')
+        .orderBy('created_at', 'desc')
+        .limit(limit)
+        .offset(offset)
+    } else {
+      articles = await db('articles')
+        .where('title', 'like', `%${q}%`)
+        .orWhere('description', 'like', `%${q}%`)
+        .orderBy('created_at', 'desc')
+        .limit(limit)
+        .offset(offset)
+    }
     if (articles) {
       return res.status(200).json(articles)
     }

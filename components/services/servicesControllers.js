@@ -7,9 +7,11 @@ const db = require('../../dbConfig')
 
 module.exports = {
   getCourses(req, res, next) {
-    const { page } = req.query
+    const { page, q } = req.query
     let queryParams = {
       'fields[course]': 'title,headline,image_480x270,url',
+      search: q,
+      ordering: 'relevance',
     }
     request(
       {
@@ -83,10 +85,10 @@ module.exports = {
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======
 setInterval(async () => {
-  // GETTING ALL DB ARTICLES TO AVOID ADDING DUBLICATES
+  // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
   const existingArticles = await db('articles')
 
-  // FILTERING TITLE
+  // FILTERING TITLES
   let existingTitles = existingArticles.map((article, index) => {
     return article.title
   })
@@ -112,8 +114,6 @@ setInterval(async () => {
             console.log(err)
           })
       })
-
-      console.log('existingTitles: ', existingTitles)
 
       Promise.all(tempo_articles).then(async articles => {
         let filteredArticles = articles.filter((article, index) => {

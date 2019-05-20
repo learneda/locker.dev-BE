@@ -7,11 +7,12 @@ const db = require('../../dbConfig')
 
 module.exports = {
   getCourses(req, res, next) {
-    const { page, q } = req.query
+    const { page, search } = req.query
     let queryParams = {
-      'fields[course]': 'title,headline,image_480x270,url',
-      search: q,
+      'fields[course]':
+        'title,headline,image_480x270,url,description,avg_rating,num_reviews',
       ordering: 'relevance',
+      search,
     }
     request(
       {

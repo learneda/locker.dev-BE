@@ -91,7 +91,7 @@ module.exports = {
     } = req.body
     if (type) {
       try {
-        //TODO: Gets root hostname for a URL
+        //TODO: Gets root_url
         const newUrl =
           req.body.post_url.indexOf('http') > -1
             ? req.body.post_url
@@ -114,7 +114,7 @@ module.exports = {
           .insert(newPost)
           .returning('*')
         if (newInsert) {
-          return res.status(201).json(newInsert)
+          return res.status(201).json(newInsert[0])
         } else {
           return res.status(300).json({ err: 'couldnt add new entry' })
         }
@@ -162,7 +162,7 @@ module.exports = {
               .insert(newPost)
               .returning('*')
             if (newInsert) {
-              res.status(201).json(newInsert)
+              res.status(201).json(newInsert[0])
             } else {
               res.status(300).json({ err: 'couldnt add new entry' })
             }

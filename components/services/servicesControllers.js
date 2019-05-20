@@ -29,7 +29,12 @@ module.exports = {
     )
   },
   async getArticles(req, res, next) {
-    const articles = await db('articles').orderBy('created_at', 'desc')
+    const limit = 12
+    const { offset } = req.query
+    const articles = await db('articles')
+      .orderBy('created_at', 'desc')
+      .limit(limit)
+      .offset(offset)
     if (articles) {
       return res.status(200).json(articles)
     }

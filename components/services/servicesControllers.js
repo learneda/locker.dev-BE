@@ -32,8 +32,6 @@ module.exports = {
     const limit = 12
     let { offset, q } = req.query
     let articles
-    console.log(' 🦄', q)
-    console.log(`%${q}%`)
     if (!q) {
       articles = await db('articles')
         .orderBy('created_at', 'desc')

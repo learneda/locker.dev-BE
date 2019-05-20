@@ -30,18 +30,21 @@ module.exports = {
   },
   async getArticles(req, res, next) {
     const limit = 12
-    const { offset, q } = req.query
+    let { offset, q } = req.query
     let articles
     console.log(' 🦄', q)
+    console.log(`%${q}%`)
     if (!q) {
       articles = await db('articles')
         .orderBy('created_at', 'desc')
         .limit(limit)
         .offset(offset)
     } else {
+      q = q.toLowerCase()
       articles = await db('articles')
-        .where('title', 'like', `%${q}%`)
-        .orWhere('description', 'like', `%${q}%`)
+        .whereRaw(
+          `LOWER(title) LIKE '%${q}%' OR LOWER(description) LIKE '%${q}%' `
+        )
         .orderBy('created_at', 'desc')
         .limit(limit)
         .offset(offset)

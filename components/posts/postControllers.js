@@ -172,7 +172,7 @@ module.exports = {
           }
         } catch (err) {
           console.log('META ERROR', err)
-          res.status(300).json({ err: 'couldnt add new entry' })
+          res.status(500).json({ err: 'couldnt add new entry' })
         }
       } else {
         res.status(400).json({ message: 'Please provide a post url ' })
@@ -257,19 +257,22 @@ module.exports = {
     const id = req.params.id
     const { post_url, title, description, user_thoughts } = req.body
     const shared = req.body.shared || false
-    try {
-      const editPromise = await db('posts')
-        .where({ id })
-        .update({ post_url, title, description, user_thoughts, shared })
-      if (editPromise) {
-        res.status(200).json({ success: 'post updated' })
-      } else {
-        res.status(404).json({ error: 'something went wrong' })
-      }
-    } catch (err) {
-      console.log(err)
-      res.status(500).json({ err })
-    }
+
+    const editPromise = db('posts')
+      .where({ id })
+      .update({ post_url, title, description, user_thoughts, shared })
+      .returning('*')
+      .then(result => {
+        const post = result[0]
+        post['profile_picture'] = req.user.profile_picture
+        post['post_id'] = post.id
+        delete post.id
+        res.status(200).json(post)
+      })
+      .catch(err => {
+        console.log(err)
+        res.status(500).json({ msg: 'something went wrong' })
+      })
   },
   async assignPostToFolder(req, res, next) {
     const { folder_id, post_id } = req.body

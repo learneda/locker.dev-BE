@@ -24,10 +24,15 @@ router.get(
 router.get('/logout', controllers.logoutHandler)
 
 router.get('/current_user', (req, res) => {
+  console.log('\n 🦄', req.user)
+
   if (req.user) {
     const { id } = req.user
+    console.log('\n 🦄', req.user)
     res.status(200).json({ id })
   } else {
+    console.log('\n 🦄', req.user)
+
     res.status(200).send(false)
   }
 })

@@ -118,15 +118,17 @@ module.exports = {
     const user_id = req.body.user_id
     const friend_id = req.body.friend_id
     try {
-      const insertPromise = await db('friendships').insert({
-        user_id,
-        friend_id,
-      })
-      if (insertPromise) {
-        res.status(200).json({ msg: 'success' })
-      } else {
-        res.status(404).json({ msg: 'something went wrong ..' })
-      }
+      const insertPromise = await db('friendships')
+        .insert({
+          user_id,
+          friend_id,
+        })
+        .returning('*')
+        .then(result => {
+          const data = result[0]
+          console.log(data)
+          res.status(200).json(data)
+        })
     } catch (err) {
       console.log(err)
       res.status(500).json(err)
@@ -139,11 +141,17 @@ module.exports = {
       const deletePromise = await db('friendships')
         .where({ user_id, friend_id })
         .del()
-      if (deletePromise) {
-        res.status(200).json({ msg: 'success' })
-      } else {
-        res.status(404).json({ msg: 'something went wrong ..' })
-      }
+        .returning('*')
+        .then(result => {
+          console.log(result[0])
+          res.status(200).json(result[0])
+        })
+      // if (deletePromise) {
+      //   console.log(deletePromise)
+      //   res.status(200).json(deletePromise[0])
+      // } else {
+      //   res.status(404).json({ msg: 'something went wrong ..' })
+      // }
     } catch (err) {
       console.log(err)
       res.status(500).json(err)

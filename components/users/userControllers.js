@@ -72,7 +72,7 @@ module.exports = {
       const user = await db('users')
         .where({ id: id })
         .select(
-          'id'
+          'id',
           'username',
           'display_name as displayName',
           'profile_picture as profilePicture',

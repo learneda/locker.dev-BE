@@ -14,7 +14,9 @@ module.exports = {
       books.search(q, options, function(error, results) {
         if (!error) {
           results.map(result => {
-            result.thumbnail = result.thumbnail.replace('http', 'https')
+            if (result.thumbnail) {
+              result.thumbnail = result.thumbnail.replace('http', 'https')
+            }
             return result
           })
           res.status(200).json(results)

@@ -433,12 +433,12 @@ module.exports = {
   },
   async savePostId(req, res) {
     const user_id = req.user ? req.user.id : req.body.user_id
-    const post_id = req.body.post_id
-    const saved_from_id = req.body.saved_from_id
+    const { post_id, saved_from_id, created_post_id } = req.body
     const post = {
       post_id,
       user_id,
       saved_from_id,
+      created_post_id: Number(created_post_id),
     }
     try {
       const saveNewPostId = await db('saved_post_id').insert(post)
@@ -446,6 +446,16 @@ module.exports = {
     } catch (err) {
       res.status(400).json(err)
       console.log(err)
+    }
+  },
+  async deleteSavedPostIds(req, res, next) {
+    const deletion = await db('saved_post_id')
+      .del()
+      .where('created_post_id', req.params.id)
+    if (deletion) {
+      res.status(200).json('post deleted')
+    } else {
+      res.status(500).json('something went wrong')
     }
   },
 }

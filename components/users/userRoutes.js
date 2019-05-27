@@ -25,6 +25,8 @@ router.get('/saved-post-ids', controllers.getSavedPostIds)
 
 router.post('/saved-post-ids', controllers.savePostId)
 
+router.delete('/saved-post-ids/:id', controllers.deleteSavedPostIds)
+
 router.get('/id/:id', controllers.getUserById)
 
 router.get('/username/:username', controllers.getUserDetailsByUserName)

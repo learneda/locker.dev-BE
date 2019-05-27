@@ -31,9 +31,9 @@ router.get('/id/:id', controllers.getUserById)
 
 router.get('/username/:username', controllers.getUserDetailsByUserName)
 
-router.post('/subscribe', controllers.subscribetoUser)
+router.post('/subscribe', controllers.subscribeToUser)
 
-router.delete('/unsubscribe', controllers.unsubscribetoUser)
+router.delete('/unsubscribe', controllers.unsubscribeToUser)
 
 router.get('/following/:id', controllers.getFollowing)
 

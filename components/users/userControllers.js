@@ -72,6 +72,7 @@ module.exports = {
       const user = await db('users')
         .where({ id: id })
         .select(
+          'id'
           'username',
           'display_name as displayName',
           'profile_picture as profilePicture',
@@ -114,7 +115,7 @@ module.exports = {
       res.status(500).json(err)
     }
   },
-  async subscribetoUser(req, res, next) {
+  async subscribeToUser(req, res, next) {
     const user_id = req.body.user_id
     const friend_id = req.body.friend_id
     try {
@@ -134,7 +135,7 @@ module.exports = {
       res.status(500).json(err)
     }
   },
-  async unsubscribetoUser(req, res, next) {
+  async unsubscribeToUser(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     const friend_id = req.body.friend_id
     try {

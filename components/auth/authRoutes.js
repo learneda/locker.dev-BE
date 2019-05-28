@@ -25,7 +25,7 @@ router.get('/logout', controllers.logoutHandler)
 
 router.get('/current_user', (req, res) => {
   console.log('\n 🦄', req.user)
-
+try {
   if (req.user) {
     const { id } = req.user
     console.log('\n 🦄', req.user)
@@ -34,6 +34,9 @@ router.get('/current_user', (req, res) => {
     console.log('\n 🦄', req.user)
 
     res.status(200).send(false)
+} catch (error) {
+  console.error(error)
+}
   }
 })
 

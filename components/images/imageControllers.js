@@ -36,14 +36,18 @@ module.exports = {
     })
   },
   async getImg(req, res, next) {
-    const user_id = req.user === undefined ? req.body.user_id : req.user.id
-    const selectPromise = await db('users')
-      .where({ id: user_id })
-      .select('profile_picture')
-    if (selectPromise) {
-      res.status(200).json(selectPromise)
-    } else {
-      res.status(500).json({ msg: 'user doesnt have any images' })
+    try {
+      const user_id = req.user === undefined ? req.body.user_id : req.user.id
+      const selectPromise = await db('users')
+        .where({ id: user_id })
+        .select('profile_picture')
+      if (selectPromise) {
+        res.status(200).json(selectPromise)
+      } else {
+        res.status(500).json({ msg: `user doesn't have an a image` })
+      }
+    } catch (error) {
+      console.log(error, ' 🦄')
     }
   },
 }

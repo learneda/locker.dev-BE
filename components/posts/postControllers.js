@@ -89,7 +89,8 @@ module.exports = {
       description,
       thumbnail_url,
     } = req.body
-    if (type) {
+    const mediaTypes = ['book', 'video', 'podcast']
+    if (mediaTypes.includes(type)) {
       try {
         //TODO: Gets root_url
         const newUrl =
@@ -101,7 +102,6 @@ module.exports = {
         rootUrl = rootUrl.hostname
           .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
           .split('/')[0]
-
         const newPost = {
           root_url: rootUrl,
           post_url,
@@ -109,11 +109,16 @@ module.exports = {
           title,
           description,
           thumbnail_url,
+          type,
         }
+        // console.log(' 🇦🇽', type)
+
         const newInsert = await db('posts')
           .insert(newPost)
           .returning('*')
         if (newInsert) {
+          // console.log(' 🇦🇽', type)
+
           return res.status(201).json(newInsert[0])
         } else {
           return res.status(300).json({ err: 'couldnt add new entry' })
@@ -125,6 +130,7 @@ module.exports = {
     }
 
     if (req.user) {
+      const { type } = req.body
       if (req.body.post_url) {
         try {
           const newUrl =
@@ -157,6 +163,7 @@ module.exports = {
               description: metadata.description,
               thumbnail_url: metadata.image,
               root_url: rootUrl,
+              type: type,
             }
             const newInsert = await db('posts')
               .insert(newPost)

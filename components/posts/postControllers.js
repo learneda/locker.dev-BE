@@ -81,16 +81,17 @@ module.exports = {
     }
   },
   async createNewPost(req, res, next) {
-    const {
-      type,
-      post_url,
-      user_id,
-      title,
-      description,
-      thumbnail_url,
-    } = req.body
+    const { post_url, user_id, title, description, thumbnail_url } = req.body
+
     const mediaTypes = ['book', 'video', 'podcast']
-    if (mediaTypes.includes(type)) {
+
+    // selecting type id from types tbl. type title string comes from request body
+    const type = await db('types')
+      .select('id')
+      .where('type_title', req.body.type)
+      .first()
+
+    if (mediaTypes.includes(req.body.type)) {
       try {
         //TODO: Gets root_url
         const newUrl =
@@ -102,6 +103,8 @@ module.exports = {
         rootUrl = rootUrl.hostname
           .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
           .split('/')[0]
+
+        // creating new insert record
         const newPost = {
           root_url: rootUrl,
           post_url,
@@ -109,16 +112,15 @@ module.exports = {
           title,
           description,
           thumbnail_url,
-          type,
+          type_id: type.id,
         }
-        // console.log(' 🇦🇽', type)
 
+        // inserting record
         const newInsert = await db('posts')
           .insert(newPost)
           .returning('*')
-        if (newInsert) {
-          // console.log(' 🇦🇽', type)
 
+        if (newInsert) {
           return res.status(201).json(newInsert[0])
         } else {
           return res.status(300).json({ err: 'couldnt add new entry' })
@@ -128,9 +130,9 @@ module.exports = {
         return res.status(500).json(err)
       }
     }
-
+    // if the type in request body in NOT book, video, or podcast
+    // will enter this if block
     if (req.user) {
-      const { type } = req.body
       if (req.body.post_url) {
         try {
           const newUrl =
@@ -156,6 +158,7 @@ module.exports = {
             ? (metadata.image = null)
             : (metadata.image = metadata.image)
           try {
+            console.log('CHECKING TYPE ID', type)
             const newPost = {
               post_url: req.body.post_url,
               user_id: req.user.id,
@@ -163,7 +166,7 @@ module.exports = {
               description: metadata.description,
               thumbnail_url: metadata.image,
               root_url: rootUrl,
-              type: type,
+              type_id: type.id,
             }
             const newInsert = await db('posts')
               .insert(newPost)
@@ -188,6 +191,7 @@ module.exports = {
       res.status(403).json({ error: 'Not authorized' })
     }
   },
+
   async deletePost(req, res, next) {
     const id = req.params.id
     if (req.user) {

@@ -377,12 +377,13 @@ module.exports = {
           )
           .where('c.post_id', '=', post.post_id)
           .join('users as u', 'c.user_id', 'u.id')
+          .orderBy('c.id', 'asc')
         post.comments.push(...commentArray)
 
         const likeCount = await db('posts_likes')
           .where('post_id', post.post_id)
           .countDistinct('user_id')
-        console.log(likeCount[0].count)
+
         post.likes = Number(likeCount[0].count)
       }
       if (bookmarkPost) {

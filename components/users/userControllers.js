@@ -183,7 +183,6 @@ module.exports = {
         .offset(req.query.offset)
         .select('*', 'newsfeed_posts.created_at AS posted_at_date')
         .limit(5)
-      console.log(newsFeed)
 
       const commentLoop = async () => {
         for (let post of newsFeed) {
@@ -200,6 +199,8 @@ module.exports = {
             )
             .where('c.post_id', '=', post.post_id)
             .join('users as u', 'c.user_id', 'u.id')
+            .orderBy('c.id', 'asc')
+
           post.comments.push(...commentArray)
 
           const likeCount = await db('posts_likes')

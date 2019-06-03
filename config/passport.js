@@ -2,12 +2,27 @@ require('dotenv').config()
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+const MeetupStrategy = require('passport-oauth2-meetup').Strategy
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt')
 const sgMail = require('@sendgrid/mail')
 const db = require('../dbConfig')
 const html = require('./html')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+passport.serializeUser((user, done) => done(null, user.id))
+
+passport.deserializeUser((id, done) => {
+  db('users')
+    .where({ id: id })
+    .first()
+    .then(user => {
+      if (!user) {
+        done(new Error('User not found ' + id))
+      }
+      done(null, user)
+    })
+})
 
 passport.use(
   new LocalStrategy(
@@ -44,20 +59,6 @@ passport.use(
     }
   )
 )
-
-passport.serializeUser((user, done) => done(null, user.id))
-
-passport.deserializeUser((id, done) => {
-  db('users')
-    .where({ id: id })
-    .first()
-    .then(user => {
-      if (!user) {
-        done(new Error('User not found ' + id))
-      }
-      done(null, user)
-    })
-})
 
 passport.use(
   new GitHubStrategy(
@@ -187,3 +188,22 @@ passport.use(
     }
   )
 )
+
+//* Meetup Strategy
+// passport.use(
+//   new MeetupOAuth2Strategy(
+//     {
+//       clientID: process.env.MEETUP_API_KEY,
+//       clientSecret: process.env.MEETUP_API_SECRET,
+//       callbackURL: 'http://127.0.0.1:8000/auth/meetup/cb',
+//       autoGenerateUsername: true,
+//     },
+//     async (accessToken, refreshToken, profile, done) => {
+//       try {
+//         return done(null, profile)
+//       } catch (err) {
+//         return done(err)
+//       }
+//     }
+//   )
+// )

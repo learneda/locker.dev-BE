@@ -6,7 +6,7 @@ module.exports = {
         .update('read', true)
         .where({ user_id: req.user.id })
       if (read) {
-        res.status(200).json({ msg: 'succces' })
+        res.status(200).json({ msg: 'success' })
       }
     } catch (err) {
       console.log(err)

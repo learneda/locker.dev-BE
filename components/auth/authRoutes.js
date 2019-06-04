@@ -21,7 +21,14 @@ router.get(
   controllers.googleHandler
 )
 
-router.get('/meetup', passport.authenticate('meetup'))
+router.get(
+  '/meetup',
+  passport.authenticate('meetup'),
+  { session: false },
+  (req, res) => {
+    console.log('in handler', req.body, req.user)
+  }
+)
 
 router.get(
   '/meetup/cb',

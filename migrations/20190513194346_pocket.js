@@ -8,6 +8,7 @@ exports.up = function(knex, Promise) {
     tbl.text('top_image_url') // img
     tbl.text('excerpt') // description
     tbl.text('item_id')
+    tbl.string('type_id')
     tbl.timestamp('created_at').defaultTo(knex.fn.now())
     tbl.timestamp('updated_at').defaultTo(knex.fn.now())
   })

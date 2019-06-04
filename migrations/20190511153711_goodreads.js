@@ -10,6 +10,7 @@ exports.up = function(knex, Promise) {
     tbl.text('rating')
     tbl.text('image')
     tbl.text('description')
+    tbl.string('type_id')
     tbl.timestamp('created_at').defaultTo(knex.fn.now())
     tbl.timestamp('updated_at').defaultTo(knex.fn.now())
   })

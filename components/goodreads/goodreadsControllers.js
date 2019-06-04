@@ -87,6 +87,7 @@ module.exports = {
                     rating: ratings[i].firstChild.data,
                     image: images[i].firstChild.data,
                     description: cleanDescription,
+                    type_id: 7,
                   }
                 } else {
                   bookObj = {
@@ -97,6 +98,7 @@ module.exports = {
                     link: links[i].firstChild.data,
                     rating: ratings[i].firstChild.data,
                     image: images[i].firstChild.data,
+                    type_id: 7,
                   }
                 }
 

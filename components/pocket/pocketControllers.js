@@ -64,6 +64,7 @@ module.exports = {
                     top_image_url: obj.top_image_url,
                     user_id: req.user.id,
                     item_id: obj.item_id,
+                    type_id: 6,
                   })
                   .returning('*')
                   .then(async result => {

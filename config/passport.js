@@ -2,7 +2,7 @@ require('dotenv').config()
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-const MeetupOAuth2Strategy = require('passport-oauth2-meetup').Strategy
+const MeetupStrategy = require('passport-meetup-oauth2').Strategy
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt')
 const sgMail = require('@sendgrid/mail')
@@ -188,15 +188,14 @@ passport.use(
     }
   )
 )
-
+console.log(process.env.MEETUP_KEY, process.env.MEETUP_SECRET)
 //* Meetup Strategy
 passport.use(
-  new MeetupOAuth2Strategy(
+  new MeetupStrategy(
     {
       clientID: process.env.MEETUP_KEY,
       clientSecret: process.env.MEETUP_SECRET,
-      callbackURL: '/auth/meetup/cb',
-      autoGenerateUsername: true,
+      callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

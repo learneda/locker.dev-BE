@@ -10,6 +10,8 @@ exports.seed = function(knex, Promise) {
         { id: 3, type_title: 'book' },
         { id: 4, type_title: 'video' },
         { id: 5, type_title: 'podcast' },
+        { id: 6, type_title: 'pocket' },
+        { id: 7, type_title: 'goodreads' },
       ])
     })
 }

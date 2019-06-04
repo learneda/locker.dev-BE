@@ -16,6 +16,9 @@ module.exports = {
   googleHandler(req, res, next) {
     selectRedirect(res, '/home')
   },
+  meetupHandler(req, res, next) {
+    selectRedirect(res, '/home')
+  },
   logoutHandler(req, res, next) {
     req.session = null
     selectRedirect(res, '/')

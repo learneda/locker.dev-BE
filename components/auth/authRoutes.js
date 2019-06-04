@@ -21,6 +21,14 @@ router.get(
   controllers.googleHandler
 )
 
+router.get('/meetup', passport.authenticate('meetup'))
+
+router.get(
+  '/meetup/cb',
+  passport.authenticate('meetup'),
+  controllers.meetupHandler
+)
+
 router.get('/logout', controllers.logoutHandler)
 
 router.get('/current_user', (req, res) => {

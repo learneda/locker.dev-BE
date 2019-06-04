@@ -2,7 +2,7 @@ require('dotenv').config()
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-const MeetupStrategy = require('passport-oauth2-meetup').Strategy
+const MeetupOAuth2Strategy = require('passport-oauth2-meetup').Strategy
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt')
 const sgMail = require('@sendgrid/mail')
@@ -190,20 +190,21 @@ passport.use(
 )
 
 //* Meetup Strategy
-// passport.use(
-//   new MeetupOAuth2Strategy(
-//     {
-//       clientID: process.env.MEETUP_API_KEY,
-//       clientSecret: process.env.MEETUP_API_SECRET,
-//       callbackURL: 'http://127.0.0.1:8000/auth/meetup/cb',
-//       autoGenerateUsername: true,
-//     },
-//     async (accessToken, refreshToken, profile, done) => {
-//       try {
-//         return done(null, profile)
-//       } catch (err) {
-//         return done(err)
-//       }
-//     }
-//   )
-// )
+passport.use(
+  new MeetupOAuth2Strategy(
+    {
+      clientID: process.env.MEETUP_KEY,
+      clientSecret: process.env.MEETUP_SECRET,
+      callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
+      autoGenerateUsername: true,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        console.log('inside CB', accessToken, refreshToken, profile)
+        return done(null, profile)
+      } catch (err) {
+        return done(err)
+      }
+    }
+  )
+)

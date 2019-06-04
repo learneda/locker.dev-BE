@@ -270,9 +270,8 @@ module.exports = {
 
   async recommendedFollow(req, res, next) {
     const user_id = req.query.id
-    const count = 3
+    const count = Number(req.query.count) || 3
     let friendsOfFriends = []
-
     // makes an array with user_id's that I follow
     const friends = await db('friendships').where('user_id', user_id)
     const friendsId = friends.map(friend => friend.friend_id)
@@ -285,7 +284,6 @@ module.exports = {
         () => _arr.splice(Math.floor(Math.random() * _arr.length), 1)[0]
       )
     }
-
     if (friendsId.length) {
       // generates an array of users that people I follow are following
       for (let i = 0; i < friendsId.length; i++) {
@@ -329,10 +327,11 @@ module.exports = {
             'users.profile_picture'
           )
           .having('friendships.friend_id', '>', '2')
-          .count('friendships.friend_id as followers')
+          // .count('friendships.friend_id as followers')
           .limit(20)
         return res.json(pickRandom(users, count))
       }
+      const randomSuggestions = pickRandom(friendsOfFriends, count)
       return res.json(pickRandom(friendsOfFriends, count))
     } else {
       // base case for a user that doesn't follow anyone

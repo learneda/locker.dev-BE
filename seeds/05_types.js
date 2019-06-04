@@ -12,6 +12,7 @@ exports.seed = function(knex, Promise) {
         { id: 5, type_title: 'podcast' },
         { id: 6, type_title: 'pocket' },
         { id: 7, type_title: 'goodreads' },
+        { id: 8, type_title: 'link' },
       ])
     })
 }

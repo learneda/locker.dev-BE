@@ -195,7 +195,7 @@ passport.use(
     {
       clientID: process.env.MEETUP_KEY,
       clientSecret: process.env.MEETUP_SECRET,
-      callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
+      callbackURL: '/auth/meetup/cb',
       autoGenerateUsername: true,
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -203,6 +203,7 @@ passport.use(
         console.log('inside CB', accessToken, refreshToken, profile)
         return done(null, profile)
       } catch (err) {
+        console.log(err)
         return done(err)
       }
     }

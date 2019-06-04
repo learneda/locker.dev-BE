@@ -15,7 +15,7 @@ const gr = goodreads(myCredentials)
 
 const callbackURL =
   process.env.NODE_ENV === 'production'
-    ? 'https://api.learnlocker.dev/goodreads/cb'
+    ? 'https://api.learnlocker.dev/api/goodreads/cb'
     : 'http://localhost:8000/api/goodreads/cb'
 
 gr.initOAuth(callbackURL)

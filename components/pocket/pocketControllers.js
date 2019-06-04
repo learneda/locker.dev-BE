@@ -72,13 +72,13 @@ module.exports = {
                       pocket_id: result[0].id,
                     })
                     const redirectUrl =
-                    process.env.NODE_ENV === 'production'
-                      ? 'https://learnlocker.dev/home/locker'
-                      : 'http://localhost:3000/home/locker'
-                  res.redirect(redirectUrl)
-                })
+                      process.env.NODE_ENV === 'production'
+                        ? 'https://learnlocker.dev/home/locker'
+                        : 'http://localhost:3000/home/locker'
+                    res.redirect(redirectUrl)
                   })
               }
+            })
         })
     }
   },

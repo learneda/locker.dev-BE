@@ -146,10 +146,16 @@ router.get(
               })
               .returning('*')
               .then(async result => {
-                await db('locker').insert({
-                  user_id: userId,
-                  goodreads_id: result[0].id,
-                })
+                await db('locker')
+                  .insert({
+                    user_id: userId,
+                    goodreads_id: result[0].id,
+                  })
+                  .catch(err => {
+                    console.log(
+                      'err came from trying to insert into locker table'
+                    )
+                  })
               })
           } // END OF 4 LOOP
 

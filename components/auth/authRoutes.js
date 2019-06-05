@@ -147,6 +147,7 @@ router.get(
               })
               .returning('*')
               .then(async result => {
+                console.log(result[0].id, 'RETURNING ID')
                 await db('locker')
                   .insert({
                     user_id: userId,

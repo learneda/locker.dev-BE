@@ -132,6 +132,7 @@ router.get(
               image,
               description,
             } = book
+            console.log('BOOK_ID', id)
             await db('goodreads')
               .insert({
                 book_id: id,

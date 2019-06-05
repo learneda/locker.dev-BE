@@ -36,7 +36,7 @@ module.exports = {
     var userId = req.user ? req.user.id : req.body.id
     console.log(userId, req.user, 'is user defined ?')
 
-    axios.get('http://api.learnlocker.dev/api/current_user').then(result => {
+    axios.get('https://api.learnlocker.dev/auth/current_user').then(result => {
       console.log(result.data, 'REQ RESULT DAT \n')
     })
 

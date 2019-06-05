@@ -33,7 +33,7 @@ module.exports = {
   async goodreadsCB(req, res, next) {
     console.log('this got hit')
     var userId = req.user ? req.user.id : req.body.id
-    console.log(userId, req.user.id, 'is user defined ?')
+    console.log(userId, req.user, 'is user defined ?')
     gr.getAccessToken()
       .then(() => {
         gr.getCurrentUserInfo().then(results => {

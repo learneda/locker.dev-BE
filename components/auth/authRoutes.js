@@ -147,7 +147,7 @@ router.get(
               .returning('*')
               .then(async result => {
                 await db('locker').insert({
-                  user_id: req.user.id,
+                  user_id: userId,
                   goodreads_id: result[0].id,
                 })
               })

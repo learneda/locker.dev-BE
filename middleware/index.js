@@ -13,6 +13,8 @@ const corsOptions = {
     'http://localhost:3000',
     'https://learnedadev.netlify.com',
     'https://learnlocker.dev',
+    'http://127.0.0.1:80',
+    'https://127.0.0.1:80',
   ],
 }
 

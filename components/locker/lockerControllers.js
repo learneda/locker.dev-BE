@@ -2,7 +2,6 @@ const db = require('../../dbConfig')
 
 module.exports = {
   async getLocker(req, res, next) {
-    console.log(req.user.id)
     if (req.user) {
       const pocketLocker = await db('locker as l')
         .where('l.user_id', req.user.id)
@@ -17,7 +16,6 @@ module.exports = {
       const locker = [...goodreadsLocker, ...pocketLocker]
 
       if (locker) {
-        console.log(locker)
         res.status(200).json(locker)
       }
     }

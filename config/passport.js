@@ -5,7 +5,10 @@ const GitHubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const MeetupStrategy = require('passport-meetup-oauth2').Strategy
 const LocalStrategy = require('passport-local').Strategy
+const GoodreadsStrategy = require('passport-goodreads').Strategy
 const bcrypt = require('bcrypt')
+const xpath = require('xpath')
+const dom = require('xmldom').DOMParser
 const sgMail = require('@sendgrid/mail')
 const db = require('../dbConfig')
 const html = require('./html')
@@ -60,6 +63,7 @@ passport.use(
     }
   )
 )
+/*  ================== GITHUB ================== */
 
 passport.use(
   new GitHubStrategy(
@@ -190,7 +194,8 @@ passport.use(
   )
 )
 console.log(process.env.MEETUP_KEY, process.env.MEETUP_SECRET)
-//* Meetup Strategy
+/*  ================== MEETUPS ================== */
+
 passport.use(
   new MeetupStrategy(
     {
@@ -210,6 +215,21 @@ passport.use(
         console.log(err)
         return done(err)
       }
+    }
+  )
+)
+
+/*  ================== GOODREADS ================== */
+
+passport.use(
+  new GoodreadsStrategy(
+    {
+      consumerKey: process.env.GOODREADS_KEY,
+      consumerSecret: process.env.GOODREADS_SECRET,
+      callbackURL: '/auth/goodreads/cb',
+    },
+    (accessToken, refreshToken, profile, done) => {
+      return done(null, { accessToken, refreshToken, profile })
     }
   )
 )

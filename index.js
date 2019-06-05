@@ -27,7 +27,6 @@ io.on('connection', socket => {
     })
 
     if (online_user) {
-      console.log('what online_user returns', online_user)
       const notifications = await db('notifications').where({
         read: false,
         user_id: data.user_id,

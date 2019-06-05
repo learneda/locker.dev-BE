@@ -196,7 +196,7 @@ passport.use(
     {
       clientID: process.env.MEETUP_KEY,
       clientSecret: process.env.MEETUP_SECRET,
-      callbackURL: '/auth/meetup/cb',
+      callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -204,6 +204,7 @@ passport.use(
         axios
           .get('/auth/current_user')
           .then(res => console.log('RESPONSE', res.data))
+          .catch(err => console.log(err))
         return done(null, { id: 503 })
       } catch (err) {
         console.log(err)

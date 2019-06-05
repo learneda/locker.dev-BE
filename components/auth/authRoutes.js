@@ -43,6 +43,7 @@ router.get(
   '/goodreads/cb',
   passport.authorize('goodreads'),
   (req, res, next) => {
+    console.log(req.user, req.user.id, 'IS user defined ???')
     var userId = req.user.id
     axios
       .get('https://www.goodreads.com/review/list?v=2', {

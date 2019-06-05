@@ -130,8 +130,6 @@ router.get(
               image,
               description,
             } = book
-            console.log('BOOK_ID', id)
-            db.client.isDebugging = true
             await db('goodreads')
               .insert({
                 book_id: id,
@@ -146,7 +144,6 @@ router.get(
               })
               .returning('*')
               .then(async result => {
-                console.log(result[0].id, 'RETURNING ID')
                 await db('locker')
                   .insert({
                     user_id: userId,

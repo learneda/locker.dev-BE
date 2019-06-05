@@ -1,4 +1,5 @@
 require('dotenv').config()
+const axios = require('axios')
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
@@ -195,12 +196,15 @@ passport.use(
     {
       clientID: process.env.MEETUP_KEY,
       clientSecret: process.env.MEETUP_SECRET,
-      callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
+      callbackURL: '/auth/meetup/cb',
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         console.log('inside CB', accessToken, refreshToken, profile)
-        return done(null, profile)
+        axios
+          .get('/auth/current_user')
+          .then(res => console.log('RESPONSE', res.data))
+        return done(null, { id: 503 })
       } catch (err) {
         console.log(err)
         return done(err)

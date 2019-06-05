@@ -22,6 +22,7 @@ gr.initOAuth(callbackURL)
 
 module.exports = {
   async login(req, res, next) {
+    console.log(req.user)
     gr.getRequestToken()
       .then(url => {
         console.log('😝 getRequestTOkenURL', url)

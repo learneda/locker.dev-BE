@@ -5,7 +5,6 @@ const xpath = require('xpath')
 const dom = require('xmldom').DOMParser
 const axios = require('axios')
 const db = require('../../dbConfig')
-
 /*  ================== GITHUB ================== */
 router.get('/github', passport.authenticate('github'))
 
@@ -108,7 +107,6 @@ router.get(
         const existingRecords = await db('goodreads')
           .select('book_id')
           .where({ user_id: userId })
-          .select('book_id')
 
         // IF USER HAS ANY EXISTING RECORDS
         if (existingRecords.length) {
@@ -133,6 +131,7 @@ router.get(
               description,
             } = book
             console.log('BOOK_ID', id)
+            db.client.isDebugging = true
             await db('goodreads')
               .insert({
                 book_id: id,
@@ -159,6 +158,7 @@ router.get(
                     )
                   })
               })
+              .catch(err => console.log('ERROR\n\n', err))
           } // END OF 4 LOOP
 
           if (booksArr) {

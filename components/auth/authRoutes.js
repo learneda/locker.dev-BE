@@ -162,8 +162,8 @@ router.get(
             // deciding if URL should be local or deployed
             const redirectUrl =
               process.env.NODE_ENV === 'production'
-                ? 'https://learnlocker.dev/home/locker'
-                : 'http://localhost:3000/home/locker'
+                ? 'https://learnlocker.dev/locker'
+                : 'http://localhost:3000/locker'
             res.redirect(redirectUrl)
           } else {
             throw new Error('newsFeedError')

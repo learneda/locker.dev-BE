@@ -11,17 +11,17 @@ const selectRedirect = (res, route) => {
 
 module.exports = {
   gitHubHandler(req, res, next) {
-    selectRedirect(res, '/home')
+    selectRedirect(res, '/')
   },
   googleHandler(req, res, next) {
-    selectRedirect(res, '/home')
+    selectRedirect(res, '/')
   },
   meetupHandler(req, res, next) {
-    selectRedirect(res, '/home')
+    selectRedirect(res, '/')
   },
   logoutHandler(req, res, next) {
     req.session = null
-    selectRedirect(res, '/')
+    selectRedirect(res, '/landing')
   },
   async getSocialNetworkIDs(req, res, next) {
     const id = req.user.id

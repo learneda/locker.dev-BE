@@ -10,6 +10,8 @@ module.exports = {
 
       const friendsAndCurrentUser = [...friends, Number(user_id)]
 
+      console.log(friends, 'friends')
+
       const newsFeed = await db('newsfeed_posts as n')
         .whereIn('n.user_id', friendsAndCurrentUser)
         .join('users', 'n.user_id', '=', 'users.id')
@@ -34,15 +36,18 @@ module.exports = {
             .where('c.post_id', '=', post.id)
             .join('users as u', 'c.user_id', 'u.id')
             .orderBy('c.id', 'asc')
+          console.log('how many comments ?', commentArray)
           post.comments.push(...commentArray)
 
           const likeCount = await db('posts_likes')
             .where('post_id', post.id)
             .countDistinct('user_id')
+          console.log('how many likes ?', likeCount[0].count)
           post.likes = Number(likeCount[0].count)
+          console.log('THIS IS ONE POST', post)
         }
       }
-      commentLoop()
+      await commentLoop()
       return { msg: 'success', newsFeed: newsFeed }
     } catch (err) {
       return err

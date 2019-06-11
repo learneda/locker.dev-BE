@@ -57,6 +57,14 @@ module.exports = {
   // ================ posting to newsfeed from saved collection ================
   async createNewsfeedRecord(user, post) {
     try {
+      // collecting userDetails to attach to the response obj
+      const userDetails = await db('users')
+        .select('profile_picture', 'display_name')
+        .where({
+          id: user,
+        })
+        .first()
+      // inserting to newsfeed
       const newInsert = await db('newsfeed_posts')
         .insert({
           user_id: user,
@@ -68,7 +76,8 @@ module.exports = {
           type_id: 8,
         })
         .returning('*')
-      return { msg: 'success', record: newInsert[0] }
+      const record = Object.assign(newInsert[0], userDetails)
+      return { msg: 'success', record }
     } catch (err) {
       return { msg: 'error', err }
     }

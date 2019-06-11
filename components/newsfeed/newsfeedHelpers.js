@@ -10,8 +10,6 @@ module.exports = {
 
       const friendsAndCurrentUser = [...friends, Number(user_id)]
 
-      console.log(friends, 'friends')
-
       const newsFeed = await db('newsfeed_posts as n')
         .whereIn('n.user_id', friendsAndCurrentUser)
         .join('users', 'n.user_id', '=', 'users.id')
@@ -36,7 +34,6 @@ module.exports = {
             .where('c.post_id', '=', post.id)
             .join('users as u', 'c.user_id', 'u.id')
             .orderBy('c.id', 'asc')
-
           post.comments.push(...commentArray)
 
           const likeCount = await db('posts_likes')
@@ -44,13 +41,9 @@ module.exports = {
             .countDistinct('user_id')
           post.likes = Number(likeCount[0].count)
         }
-        if (newsFeed) {
-          return { msg: 'success', newsFeed: newsFeed }
-        } else {
-          return { msg: 'err' }
-        }
       }
       commentLoop()
+      return { msg: 'success', newsFeed: newsFeed }
     } catch (err) {
       return err
     }

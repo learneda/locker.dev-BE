@@ -4,12 +4,11 @@ module.exports = {
   async getNewsfeed(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     const offset = req.query.offset
-    console.log('THIS GOT HIT', user_id, offset)
     const newsfeedResponse = await helpers.generateNewsFeed(user_id, offset)
     if (newsfeedResponse) {
       res.status(200).json(newsfeedResponse.newsFeed)
     } else {
-      console.log(newsfeedResponse)
+      res.status(500).json({ msg: 'something went wrong' })
     }
   },
 

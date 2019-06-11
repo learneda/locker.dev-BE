@@ -64,6 +64,7 @@ module.exports = {
           description: post.description,
           url: post.post_url,
           user_thoughts: post.user_thoughts,
+          thumbnail_url: post.thumbnail_url,
           type_id: 8,
         })
         .returning('*')

@@ -24,4 +24,5 @@ module.exports = server => {
   require('./books')(server)
   require('./pocket')(server)
   require('./locker')(server)
+  require('./newsfeed')(server)
 }

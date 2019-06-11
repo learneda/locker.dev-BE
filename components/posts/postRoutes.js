@@ -35,7 +35,7 @@ router.delete('/:id', controllers.deletePost)
 router.put('/:id', controllers.editPost)
 
 /* ===== SHARE BOOKMARK ===== */
-router.post('/share', controllers.shareBookmark)
+// router.post('/share', controllers.shareBookmark)
 
 /* ===== GET SINGLE SHARED BOOKMARK ===== */
 router.get('/shared/:id', controllers.getSharedBookmark)

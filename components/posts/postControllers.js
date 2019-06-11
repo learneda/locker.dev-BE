@@ -324,20 +324,20 @@ module.exports = {
     }
   },
 
-  async shareBookmark(req, res, next) {
-    console.log('in share bookmarks', req.body, req.user.id)
-    try {
-      const insertToNewsfeedPosts = await db('newsfeed_posts').insert({
-        user_id: req.user.id,
-        post_id: req.body.id,
-      })
-      if (insertToNewsfeedPosts) {
-        res.status(200).json({ success: 'posted' })
-      }
-    } catch (err) {
-      console.log(err)
-      res.status(500).json(err)
-    }
+  async shareSaved(req, res, next) {
+    console.log('in share bookmarks', req.body)
+    // try {
+    //   const insertToNewsfeedPosts = await db('newsfeed_posts').insert({
+    //     user_id: req.user.id,
+    //     post_id: req.body.id,
+    //   })
+    //   if (insertToNewsfeedPosts) {
+    //     res.status(200).json({ success: 'posted' })
+    //   }
+    // } catch (err) {
+    //   console.log(err)
+    //   res.status(500).json(err)
+    // }
   },
 
   async unshareBookmark(req, res, next) {

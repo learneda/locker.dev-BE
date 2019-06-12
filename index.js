@@ -118,14 +118,14 @@ io.on('connection', socket => {
     if (data.action === 'unlike') {
       db('posts_likes')
         .del()
-        .where({ user_id: data.user_id, post_id: data.post_id })
+        .where({ user_id: data.user_id, post_id: data.id })
         .then(res => {
           socket.broadcast.emit('like', data)
           socket.emit('like', data)
         })
     } else {
       db('posts_likes')
-        .insert({ user_id: data.user_id, post_id: data.post_id })
+        .insert({ user_id: data.user_id, post_id: data.id })
         .then(res => {
           socket.broadcast.emit('like', data)
           socket.emit('like', data)
@@ -134,7 +134,7 @@ io.on('connection', socket => {
         db('notifications')
           .insert({
             user_id: data.postOwnerId,
-            post_id: data.post_id,
+            post_id: data.id,
             type: 'like',
             invoker: data.username,
           })

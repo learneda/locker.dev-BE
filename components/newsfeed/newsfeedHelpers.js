@@ -13,13 +13,24 @@ module.exports = {
       console.log(friends, 'friends')
 
       const newsFeed = await db('newsfeed_posts as n')
+        .select(
+          'display_name',
+          'profile_picture',
+          'user_id',
+          'title',
+          'thumbnail_url',
+          'user_thoughts',
+          'n.id as news_id',
+          'url',
+          'type_id'
+        )
         .whereIn('n.user_id', friendsAndCurrentUser)
         .join('users', 'n.user_id', '=', 'users.id')
         .orderBy('n.created_at', 'desc')
         .offset(offset)
         .select('*', 'n.created_at AS posted_at_date')
         .limit(5)
-
+      console.log('is newsfeed Okay here ?????', newsFeed)
       const commentLoop = async () => {
         for (let post of newsFeed) {
           post.comments = []
@@ -44,6 +55,7 @@ module.exports = {
             .countDistinct('user_id')
           console.log('how many likes ?', likeCount[0].count)
           post.likes = Number(likeCount[0].count)
+          post.id = post.news_id
           console.log('THIS IS ONE POST', post)
         }
       }

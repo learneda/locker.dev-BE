@@ -30,7 +30,7 @@ module.exports = {
         .offset(offset)
         .select('*', 'n.created_at AS posted_at_date')
         .limit(5)
-      console.log('is newsfeed Okay here ?????', newsFeed)
+
       const commentLoop = async () => {
         for (let post of newsFeed) {
           post.comments = []
@@ -48,15 +48,18 @@ module.exports = {
             .where('c.post_id', '=', post.id)
             .join('users as u', 'c.user_id', 'u.id')
             .orderBy('c.id', 'asc')
-          console.log('how many comments ?', commentArray)
           post.comments.push(...commentArray)
 
           const likeCount = await db('posts_likes')
             .where('post_id', post.id)
             .countDistinct('user_id')
-          console.log('how many likes ?', likeCount[0].count)
           post.likes = Number(likeCount[0].count)
-          console.log('THIS IS ONE POST', post)
+          // ========== ATTACHING TAGS ========
+          const tags = await db('post_tags')
+            .where({ newsfeed_id: post.id })
+            .join('tags', 'tags.id', 'post_tags.tag_id')
+          console.log('this are the post"s tags', tags)
+          post.tags = tags
         }
       }
       await commentLoop()
@@ -68,6 +71,9 @@ module.exports = {
 
   // ================ posting to newsfeed from saved collection ================
   async createNewsfeedRecord(user, post) {
+    function myTrim(x) {
+      return x.replace(/^\s+|\s+$/gm, '')
+    }
     try {
       // collecting userDetails to attach to the response obj
       const userDetails = await db('users')
@@ -89,6 +95,45 @@ module.exports = {
         })
         .returning('*')
       const record = Object.assign(newInsert[0], userDetails)
+      // ================ TAG LOGIC ================
+      console.log(post)
+      const lowerCaseTags = post.tags.toLowerCase()
+      console.log('are they all lower case ?', lowerCaseTags)
+      const tagArr = myTrim(lowerCaseTags).split('#')
+
+      console.log('tag arrr', tagArr)
+
+      const tagLoop = async () => {
+        for (let tag of tagArr) {
+          if (tag) {
+            const isExisting = await db('tags')
+              .where('hashtag', tag)
+              .first()
+            console.log(isExisting)
+            console.log(!isExisting)
+            if (isExisting) {
+              console.log('record', record)
+              await db('post_tags').insert({
+                newsfeed_id: record.id,
+                tag_id: isExisting.id,
+              })
+            }
+            ///============== FIX INCREMENT PROBLEM ============
+            if (!isExisting) {
+              console.log('in here', tag)
+              const newTagRecord = await db('tags')
+                .insert({ hashtag: tag, id: 2 })
+                .returning('*')
+
+              await db('post_tags').insert({
+                newsfeed_id: record.id,
+                tag_id: newTagRecord[0].id,
+              })
+            }
+          }
+        }
+      }
+      await tagLoop()
       return { msg: 'success', record }
     } catch (err) {
       return { msg: 'error', err }

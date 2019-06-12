@@ -1,12 +1,14 @@
 import db from '../../knexfile'
 module.exports = {
-  async findOrCreateTag(req, res, next)  {
-      const tag = await db('tags').where('hashtag', req.body.tagText)
+  async findOrCreateTag(req, res, next) {
+    const tag = await db('tags')
+      .where('hashtag', req.body.hashtag)
+      .first()
+    console.log(tag)
     if (tag) {
-      //
-      res
-    } else  {
-      await try db('tags').insert(req.body)
+      return { msg: 'success' }
+    } else {
+      await db('tags').insert(req.body.hashtag)
     }
   },
 }

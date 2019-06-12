@@ -95,10 +95,13 @@ module.exports = {
         })
         .returning('*')
       const record = Object.assign(newInsert[0], userDetails)
+      record.tags = []
       // ================ TAG LOGIC ================
       console.log(post)
       const lowerCaseTags = post.tags.toLowerCase()
       console.log('are they all lower case ?', lowerCaseTags)
+
+      //* =========== need to fix triming of tags =========
       const tagArr = myTrim(lowerCaseTags).split('#')
 
       console.log('tag arrr', tagArr)
@@ -112,6 +115,7 @@ module.exports = {
             console.log(isExisting)
             console.log(!isExisting)
             if (isExisting) {
+              record.tags.push({ hashtag: isExisting.hashtag })
               console.log('record', record)
               await db('post_tags').insert({
                 newsfeed_id: record.id,
@@ -122,18 +126,22 @@ module.exports = {
             if (!isExisting) {
               console.log('in here', tag)
               const newTagRecord = await db('tags')
-                .insert({ hashtag: tag, id: 2 })
+                .insert({ hashtag: tag })
                 .returning('*')
 
               await db('post_tags').insert({
                 newsfeed_id: record.id,
                 tag_id: newTagRecord[0].id,
               })
+              record.tags.push({ hashtag: newTagRecord[0].hashtag })
             }
           }
         }
       }
       await tagLoop()
+      record.comments = []
+      record.likes = 0
+
       return { msg: 'success', record }
     } catch (err) {
       return { msg: 'error', err }

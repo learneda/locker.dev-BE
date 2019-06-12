@@ -34,6 +34,7 @@ module.exports = {
       const commentLoop = async () => {
         for (let post of newsFeed) {
           post.comments = []
+          post.id = post.news_id
 
           const commentArray = await db('comments as c')
             .select(
@@ -55,7 +56,6 @@ module.exports = {
             .countDistinct('user_id')
           console.log('how many likes ?', likeCount[0].count)
           post.likes = Number(likeCount[0].count)
-          post.id = post.news_id
           console.log('THIS IS ONE POST', post)
         }
       }

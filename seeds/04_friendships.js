@@ -2,9 +2,9 @@ const faker = require('faker')
 const fakeInsertData = []
 
 // gives generated users dummy follow data
-for (let i = 0; i < 10; i++) {
-  for (let i = 1; i < 500; i++) {
-    const randomFriendId = Math.floor(Math.random() * 500)
+for (let i = 0; i < 5; i++) {
+  for (let i = 1; i < 100; i++) {
+    const randomFriendId = Math.floor(Math.random() * 100)
     const friendShip = {
       user_id: i,
       friend_id: randomFriendId,

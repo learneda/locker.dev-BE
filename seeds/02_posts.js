@@ -56,7 +56,7 @@ const hardCodedImages = [
 
 fakeInsertData.push(...posts_array)
 
-for (let i = 1; i < 500; i++) {
+for (let i = 1; i < 100; i++) {
   let randomIndex = Math.floor(Math.random() * hardCodedImages.length)
   // const post_url = faker.internet.url();
   // console.log(randomIndex);

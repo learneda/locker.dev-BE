@@ -164,28 +164,28 @@ passport.use(
               profile_picture: profile.photos[0].value,
             })
             .returning('*')
-            .then(async user_obj => {
-              user_obj = user_obj[0]
-              if (process.env.NODE_ENV === 'production') {
-                console.log('user_obj', user_obj)
+          // .then(async user_obj => {
+          //   user_obj = user_obj[0]
+          //   if (process.env.NODE_ENV === 'production') {
+          //     console.log('user_obj', user_obj)
 
-                await db('friendships').insert({
-                  user_id: user_obj.id,
-                  friend_id: 504,
-                })
+          //     await db('friendships').insert({
+          //       user_id: user_obj.id,
+          //       friend_id: 504,
+          //     })
 
-                await db('friendships').insert({
-                  user_id: user_obj.id,
-                  friend_id: 505,
-                })
+          //     await db('friendships').insert({
+          //       user_id: user_obj.id,
+          //       friend_id: 505,
+          //     })
 
-                await db('friendships').insert({
-                  user_id: user_obj.id,
-                  friend_id: 506,
-                })
-              }
-              return done(null, user_obj)
-            })
+          //     await db('friendships').insert({
+          //       user_id: user_obj.id,
+          //       friend_id: 506,
+          //     })
+          //   }
+          //   return done(null, user_obj)
+          // })
         }
       } catch (err) {
         return done(err)

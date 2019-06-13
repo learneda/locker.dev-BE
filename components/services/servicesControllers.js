@@ -82,7 +82,7 @@ module.exports = {
     }
     res.send('all okay')
   },
-  getAllArticles() {
+  getAllArticles(req, res, next) {
     db('articles').then(articles => res.status(200).json(articles))
   },
 }

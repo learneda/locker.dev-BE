@@ -82,65 +82,57 @@ module.exports = {
     }
     res.send('all okay')
   },
-  getAllArticles(req, res, next) {
-    db('articles').then(articles => res.status(200).json(articles))
-  },
-  postAllArticles(req, res, next) {
-    db('articles')
-      .insert(req.body)
-      .then(count => res.status(201).json(count))
-  },
 }
 
-// // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======
-// setInterval(async () => {
-//   // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
-//   const existingArticles = await db('articles')
+// ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======
+setInterval(async () => {
+  // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
+  const existingArticles = await db('articles')
 
-//   // FILTERING TITLES
-//   let existingTitles = existingArticles.map((article, index) => {
-//     return article.title
-//   })
-//   // GETTING FETCHING FREECODECAMP ARTICLES && HACKERNOON
-//   for (let i = 0; i < 2; i++) {
-//     const url =
-//       i === 0
-//         ? 'https://medium.freecodecamp.org/feed'
-//         : 'https://hackernoon.com/feed'
-//     Feed.load(url, function(err, rss) {
-//       const tempo_articles = rss.items.map(item => {
-//         // for each article, get its url and parse it
-//         let url = item.url
-//         return urlMetadata(url)
-//           .then(article => ({
-//             created: item.created,
-//             title: article.title,
-//             description: article.description,
-//             thumbnail: article.image,
-//             url: article.url,
-//           }))
-//           .catch(err => {
-//             console.log(err)
-//           })
-//       })
+  // FILTERING TITLES
+  let existingTitles = existingArticles.map((article, index) => {
+    return article.title
+  })
+  // GETTING FETCHING FREECODECAMP ARTICLES && HACKERNOON
+  for (let i = 0; i < 2; i++) {
+    const url =
+      i === 0
+        ? 'https://medium.freecodecamp.org/feed'
+        : 'https://hackernoon.com/feed'
+    Feed.load(url, function(err, rss) {
+      const tempo_articles = rss.items.map(item => {
+        // for each article, get its url and parse it
+        let url = item.url
+        return urlMetadata(url)
+          .then(article => ({
+            created: item.created,
+            title: article.title,
+            description: article.description,
+            thumbnail: article.image,
+            url: article.url,
+          }))
+          .catch(err => {
+            console.log(err)
+          })
+      })
 
-//       Promise.all(tempo_articles).then(async articles => {
-//         let filteredArticles = articles.filter((article, index) => {
-//           console.log(!existingTitles.includes(article.title), article.title)
-//           return !existingTitles.includes(article.title)
-//         })
+      Promise.all(tempo_articles).then(async articles => {
+        let filteredArticles = articles.filter((article, index) => {
+          console.log(!existingTitles.includes(article.title), article.title)
+          return !existingTitles.includes(article.title)
+        })
 
-//         // INSERTING UNIQUE ARTICLES
-//         for (let article of filteredArticles) {
-//           await db('articles').insert({
-//             url: article.url,
-//             title: article.title,
-//             thumbnail: article.thumbnail,
-//             description: article.description,
-//             created: article.created,
-//           })
-//         }
-//       })
-//     })
-//   }
-// }, 3600000)
+        // INSERTING UNIQUE ARTICLES
+        for (let article of filteredArticles) {
+          await db('articles').insert({
+            url: article.url,
+            title: article.title,
+            thumbnail: article.thumbnail,
+            description: article.description,
+            created: article.created,
+          })
+        }
+      })
+    })
+  }
+}, 3600000)

@@ -82,6 +82,9 @@ module.exports = {
     }
     res.send('all okay')
   },
+  getAllArticles() {
+    db('articles').then(articles => res.status(200).json(articles))
+  },
 }
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======

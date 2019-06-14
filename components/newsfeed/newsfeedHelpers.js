@@ -89,6 +89,14 @@ module.exports = {
             .countDistinct('user_id')
           // attching post like count to post object
           post.likes = Number(likeCount[0].count)
+
+          // checking if user has liked this post
+          const hasLiked = await db('posts_likes').where({
+            post_id: post.id,
+            user_id: Number(user_id),
+          })
+          // if response is not empty has hasLiked is true else false
+          post.hasLiked = hasLiked.length > 0 ? true : false
           // ========== ATTACHING TAGS ========
           const tags = await db('post_tags')
             .where({ newsfeed_id: post.id })

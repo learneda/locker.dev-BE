@@ -25,4 +25,5 @@ module.exports = server => {
   require('./pocket')(server)
   require('./locker')(server)
   require('./newsfeed')(server)
+  require('./tags')(server)
 }

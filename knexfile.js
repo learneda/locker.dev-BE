@@ -14,7 +14,6 @@ module.exports = {
       directory: './migrations',
     },
     seeds: { directory: './seeds' },
-    debug: true,
   },
 
   production: {

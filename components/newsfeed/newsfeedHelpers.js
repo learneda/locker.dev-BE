@@ -2,47 +2,50 @@ const db = require('../../dbConfig')
 module.exports = {
   async generateNewsFeed(user_id, offset) {
     try {
+      // retreive all records that belongs to user & select friend id
       let friends = await db('friendships')
         .where({ user_id })
         .select('friend_id')
 
+      // creating an array with only friend id integers
       friends = friends.map(friend => friend.friend_id)
-
-      const friendsAndCurrentUser = [...friends, Number(user_id)]
 
       console.log(friends, 'friends')
 
+      // generating newsfeed from user friendship relationships
       const newsFeed = await db('newsfeed_posts as n')
         .select('*')
-        .whereIn('n.user_id', friendsAndCurrentUser)
+        .whereIn('n.user_id', [...friends, Number(user_id)]) // all friends + self user
 
-      // ====== GETTING TAG POST RELATIONSHIPS ======
+      // ====== GETTING POST FROM FOLLOWING TAGS RELATIONSHIPS ======
 
-      // console.log('I SHOULD GET ALL POST IM SUB TO', postFromFollowedTags)
       let friendshipTagArr = await db('tag_friendships').where({ user_id })
-      /// an arrry of all tag id's that user follows
+      /// an array of tag id integers that user follows
       friendshipTagArr = friendshipTagArr.map(tag => tag.tag_id)
+
       console.log('this is myfriendshipArr', friendshipTagArr)
 
-      // an array of all post that contain a relationship with post that user follows
+      // an array of all post objects that contain the tags a user follows
       let tagPostArr = await db('post_tags').whereIn('tag_id', friendshipTagArr)
       console.log('tagPostArr ==> \n', tagPostArr)
 
-      let tagPostIdsArr = tagPostArr.map(obj => obj.newsfeed_id)
+      // creating arr of newsfeed_post record ids
+      let tagPostIdsArr = tagPostArr.map(obj => obj.newsfeed_id) // these only come from association of tags a user follows
 
       console.log('tagPostIdArr ==> \n', tagPostIdsArr)
-      //* might be messing up here
 
+      // creating an arr of newfeed_posts id integers that come from following other users(friendships)
       let newsfeedIdsArr = newsFeed.map(post => post.id)
 
       console.log('newsfeedIdsArr', newsfeedIdsArr)
-
+      // creating ultimate array with post ids integers that come from following friends and following tags
+      // using Set() to get rid of duplicate newsfeed post id's
       const filteredNewsfeedIds = [
         ...new Set([...tagPostIdsArr, ...newsfeedIdsArr]),
       ]
 
       console.log('FINAL NEWSFEED IDS\n', filteredNewsfeedIds)
-
+      // getting the final newsfeed post records with all correct IDs
       const finalNewsfeed = await db('newsfeed_posts as n')
         .select(
           'display_name',
@@ -53,16 +56,16 @@ module.exports = {
           'user_thoughts',
           'n.id as news_id',
           'url',
-          'type_id'
+          'type_id',
+          'n.created_at AS posted_at_date'
         )
         .whereIn('n.id', filteredNewsfeedIds)
         .join('users', 'n.user_id', '=', 'users.id')
         .orderBy('n.created_at', 'desc')
-        .select('*', 'n.created_at AS posted_at_date')
 
       const commentLoop = async () => {
         for (let post of finalNewsfeed) {
-          post.comments = []
+          // correcting post.id value ....
           post.id = post.news_id
 
           const commentArray = await db('comments as c')
@@ -77,18 +80,19 @@ module.exports = {
             .where('c.post_id', '=', post.id)
             .join('users as u', 'c.user_id', 'u.id')
             .orderBy('c.id', 'asc')
-          post.comments.push(...commentArray)
+          // attach comment arr to post object
+          post.comments = commentArray
 
+          // get all existing records of this post on the likes tbl
           const likeCount = await db('posts_likes')
             .where('post_id', post.id)
             .countDistinct('user_id')
+          // attching post like count to post object
           post.likes = Number(likeCount[0].count)
           // ========== ATTACHING TAGS ========
           const tags = await db('post_tags')
             .where({ newsfeed_id: post.id })
             .join('tags', 'tags.id', 'post_tags.tag_id')
-
-          console.log('this post contains theses tags', tags)
 
           post.tags = tags
         }

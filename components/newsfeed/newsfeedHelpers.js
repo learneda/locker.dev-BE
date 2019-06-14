@@ -115,7 +115,8 @@ module.exports = {
   // ================ posting to newsfeed from saved collection ================
   async createNewsfeedRecord(user, post) {
     function myTrim(x) {
-      return x.replace(/^\s+|\s+$/gm, '')
+      x.replace("(s+|@|&|'|(|)|<|>)", '')
+      return x.replace(/\s/g, '')
     }
     try {
       // collecting userDetails to attach to the response obj

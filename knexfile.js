@@ -4,6 +4,17 @@ module.exports = {
   development: {
     client: 'pg',
     connection: process.env.DB_LOCAL_URL,
+    useNullAsDefault: true,
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      tableName: 'dbmigrations',
+      directory: './migrations',
+    },
+    seeds: { directory: './seeds' },
+    debug: true,
   },
 
   production: {

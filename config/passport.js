@@ -171,18 +171,18 @@ passport.use(
 
                 await db('friendships').insert({
                   user_id: user_obj.id,
-                  friend_id: 504,
+                  friend_id: 100,
                 })
 
                 await db('friendships').insert({
                   user_id: user_obj.id,
-                  friend_id: 505,
+                  friend_id: 102,
                 })
 
-                await db('friendships').insert({
-                  user_id: user_obj.id,
-                  friend_id: 506,
-                })
+                // await db('friendships').insert({
+                //   user_id: user_obj.id,
+                //   friend_id: 506,
+                // })
               }
               return done(null, user_obj)
             })

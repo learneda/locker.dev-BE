@@ -81,9 +81,9 @@ module.exports = {
     }
   },
   async createNewPost(req, res, next) {
-    const { post_url, user_id, title, description, thumbnail_url } = req.body
-
-    const mediaTypes = ['book', 'video', 'podcast']
+    const { post_url, title, description, thumbnail_url } = req.body
+    const user_id = req.user.id || req.body.userId
+    const mediaTypes = ['book', 'video', 'podcast', 'course', 'article']
 
     // selecting type id from types tbl. type title string comes from request body
     const type = await db('types')

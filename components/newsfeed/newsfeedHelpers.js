@@ -27,14 +27,42 @@ module.exports = {
         .whereIn('n.user_id', friendsAndCurrentUser)
         .join('users', 'n.user_id', '=', 'users.id')
         .orderBy('n.created_at', 'desc')
-        .offset(offset)
         .select('*', 'n.created_at AS posted_at_date')
-        .limit(5)
+
+      // ====== GETTING TAG POST RELATIONSHIPS ======
+
+      // console.log('I SHOULD GET ALL POST IM SUB TO', postFromFollowedTags)
+      let friendshipTagArr = await db('tag_friendships').where({ user_id })
+      /// an arrry of all tag id's that user follows
+      friendshipTagArr = friendshipTagArr.map(tag => tag.tag_id)
+      console.log('this is myfriendshipArr', friendshipTagArr)
+
+      // an array of all post that contain a relationship with post that user follows
+      let tagPostArr = await db('post_tags').whereIn('tag_id', friendshipTagArr)
+      console.log('tagPostArr ==> \n', tagPostArr)
+
+      let tagPostIdsArr = tagPostArr.map(obj => obj.newsfeed_id)
+
+      console.log('tagPostArr ==> \n', tagPostIdsArr)
+
+      let newsfeedIdsArr = newsFeed.map(post => post.news_id)
+
+      console.log('newsfeedIdsArr', newsfeedIdsArr)
+
+      const filteredNewsfeedIds = [...new Set(newsfeedIdsArr, tagPostArr)]
+      console.log('FINAL NEWSFEED \n', filteredNewsfeedIds)
+      console.log(Array.isArray(filteredNewsfeedIds))
+
+      const finalNewsfeed = await db('newsfeed_posts as n').whereIn(
+        'n.id',
+        filteredNewsfeedIds
+      )
+
+      // console.log('this will be final response \n', finalNewsfeed)
 
       const commentLoop = async () => {
-        for (let post of newsFeed) {
+        for (let post of finalNewsfeed) {
           post.comments = []
-          post.id = post.news_id
 
           const commentArray = await db('comments as c')
             .select(
@@ -58,12 +86,13 @@ module.exports = {
           const tags = await db('post_tags')
             .where({ newsfeed_id: post.id })
             .join('tags', 'tags.id', 'post_tags.tag_id')
-          console.log('this are the post"s tags', tags)
+          console.log('this post contains theses tags', tags)
           post.tags = tags
         }
       }
       await commentLoop()
-      return { msg: 'success', newsFeed: newsFeed }
+
+      return { msg: 'success', newsFeed: finalNewsfeed }
     } catch (err) {
       return err
     }

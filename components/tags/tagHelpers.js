@@ -19,4 +19,21 @@ module.exports = {
       return { msg: 'no post with that tag' }
     }
   },
+  async createFriendship(user_id, tag) {
+    const tagId = await db('tags')
+      .select('id')
+      .where({ hashtag: tag })
+      .first()
+    if (tagId) {
+      const insert = await db('tag_friendships').insert({
+        user_id,
+        tag_id: tagId.id,
+      })
+      if (insert) {
+        return { msg: 'success' }
+      }
+    } else {
+      return { msg: 'no tag fround' }
+    }
+  },
 }

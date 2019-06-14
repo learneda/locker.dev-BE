@@ -3,5 +3,5 @@ const controllers = require('./tagControllers')
 
 router.get('/:tag', controllers.getTagPost)
 
-// router.get('/', controllers.getAllTags)
+router.post('/follow', controllers.createFriendship)
 module.exports = router

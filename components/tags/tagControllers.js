@@ -11,7 +11,7 @@ module.exports = {
   //     await db('tags').insert(req.body.hashtag)
   //   }
   // },
-  async getTagPost(req, res, next) {
+  async getTagPosts(req, res, next) {
     const tag = req.params.tag
     if (tag) {
       const response = await helpers.getPostsWithTag(tag)
@@ -28,14 +28,31 @@ module.exports = {
         .json({ msg: 'missing params. requires tags on header params' })
     }
   },
-  async createFriendship(req, res, next) {
-    const { user_id, tag } = req.body
+  async followTag(req, res, next) {
+    const { tag } = req.body
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id
     if (user_id && tag) {
       const response = await helpers.createFriendship(user_id, tag)
       if (response.msg === 'success') {
         res.status(200).json(response)
       } else {
         res.status(500).json({ response })
+      }
+    } else {
+      res.status(400).json({ msg: 'missing body. requires tag & user_id' })
+    }
+  },
+  async unfollowTag(req, res, next) {
+    const { tag } = req.body
+    const user_id = req.user === undefined ? req.body.user_id : req.user.id
+    if (user_id && tag) {
+      const response = await helpers.unfollowTag(user_id, tag)
+      if (response.msg === 'success') {
+        res.status(200).json(response)
+      } else if (response.msg === '404') {
+        res.status(404).json({ msg: 'tag ID not found' })
+      } else {
+        res.status(500).json(response)
       }
     } else {
       res.status(400).json({ msg: 'missing body. requires tag & user_id' })

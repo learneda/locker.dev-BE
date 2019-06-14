@@ -28,4 +28,21 @@ module.exports = {
       res.status(400).json({ msg: 'missing body' })
     }
   },
+  async getSingleNewsfeedPost(req, res, next) {
+    const postId = req.params.id
+    console.log('THIS GOT HIT OMG 🦄')
+    if (postId) {
+      const response = await helpers.getPost(postId, req.user.id)
+      console.log('getSingleNewsfeedPost Response', response)
+      if (response.msg === 'success') {
+        res.status(200).json(response)
+      } else if (response.msg === 'error') {
+        res.status(500).json(response)
+      } else {
+        res.status(404).json(response)
+      }
+    } else {
+      res.status(400).json({ msg: 'missing id on header params' })
+    }
+  },
 }

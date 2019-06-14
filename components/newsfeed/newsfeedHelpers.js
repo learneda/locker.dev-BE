@@ -190,4 +190,56 @@ module.exports = {
       return { msg: 'error', err }
     }
   },
+  async getPost(postId, userId) {
+    // fetching postId record
+    postId = Number(postId)
+    try {
+      const post = await db('newsfeed_posts as n')
+        .where('n.id', postId)
+        .join('users as u', 'n.user_id', 'u.id')
+        .first()
+
+      if (!post) {
+        return { msg: 'post doesnt exist' }
+      }
+      // correcting post id
+      post.id = postId
+
+      // attaching post's comments
+      const commentArray = await db('comments as c')
+        .select(
+          'c.id',
+          'c.created_at',
+          'c.content',
+          'c.user_id',
+          'c.post_id',
+          'u.username'
+        )
+        .where('c.post_id', '=', postId)
+        .join('users as u', 'c.user_id', 'u.id')
+        .orderBy('c.id', 'asc')
+
+      post.comments = commentArray
+
+      const likeCount = await db('posts_likes')
+        .where('post_id', postId)
+        .countDistinct('user_id')
+        .first()
+
+      console.log('like post', Number(likeCount.count))
+
+      post.likes = Number(likeCount.count)
+
+      const hasLiked = await db('posts_likes').where({
+        post_id: postId,
+        user_id: Number(userId),
+      })
+
+      post.hasLiked = hasLiked.length > 0 ? true : false
+
+      return { msg: 'success', post }
+    } catch (err) {
+      return { msg: 'error', err }
+    }
+  },
 }

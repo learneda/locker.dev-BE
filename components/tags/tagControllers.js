@@ -11,7 +11,7 @@ module.exports = {
   //     await db('tags').insert(req.body.hashtag)
   //   }
   // },
-  async getTagPost(req, res, next) {
+  async getTagPosts(req, res, next) {
     const tag = req.params.tag
     if (tag) {
       const response = await helpers.getPostsWithTag(tag)

@@ -17,8 +17,6 @@ router.get('/followers', controllers.getUserFollowers)
 
 router.get('/recommendedFollow', controllers.recommendedFollow)
 
-router.get('/newsfeed', controllers.getUserNewsFeed)
-
 router.put('/edit', controllers.editProfile)
 
 router.get('/saved-post-ids', controllers.getSavedPostIds)

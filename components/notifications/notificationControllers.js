@@ -1,30 +1,45 @@
 const db = require('../../dbConfig')
+const helpers = require('./notificationHelpers')
 module.exports = {
   async readNotifications(req, res, next) {
-    try {
-      const read = await db('notifications')
-        .update('read', true)
-        .where({ user_id: req.user.id })
-      if (read) {
-        res.status(200).json({ msg: 'success' })
+    const userId = req.user.id
+    if (userId) {
+      const response = await helpers.updateReadStatus(userId)
+      if (response.msg === 'success') {
+        res.status(200).json(response)
+      } else {
+        res.status(500).json(response)
       }
-    } catch (err) {
-      console.log(err)
-      res.status(200).json({ err })
+    } else {
+      res.status(400).json({ msg: 'request requires user id' })
     }
   },
 
   async clearNotifications(req, res, next) {
-    try {
-      const clear = await db('notifications')
-        .del()
-        .where('user_id', req.user.id)
-      if (clear) {
-        res.status(200).json({ msg: 'success' })
+    const userId = req.user.id
+    if (userId) {
+      const response = await helpers.deleteNotifications(userId)
+      if (response.msg === 'success') {
+        res.status(200).json(response)
+      } else {
+        res.status(500).json(response)
       }
-    } catch (err) {
-      console.log(err)
-      res.status(200).json({ err })
+    } else {
+      res.status(400).json({ msg: 'request requires user id' })
+    }
+  },
+
+  async getAllNotifications(req, res, next) {
+    const userId = req.user.id
+    if (userId) {
+      const response = await helpers.getNotifications(userId)
+      if (response.msg === 'success') {
+        res.status(200).json(response)
+      } else if (response.msg === '404') {
+        res.status(404).json(msg:'user doesnt have any notifications')
+      } else {
+        res.status(500).json(response)
+      }
     }
   },
 }

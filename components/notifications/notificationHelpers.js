@@ -27,4 +27,15 @@ module.exports = {
       return { msg: 'error', err }
     }
   },
+  async getNotifications(userId) {
+    try {
+      const notifications = await db('notifications').where('user_id', userId)
+      if (!notifications.length > 0) {
+        return { msg: '404' }
+      }
+      return { msg: 'success', notifications }
+    } catch (err) {
+      return { msg: 'error', err }
+    }
+  },
 }

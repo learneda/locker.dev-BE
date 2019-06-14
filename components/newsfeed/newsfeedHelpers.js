@@ -242,4 +242,30 @@ module.exports = {
       return { msg: 'error', err }
     }
   },
+  async deletePost(postId, userId) {
+    try {
+      postId = Number(postId)
+      userId = Number(userId)
+      const post = await db('newsfeed_posts as n')
+        .where('n.id', postId)
+        .first()
+
+      if (!post) {
+        return { msg: 'post id isnt found' }
+      }
+
+      if (post.user_id === userId) {
+        let deletedPost = await db('newsfeed_post as n')
+          .where('n.id', postId)
+          .del()
+          .returning('*')
+        deletedPost = deletedPost[0]
+        return { msg: 'success', deletedPost }
+      } else {
+        return { msg: '403' }
+      }
+    } catch (err) {
+      return { msg: 'error', err }
+    }
+  },
 }

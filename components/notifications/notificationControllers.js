@@ -36,7 +36,7 @@ module.exports = {
       if (response.msg === 'success') {
         res.status(200).json(response)
       } else if (response.msg === '404') {
-        res.status(404).json(msg:'user doesnt have any notifications')
+        res.status(404).json({ msg: 'user doesnt have any notifications' })
       } else {
         res.status(500).json(response)
       }

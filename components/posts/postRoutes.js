@@ -11,8 +11,6 @@ router.get('/', controllers.getAllCurrentUserPost)
 
 router.get('/count', controllers.getUserPostsCount)
 
-router.get('/shared', controllers.getAllSharedPost)
-
 router.get('/like/count', controllers.getPostLikeCount)
 
 router.post('/like/users', controllers.getUsersWhoLikedPost)
@@ -24,9 +22,6 @@ router.get('/:id', controllers.getPost)
 router.get('/all/:id', controllers.getAllUserPosts)
 
 router.post('/', controllers.createNewPost)
-
-/* ===== DELETE SHARED BOOKMARK ===== */
-router.delete('/unshare', controllers.unshareBookmark)
 
 /* ===== DELETE BOOKMARK ===== */
 router.delete('/:id', controllers.deletePost)

@@ -4,7 +4,6 @@ const urlMetadata = require('url-metadata')
 module.exports = {
   async getAllCurrentUserPost(req, res, next) {
     try {
-      //* Prevents error on accessing req.user.id if req.user == undefined
       if (req.user) {
         const posts = await db('posts')
           .where({ user_id: req.user.id })
@@ -45,26 +44,6 @@ module.exports = {
     }
   },
 
-  async getAllSharedPost(req, res, next) {
-    if (req.user) {
-      const user_id = req.user.id
-      try {
-        const sharedPostPromise = await db('posts').where({
-          user_id,
-          recommended: true,
-        })
-        if (sharedPostPromise) {
-          console.log(sharedPostPromise)
-          res.status(200).json({ postsArr: sharedPostPromise })
-        }
-      } catch (err) {
-        console.log(err)
-        res.status(500).json({ error: err })
-      }
-    } else {
-      res.status(403).json({ error: 'Not authorized' })
-    }
-  },
   async getPost(req, res, next) {
     const { id } = req.params
     try {
@@ -250,7 +229,6 @@ module.exports = {
 
   async getUsersWhoLikedPost(req, res, next) {
     const post_id = req.body.post_id
-    // console.log(post_id, '⛵️', req.body);
     try {
       const selectPromise = await db('posts_likes')
         .where('post_id', post_id)
@@ -321,38 +299,6 @@ module.exports = {
       }
     } else {
       res.status(417).json({ err: '<user_id>' })
-    }
-  },
-
-  async shareSaved(req, res, next) {
-    console.log('in share bookmarks', req.body)
-    // try {
-    //   const insertToNewsfeedPosts = await db('newsfeed_posts').insert({
-    //     user_id: req.user.id,
-    //     post_id: req.body.id,
-    //   })
-    //   if (insertToNewsfeedPosts) {
-    //     res.status(200).json({ success: 'posted' })
-    //   }
-    // } catch (err) {
-    //   console.log(err)
-    //   res.status(500).json(err)
-    // }
-  },
-
-  async unshareBookmark(req, res, next) {
-    console.log('req.body ==>', req.body)
-    try {
-      await db('newsfeed_posts')
-        .del()
-        .where({
-          user_id: req.user.id,
-          post_id: req.body.id,
-        })
-      res.status(200).json({ success: 'deleted' })
-    } catch (err) {
-      console.log(err)
-      res.status(500).json(err)
     }
   },
 }

@@ -166,7 +166,6 @@ module.exports = {
                 tag_id: isExisting.id,
               })
             }
-            ///============== FIX INCREMENT PROBLEM ============
             if (!isExisting) {
               console.log('in here', tag)
               const newTagRecord = await db('tags')

@@ -14,6 +14,19 @@ module.exports = {
         })
         .join('newsfeed_posts as n', 'n.id', 'pt.newsfeed_id')
         .join('users as u', 'u.id', 'n.user_id')
+
+      // TARD WAY OF ATTACHING ADDITIONAL TAGS
+      const hashtagLoop = async () => {
+        for (let post of allPostWithTag) {
+          const tags = await db('post_tags')
+            .where({ newsfeed_id: post.newsfeed_id })
+            .join('tags', 'tags.id', 'post_tags.tag_id')
+
+          post.tags = tags
+        }
+      }
+      await hashtagLoop()
+
       return { msg: 'success', allPostWithTag }
     } else {
       return { msg: 'no post with that tag' }

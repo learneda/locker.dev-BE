@@ -9,8 +9,25 @@ module.exports = {
       `SELECT * FROM tag_friendships AS tf WHERE tf.tag_id IN (SELECT id FROM tags AS t WHERE t.hashtag = '${tag}') AND tf.user_id = ${userId}`
     )
 
+    const responsePost = posts.rows
+
+    const commentLoop = async () => {
+      for (let post of responsePost) {
+        for (let comment of post.comments) {
+          if (comment) {
+            const username = await db('users')
+              .select('username')
+              .where({ id: comment.user_id })
+              .first()
+            comment.username = username.username
+          }
+        }
+      }
+    }
+    await commentLoop()
+
     const response = {
-      posts: posts.rows,
+      posts: responsePost,
       isFollowing: isFollowing.rows.length > 0 ? true : false,
     }
 

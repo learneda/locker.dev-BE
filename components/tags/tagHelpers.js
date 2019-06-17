@@ -1,36 +1,37 @@
 const db = require('../../dbConfig')
 module.exports = {
-  async getPostsWithTag(tag) {
-    const tagId = await db('tags')
-      .select('id')
-      .where({ hashtag: tag })
-      .first()
-    console.log(tagId)
+  async getPostsWithTag(tag, userId) {
+    const posts = await db.raw(
+      `SELECT n.*, to_json(array_agg(DISTINCT t.*)) AS tags, to_json(array_agg(DISTINCT c.*)) AS comments, to_json(array_agg(DISTINCT u.*)) AS user FROM post_tags AS pt LEFT OUTER JOIN newsfeed_posts AS n ON n.id = pt.newsfeed_id LEFT OUTER JOIN tags AS t ON t.id = pt.tag_id LEFT OUTER JOIN comments AS c ON c.post_id = pt.newsfeed_id LEFT OUTER JOIN users AS u ON u.id = n.user_id WHERE pt.tag_id IN (SELECT id FROM tags AS t WHERE t.hashtag = '${tag}') GROUP BY n.id`
+    )
 
-    if (tagId) {
-      const allPostWithTag = await db('post_tags as pt')
-        .where({
-          tag_id: Number(tagId.id),
-        })
-        .join('newsfeed_posts as n', 'n.id', 'pt.newsfeed_id')
-        .join('users as u', 'u.id', 'n.user_id')
+    const isFollowing = await db.raw(
+      `SELECT * FROM tag_friendships AS tf WHERE tf.tag_id IN (SELECT id FROM tags AS t WHERE t.hashtag = '${tag}') AND tf.user_id = ${userId}`
+    )
 
-      // TARD WAY OF ATTACHING ADDITIONAL TAGS
-      const hashtagLoop = async () => {
-        for (let post of allPostWithTag) {
-          const tags = await db('post_tags')
-            .where({ newsfeed_id: post.newsfeed_id })
-            .join('tags', 'tags.id', 'post_tags.tag_id')
+    const responsePost = posts.rows
 
-          post.tags = tags
+    const commentLoop = async () => {
+      for (let post of responsePost) {
+        for (let comment of post.comments) {
+          if (comment) {
+            const username = await db('users')
+              .select('username')
+              .where({ id: comment.user_id })
+              .first()
+            comment.username = username.username
+          }
         }
       }
-      await hashtagLoop()
-
-      return { msg: 'success', allPostWithTag }
-    } else {
-      return { msg: 'no post with that tag' }
     }
+    await commentLoop()
+
+    const response = {
+      posts: responsePost,
+      isFollowing: isFollowing.rows.length > 0 ? true : false,
+    }
+
+    return { msg: 'success', response }
   },
   async createFriendship(user_id, tag) {
     const tagId = await db('tags')
@@ -65,6 +66,16 @@ module.exports = {
         }
       } else {
         return { msg: '404' }
+      }
+    } catch (err) {
+      return { msg: 'error', err }
+    }
+  },
+  async findTopTags() {
+    try {
+      const topTags = await db('tags as t').limit(28)
+      if (topTags.length) {
+        return { msg: 'success', topTags }
       }
     } catch (err) {
       return { msg: 'error', err }

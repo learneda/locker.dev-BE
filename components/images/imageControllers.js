@@ -29,10 +29,33 @@ module.exports = {
       db('users')
         .update('profile_picture', req.file.secure_url)
         .where('id', req.user.id)
+        .returning('*')
         .then(response => {
-          res.status(200).json({ success: 'added image' })
+          console.log('cloud response', response[0])
+          res.status(200).json({ success: 'added image', user: response[0] })
         })
         .catch(err => console.log(err))
+    })
+  },
+  async uploadHeader(req, res, next) {
+    upload(req, res, function(err) {
+      if (err) {
+        console.log(err)
+      }
+      console.log(req.file)
+      if (req.file.secure_url) {
+        db('users')
+          .update('header_picture', req.file.secure_url)
+          .where('id', req.user.id)
+          .returning('*')
+          .then(response => {
+            console.log('from this one ? wtf', response[0])
+            res.status(200).json({ success: 'added image', user: response[0] })
+          })
+          .catch(err => console.log(err))
+      } else {
+        res.status(200).json({ success: 'added image' })
+      }
     })
   },
   async getImg(req, res, next) {

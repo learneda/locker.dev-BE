@@ -18,7 +18,6 @@ server.get('/', (req, res) => {
 const io = require('socket.io')(myServer)
 
 io.on('connection', socket => {
-  // console.log(io.engine.clients)
   socket.on('join', async function(data) {
     console.log(data, 'DATA', socket.id)
     const online_user = await db('online_users').insert({
@@ -32,10 +31,10 @@ io.on('connection', socket => {
         user_id: data.user_id,
       })
       if (notifications.length) {
-        console.log(
-          notifications,
-          'notificationPRomise, you got some notifications :)'
-        )
+        // console.log(
+        //   notifications,
+        //   'notificationPRomise, you got some notifications :)'
+        // )
         io.to(socket.id).emit('join', notifications)
       } else {
         console.log(notifications, 'you aint got no notifications')
@@ -136,6 +135,51 @@ io.on('connection', socket => {
             user_id: data.postOwnerId,
             post_id: data.id,
             type: 'like',
+            invoker: data.username,
+          })
+          .then(res => {
+            return db('online_users').where({ user_id: data.postOwnerId })
+          })
+          .then(online_data => {
+            if (online_data.length) {
+              db('notifications')
+                .where({ read: false, user_id: online_data[0].user_id })
+                .then(notificationRes => {
+                  console.log('here', notificationRes)
+                  if (notificationRes.length) {
+                    io.to(online_data[0].socket_id).emit(
+                      'join',
+                      notificationRes
+                    )
+                  }
+                })
+            }
+          })
+      }
+    }
+  })
+  socket.on('pony', data => {
+    if (data.action === 'pony_down') {
+      db('posts_ponies')
+        .del()
+        .where({ user_id: data.user_id, post_id: data.id })
+        .then(res => {
+          socket.broadcast.emit('pony', data)
+          socket.emit('pony', data)
+        })
+    } else {
+      db('posts_ponies')
+        .insert({ user_id: data.user_id, post_id: data.id })
+        .then(res => {
+          socket.broadcast.emit('pony', data)
+          socket.emit('pony', data)
+        })
+      if (data.user_id != data.postOwnerId) {
+        db('notifications')
+          .insert({
+            user_id: data.postOwnerId,
+            post_id: data.id,
+            type: 'pony',
             invoker: data.username,
           })
           .then(res => {

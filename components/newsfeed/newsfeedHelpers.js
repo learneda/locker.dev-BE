@@ -90,6 +90,19 @@ module.exports = {
           // attching post like count to post object
           post.likes = Number(likeCount[0].count)
 
+          const ponyCount = await db('posts_ponies')
+            .where('post_id', post.id)
+            .countDistinct('user_id')
+
+          post.ponyCount = Number(ponyCount[0].count)
+
+          const hasPony = await db('posts_ponies').where({
+            post_id: post.id,
+            user_id: Number(user_id),
+          })
+
+          post.hasPony = hasPony.length > 0 ? true : false
+
           // checking if user has liked this post
           const hasLiked = await db('posts_likes').where({
             post_id: post.id,

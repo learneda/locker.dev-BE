@@ -184,8 +184,7 @@ router.get('/logout', controllers.logoutHandler)
 router.get('/current_user', (req, res) => {
   try {
     if (req.user) {
-      const { id } = req.user
-      res.status(200).json({ id })
+      res.status(200).json(req.user)
     } else {
       res.status(200).send(false)
     }

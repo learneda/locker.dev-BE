@@ -159,7 +159,7 @@ io.on('connection', socket => {
     }
   })
   socket.on('pony', data => {
-    if (data.action === 'unpony') {
+    if (data.action === 'pony_down') {
       db('posts_ponies')
         .del()
         .where({ user_id: data.user_id, post_id: data.id })

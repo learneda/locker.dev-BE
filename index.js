@@ -32,10 +32,10 @@ io.on('connection', socket => {
         user_id: data.user_id,
       })
       if (notifications.length) {
-        console.log(
-          notifications,
-          'notificationPRomise, you got some notifications :)'
-        )
+        // console.log(
+        //   notifications,
+        //   'notificationPRomise, you got some notifications :)'
+        // )
         io.to(socket.id).emit('join', notifications)
       } else {
         console.log(notifications, 'you aint got no notifications')

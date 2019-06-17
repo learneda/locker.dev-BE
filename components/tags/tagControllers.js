@@ -15,10 +15,9 @@ module.exports = {
     const tag = req.params.tag
     if (tag) {
       const response = await helpers.getPostsWithTag(tag)
-      console.log('the response from the helper ;P', response)
       if (response.msg === 'success') {
         // DO NOT USE THE ID OF THIS RESPONSE
-        res.status(200).json(response.allPostWithTag)
+        res.status(200).json(response.posts)
       } else {
         res.status(200).json({ msg: response.msg })
       }

@@ -51,6 +51,7 @@ module.exports = {
             'location',
             'website_url as websiteUrl',
             'created_at as createdAt',
+            'header_picture as headerPicture',
           ])
         if (user) {
           res.status(200).json(user[0])

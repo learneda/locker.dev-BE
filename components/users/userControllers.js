@@ -81,6 +81,7 @@ module.exports = {
           'location',
           'website_url as websiteUrl',
           'created_at as createdAt'
+          'header_picture as headerPicture'
         )
         .first()
       if (user) {

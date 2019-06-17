@@ -29,8 +29,10 @@ module.exports = {
       db('users')
         .update('profile_picture', req.file.secure_url)
         .where('id', req.user.id)
+        .returning('*')
         .then(response => {
-          res.status(200).json({ success: 'added image' })
+          console.log('cloud response', response[0])
+          res.status(200).json({ success: 'added image', user: response[0] })
         })
         .catch(err => console.log(err))
     })

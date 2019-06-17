@@ -45,13 +45,13 @@ module.exports = {
           .returning([
             'username',
             'display_name as displayName',
-            'profile_picture as profilePicture',
+            'profile_picture',
             'bio',
             'email',
             'location',
             'website_url as websiteUrl',
             'created_at as createdAt',
-            'header_picture as headerPicture',
+            'header_picture',
           ])
         if (user) {
           res.status(200).json(user[0])
@@ -76,13 +76,13 @@ module.exports = {
           'id',
           'username',
           'display_name as displayName',
-          'profile_picture as profilePicture',
+          'profile_picture',
           'bio',
           'email',
           'location',
           'website_url as websiteUrl',
           'created_at as createdAt',
-          'header_picture as headerPicture'
+          'header_picture'
         )
         .first()
       if (user) {

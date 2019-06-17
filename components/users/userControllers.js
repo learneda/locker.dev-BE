@@ -80,7 +80,7 @@ module.exports = {
           'email',
           'location',
           'website_url as websiteUrl',
-          'created_at as createdAt'
+          'created_at as createdAt',
           'header_picture as headerPicture'
         )
         .first()

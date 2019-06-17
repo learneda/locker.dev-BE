@@ -8,6 +8,7 @@ exports.up = function(knex, Promise) {
       .unique()
     tbl.string('display_name')
     tbl.string('profile_picture').nullable()
+    tbl.string('header_picture')
     tbl.string('github_id').nullable()
     tbl.string('google_id').nullable()
     tbl.string('bio')

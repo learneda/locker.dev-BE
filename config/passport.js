@@ -15,30 +15,30 @@ const html = require('./html')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 // ======= gets called when a new user signs up on production =======
-async function learnLockerToms(userId) {
-  await db('friendships').insert({
-    user_id: userId,
-    friend_id: 100,
-  })
+// async function learnLockerToms(userId) {
+//   await db('friendships').insert({
+//     user_id: userId,
+//     friend_id: 100,
+//   })
 
-  await db('friendships').insert({
-    user_id: userId,
-    friend_id: 102,
-  })
+//   await db('friendships').insert({
+//     user_id: userId,
+//     friend_id: 102,
+//   })
 
-  await db('friendships').insert({
-    user_id: userId,
-    friend_id: 103,
-  })
-  await db('friendships').insert({
-    user_id: userId,
-    friend_id: 106,
-  })
-  await db('friendships').insert({
-    user_id: userId,
-    friend_id: 107,
-  })
-}
+//   await db('friendships').insert({
+//     user_id: userId,
+//     friend_id: 103,
+//   })
+//   await db('friendships').insert({
+//     user_id: userId,
+//     friend_id: 106,
+//   })
+//   await db('friendships').insert({
+//     user_id: userId,
+//     friend_id: 107,
+//   })
+// }
 
 passport.serializeUser((user, done) => done(null, user.id))
 

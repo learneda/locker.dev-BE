@@ -71,4 +71,14 @@ module.exports = {
       return { msg: 'error', err }
     }
   },
+  async findTopTags() {
+    try {
+      const topTags = await db('tags as t').limit(28)
+      if (topTags.length) {
+        return { msg: 'success', topTags }
+      }
+    } catch (err) {
+      return { msg: 'error', err }
+    }
+  },
 }

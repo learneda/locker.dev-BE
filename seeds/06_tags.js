@@ -28,6 +28,8 @@ const hashtags = [
   'go',
   'docker',
   'angular',
+  'sql',
+  'knex',
 ]
 const tagObjects = []
 for (let i = 0; i < hashtags.length - 1; i++) {

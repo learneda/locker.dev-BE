@@ -128,7 +128,7 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
-                await learnLockerToms(user_obj.id)
+                // await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)
             })
@@ -178,7 +178,7 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
-                await learnLockerToms(user_obj.id)
+                // await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)
             })

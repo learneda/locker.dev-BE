@@ -14,10 +14,9 @@ module.exports = {
   async getTagPosts(req, res, next) {
     const tag = req.params.tag
     if (tag) {
-      const response = await helpers.getPostsWithTag(tag)
+      const response = await helpers.getPostsWithTag(tag, req.user.id)
       if (response.msg === 'success') {
-        // DO NOT USE THE ID OF THIS RESPONSE
-        res.status(200).json(response.posts)
+        res.status(200).json(response)
       } else {
         res.status(200).json({ msg: response.msg })
       }

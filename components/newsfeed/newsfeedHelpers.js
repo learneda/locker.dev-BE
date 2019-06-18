@@ -143,6 +143,11 @@ module.exports = {
           id: user,
         })
         .first()
+      const type = await db('types')
+        .select('id')
+        .where('type_title', post.type)
+        .first()
+      console.log('type => ', type)
       // inserting to newsfeed
       const newInsert = await db('newsfeed_posts')
         .insert({
@@ -152,51 +157,51 @@ module.exports = {
           url: post.post_url,
           user_thoughts: post.user_thoughts,
           thumbnail_url: post.thumbnail_url,
-          type_id: 8,
+          type_id: type.id,
         })
         .returning('*')
       const record = Object.assign(newInsert[0], userDetails)
 
       record.tags = []
       // ================ TAG LOGIC ================
-      const lowerCaseTags = post.tags.toLowerCase()
-
-      //* =========== need to fix triming of tags =========
-      const tagArr = myTrim(lowerCaseTags).split('#')
-      console.log('tagArr', tagArr)
-      const tagLoop = async () => {
-        for (let tag of tagArr) {
-          if (tag) {
-            const isExisting = await db('tags')
-              .where('hashtag', tag)
-              .first()
-
-            if (isExisting) {
-              record.tags.push({ hashtag: isExisting.hashtag })
-              await db('post_tags').insert({
-                newsfeed_id: record.id,
-                tag_id: isExisting.id,
-              })
-            }
-            if (!isExisting) {
-              const maxId = await db('tags')
-                .max('id')
+      if (post.tags.length) {
+        const lowerCaseTags = post.tags.toLowerCase()
+        const tagArr = myTrim(lowerCaseTags).split('#')
+        console.log('tagArr', tagArr)
+        const tagLoop = async () => {
+          for (let tag of tagArr) {
+            if (tag) {
+              const isExisting = await db('tags')
+                .where('hashtag', tag)
                 .first()
 
-              const newTagRecord = await db('tags')
-                .insert({ hashtag: tag, id: maxId.max + 1 })
-                .returning('*')
+              if (isExisting) {
+                record.tags.push({ hashtag: isExisting.hashtag })
+                await db('post_tags').insert({
+                  newsfeed_id: record.id,
+                  tag_id: isExisting.id,
+                })
+              }
+              if (!isExisting) {
+                const maxId = await db('tags')
+                  .max('id')
+                  .first()
 
-              await db('post_tags').insert({
-                newsfeed_id: record.id,
-                tag_id: newTagRecord[0].id,
-              })
-              record.tags.push({ hashtag: newTagRecord[0].hashtag })
+                const newTagRecord = await db('tags')
+                  .insert({ hashtag: tag, id: maxId.max + 1 })
+                  .returning('*')
+
+                await db('post_tags').insert({
+                  newsfeed_id: record.id,
+                  tag_id: newTagRecord[0].id,
+                })
+                record.tags.push({ hashtag: newTagRecord[0].hashtag })
+              }
             }
           }
         }
+        await tagLoop()
       }
-      await tagLoop()
       record.comments = []
       record.likes = 0
       record.ponyCount = 0

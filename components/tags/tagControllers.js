@@ -16,12 +16,14 @@ module.exports = {
     }
   },
   async followTag(req, res, next) {
-    const { tag } = req.body
+    const { tag } = req.params
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     if (user_id && tag) {
       const response = await helpers.createFriendship(user_id, tag)
       if (response.msg === 'success') {
         res.status(200).json(response)
+      } else if (response.msg === '404') {
+        res.status(404).json({ msg: 'hashtag not found' })
       } else {
         res.status(500).json({ response })
       }
@@ -30,8 +32,8 @@ module.exports = {
     }
   },
   async unfollowTag(req, res, next) {
-    const { tag } = req.body
-    const user_id = req.user === undefined ? req.body.user_id : req.user.id
+    const { tag } = req.params
+    const user_id = req.user.id
     if (user_id && tag) {
       const response = await helpers.unfollowTag(user_id, tag)
       if (response.msg === 'success') {

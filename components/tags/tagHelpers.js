@@ -78,7 +78,7 @@ module.exports = {
         return { msg: 'success' }
       }
     } else {
-      return { msg: 'no tag fround' }
+      return { msg: '404' }
     }
   },
   async unfollowTag(user_id, tag) {
@@ -88,12 +88,11 @@ module.exports = {
         .where({ hashtag: tag })
         .first()
       if (tagId) {
-        const unfollowTag = await db('tags')
+        const unfollowTag = await db('tag_friendships')
           .del()
-          .where({ tag_id: tagId.id })
-          .returning('*')
+          .where({ tag_id: tagId.id, user_id: user_id })
         if (unfollowTag) {
-          return { msg: 'success', unfollowTag: unfollowTag[0] }
+          return { msg: 'success' }
         }
       } else {
         return { msg: '404' }

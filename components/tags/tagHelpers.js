@@ -59,12 +59,14 @@ module.exports = {
           .join('tags', 'tags.id', 'post_tags.tag_id')
 
         post.tags = tags
+
+        post.posted_at_date = post.created_at
       }
     }
     await commentLoop()
 
     const response = {
-      posts: responsePost,
+      posts: responsePost.reverse(),
       isFollowing: isFollowing.rows.length > 0 ? true : false,
     }
 

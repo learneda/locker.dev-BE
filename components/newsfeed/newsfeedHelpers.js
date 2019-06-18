@@ -164,7 +164,7 @@ module.exports = {
 
       record.tags = []
       // ================ TAG LOGIC ================
-      if (post.tags.length) {
+      if (post.tags && post.tags.length) {
         const lowerCaseTags = post.tags.toLowerCase()
         const tagArr = myTrim(lowerCaseTags).split('#')
         console.log('tagArr', tagArr)

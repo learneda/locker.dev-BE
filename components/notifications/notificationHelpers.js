@@ -6,8 +6,9 @@ module.exports = {
       const read = await db('notifications')
         .update('read', true)
         .where({ user_id: userId })
+        .returning('*')
       if (read) {
-        return { msg: 'success' }
+        return { msg: 'success', read: read[0] }
       }
     } catch (err) {
       console.log(err)

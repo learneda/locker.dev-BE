@@ -53,6 +53,12 @@ module.exports = {
         })
 
         post.hasPony = hasPony.length > 0 ? true : false
+
+        const tags = await db('post_tags')
+          .where({ newsfeed_id: post.id })
+          .join('tags', 'tags.id', 'post_tags.tag_id')
+
+        post.tags = tags
       }
     }
     await commentLoop()

@@ -30,7 +30,10 @@ module.exports = {
   },
   async getNotifications(userId) {
     try {
-      const notifications = await db('notifications').where('user_id', userId)
+      const notifications = await db('notifications')
+        .limit(15)
+        .where('user_id', userId)
+
       if (!notifications.length > 0) {
         return { msg: '404' }
       }

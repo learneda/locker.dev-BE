@@ -152,37 +152,35 @@ module.exports = {
         })
         .returning('*')
       const record = Object.assign(newInsert[0], userDetails)
+
       record.tags = []
       // ================ TAG LOGIC ================
-      console.log(post)
       const lowerCaseTags = post.tags.toLowerCase()
-      console.log('are they all lower case ?', lowerCaseTags)
 
       //* =========== need to fix triming of tags =========
       const tagArr = myTrim(lowerCaseTags).split('#')
-
-      console.log('tag arrr', tagArr)
-
+      console.log('tagArr', tagArr)
       const tagLoop = async () => {
         for (let tag of tagArr) {
           if (tag) {
             const isExisting = await db('tags')
               .where('hashtag', tag)
               .first()
-            console.log(isExisting)
-            console.log(!isExisting)
+
             if (isExisting) {
               record.tags.push({ hashtag: isExisting.hashtag })
-              console.log('record', record)
               await db('post_tags').insert({
                 newsfeed_id: record.id,
                 tag_id: isExisting.id,
               })
             }
             if (!isExisting) {
-              console.log('in here', tag)
+              const maxId = await db('tags')
+                .max('id')
+                .first()
+
               const newTagRecord = await db('tags')
-                .insert({ hashtag: tag })
+                .insert({ hashtag: tag, id: maxId.max + 1 })
                 .returning('*')
 
               await db('post_tags').insert({
@@ -200,6 +198,7 @@ module.exports = {
 
       return { msg: 'success', record }
     } catch (err) {
+      console.log(err)
       return { msg: 'error', err }
     }
   },

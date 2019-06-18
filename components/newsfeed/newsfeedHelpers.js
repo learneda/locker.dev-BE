@@ -10,8 +10,6 @@ module.exports = {
       // creating an array with only friend id integers
       friends = friends.map(friend => friend.friend_id)
 
-      console.log(friends, 'friends')
-
       // generating newsfeed from user friendship relationships
       const newsFeed = await db('newsfeed_posts as n')
         .select('*')
@@ -23,28 +21,21 @@ module.exports = {
       /// an array of tag id integers that user follows
       friendshipTagArr = friendshipTagArr.map(tag => tag.tag_id)
 
-      console.log('this is myfriendshipArr', friendshipTagArr)
-
       // an array of all post objects that contain the tags a user follows
       let tagPostArr = await db('post_tags').whereIn('tag_id', friendshipTagArr)
-      console.log('tagPostArr ==> \n', tagPostArr)
 
       // creating arr of newsfeed_post record ids
       let tagPostIdsArr = tagPostArr.map(obj => obj.newsfeed_id) // these only come from association of tags a user follows
 
-      console.log('tagPostIdArr ==> \n', tagPostIdsArr)
-
       // creating an arr of newfeed_posts id integers that come from following other users(friendships)
       let newsfeedIdsArr = newsFeed.map(post => post.id)
 
-      console.log('newsfeedIdsArr', newsfeedIdsArr)
       // creating ultimate array with post ids integers that come from following friends and following tags
       // using Set() to get rid of duplicate newsfeed post id's
       const filteredNewsfeedIds = [
         ...new Set([...tagPostIdsArr, ...newsfeedIdsArr]),
       ]
 
-      console.log('FINAL NEWSFEED IDS\n', filteredNewsfeedIds)
       // getting the final newsfeed post records with all correct IDs
       const finalNewsfeed = await db('newsfeed_posts as n')
         .select(
@@ -119,6 +110,10 @@ module.exports = {
         }
       }
       await commentLoop()
+      // if (Number(offset) < 5) {
+
+      //   return {}
+      // }
       return { msg: 'success', newsFeed: finalNewsfeed }
     } catch (err) {
       return err

@@ -34,7 +34,7 @@ module.exports = {
     if (userId) {
       const response = await helpers.getNotifications(userId)
       if (response.msg === 'success') {
-        res.status(200).json(response)
+        res.status(200).json(response.notifications)
       } else if (response.msg === '404') {
         res.status(404).json({ msg: 'user doesnt have any notifications' })
       } else {

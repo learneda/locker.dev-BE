@@ -190,6 +190,7 @@ module.exports = {
       await tagLoop()
       record.comments = []
       record.likes = 0
+      record.ponyCount = 0
 
       return { msg: 'success', record }
     } catch (err) {

@@ -21,7 +21,36 @@ module.exports = {
               .first()
             comment.username = username.username
           }
-        }
+        } /// end of 4Loop
+        // =========== attaching like data ==========
+        const likeCount = await db('posts_likes')
+          .where('post_id', post.id)
+          .countDistinct('user_id')
+        // attching post like count to post object
+        post.likes = Number(likeCount[0].count)
+
+        const hasLiked = await db('posts_likes').where({
+          post_id: post.id,
+          user_id: Number(userId),
+        })
+        // if response is not empty has hasLiked is true else false
+        post.hasLiked = hasLiked.length > 0 ? true : false
+
+        post.profile_picture = post.user[0].profile_picture
+
+        // =========== attaching pony data =============
+        const ponyCount = await db('posts_ponies')
+          .where('post_id', post.id)
+          .countDistinct('user_id')
+
+        post.ponyCount = Number(ponyCount[0].count)
+
+        const hasPony = await db('posts_ponies').where({
+          post_id: post.id,
+          user_id: Number(userId),
+        })
+
+        post.hasPony = hasPony.length > 0 ? true : false
       }
     }
     await commentLoop()

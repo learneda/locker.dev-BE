@@ -110,11 +110,20 @@ module.exports = {
         }
       }
       await commentLoop()
-      // if (Number(offset) < 5) {
-
-      //   return {}
-      // }
-      return { msg: 'success', newsFeed: finalNewsfeed }
+      if (Number(offset) < 5) {
+        return { msg: 'success', newsFeed: finalNewsfeed.slice(0, 5) }
+      }
+      if (Number(offset)) {
+        return {
+          msg: 'success',
+          newsFeed: finalNewsfeed.slice(Number(offset), Number(offset) + 5),
+        }
+      } else {
+        return {
+          msg: 'success',
+          newsFeed: finalNewsfeed,
+        }
+      }
     } catch (err) {
       return err
     }

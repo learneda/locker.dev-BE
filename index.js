@@ -17,7 +17,11 @@ server.get('/', (req, res) => {
 
 const io = require('socket.io')(myServer)
 
-io.on('connection', socket => {
+io.on('connection', async socket => {
+  await db('online_users')
+    .del()
+    .whereNotIn('socket_id', Object.keys(io.sockets.sockets))
+
   socket.on('join', async function(data) {
     console.log(data, 'DATA', socket.id)
     const online_user = await db('online_users').insert({
@@ -47,7 +51,6 @@ io.on('connection', socket => {
     const deleteInsert = await db('online_users')
       .del()
       .where({ socket_id: socket.id })
-    console.log(deleteInsert)
   })
 
   socket.on('comments', msg => {

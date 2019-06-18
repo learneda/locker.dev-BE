@@ -20,6 +20,8 @@ module.exports = {
               .where({ id: comment.user_id })
               .first()
             comment.username = username.username
+          } else {
+            post.comments = []
           }
         } /// end of 4Loop
         // =========== attaching like data ==========

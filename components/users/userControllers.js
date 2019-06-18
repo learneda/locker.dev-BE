@@ -44,12 +44,12 @@ module.exports = {
           })
           .returning([
             'username',
-            'display_name as displayName',
+            'display_name',
             'profile_picture',
             'bio',
             'email',
             'location',
-            'website_url as websiteUrl',
+            'website_url',
             'created_at as createdAt',
             'header_picture',
           ])
@@ -75,12 +75,12 @@ module.exports = {
         .select(
           'id',
           'username',
-          'display_name as displayName',
+          'display_name',
           'profile_picture',
           'bio',
           'email',
           'location',
-          'website_url as websiteUrl',
+          'website_url',
           'created_at as createdAt',
           'header_picture'
         )

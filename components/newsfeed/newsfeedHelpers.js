@@ -278,6 +278,8 @@ module.exports = {
 
       post.hasPony = hasPony.length > 0 ? true : false
 
+      post.posted_at_date = post.created_at
+
       return { msg: 'success', post }
     } catch (err) {
       return { msg: 'error', err }

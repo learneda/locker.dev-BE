@@ -259,6 +259,25 @@ module.exports = {
 
       post.hasLiked = hasLiked.length > 0 ? true : false
 
+      const tags = await db('post_tags')
+        .where({ newsfeed_id: postId })
+        .join('tags', 'tags.id', 'post_tags.tag_id')
+
+      post.tags = tags
+
+      const ponyCount = await db('posts_ponies')
+        .where('post_id', postId)
+        .countDistinct('user_id')
+
+      post.ponyCount = Number(ponyCount[0].count)
+
+      const hasPony = await db('posts_ponies').where({
+        post_id: postId,
+        user_id: Number(userId),
+      })
+
+      post.hasPony = hasPony.length > 0 ? true : false
+
       return { msg: 'success', post }
     } catch (err) {
       return { msg: 'error', err }

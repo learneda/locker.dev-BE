@@ -158,6 +158,7 @@ io.on('connection', async socket => {
     }
   })
   socket.on('pony', data => {
+    console.log(data)
     if (data.action === 'pony_down') {
       db('posts_ponies')
         .del()

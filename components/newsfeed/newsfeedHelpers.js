@@ -48,10 +48,11 @@ module.exports = {
           'n.id as news_id',
           'url',
           'type_id',
-          'n.created_at AS posted_at_date'
+          'n.created_at AS posted_at_date',
+          'u.username'
         )
         .whereIn('n.id', filteredNewsfeedIds)
-        .join('users', 'n.user_id', '=', 'users.id')
+        .join('users as u', 'n.user_id', '=', 'u.id')
         .orderBy('n.created_at', 'desc')
 
       const commentLoop = async () => {

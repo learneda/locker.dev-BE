@@ -30,9 +30,10 @@ module.exports = {
   },
   async getNotifications(userId) {
     try {
-      const notifications = await db('notifications')
+      const notifications = await db('notifications as n')
         .limit(15)
         .where('user_id', userId)
+        .join('newsfeed_posts as np', 'n.id', 'n.post_id')
 
       if (!notifications.length > 0) {
         return { msg: '404' }

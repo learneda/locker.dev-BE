@@ -55,4 +55,12 @@ module.exports = {
       res.status(500).json(response)
     }
   },
+  async getUserFollowingTag(req, res, next) {
+    const response = await helpers.findUserTags(req.user.id)
+    if (response.msg === 'success') {
+      res.status(200).json(response.userTags)
+    } else {
+      res.status(500).json(response)
+    }
+  },
 }

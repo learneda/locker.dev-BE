@@ -3,6 +3,8 @@ const controllers = require('./tagControllers')
 
 router.get('/top', controllers.getTopTags)
 
+router.get('/', controllers.getUserFollowingTag)
+
 router.get('/:tag', controllers.getTagPosts)
 
 router.post('/follow/:tag', controllers.followTag)

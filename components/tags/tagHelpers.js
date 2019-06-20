@@ -119,4 +119,17 @@ module.exports = {
       return { msg: 'error', err }
     }
   },
+  async findUserTags(userId) {
+    try {
+      const userTags = await db('tag_friendships as tf')
+        .select('t.hashtag')
+        .where('user_id', userId)
+        .join('tags as t', 't.id', 'tf.tag_id')
+      if (userTags) {
+        return { msg: 'success', userTags }
+      }
+    } catch (err) {
+      return { msg: 'error', err }
+    }
+  },
 }

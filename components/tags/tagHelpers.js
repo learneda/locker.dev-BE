@@ -83,7 +83,7 @@ module.exports = {
         tag_id: tagId.id,
       })
       if (insert) {
-        return { msg: 'success' }
+        return { msg: 'success', hashtag: { id: tagId.id, hashtag: tag } }
       }
     } else {
       return { msg: '404' }
@@ -100,7 +100,7 @@ module.exports = {
           .del()
           .where({ tag_id: tagId.id, user_id: user_id })
         if (unfollowTag) {
-          return { msg: 'success' }
+          return { msg: 'success', hashtag: { id: tagId.id, hashtag: tag } }
         }
       } else {
         return { msg: '404' }
@@ -122,7 +122,7 @@ module.exports = {
   async findUserTags(userId) {
     try {
       const userTags = await db('tag_friendships as tf')
-        .select('t.hashtag')
+        .select('t.hashtag', 't.id')
         .where('user_id', userId)
         .join('tags as t', 't.id', 'tf.tag_id')
       if (userTags) {

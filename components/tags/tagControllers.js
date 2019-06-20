@@ -21,6 +21,7 @@ module.exports = {
     if (user_id && tag) {
       const response = await helpers.createFriendship(user_id, tag)
       if (response.msg === 'success') {
+        console.log(response.hashtag)
         res.status(200).json(response)
       } else if (response.msg === '404') {
         res.status(404).json({ msg: 'hashtag not found' })

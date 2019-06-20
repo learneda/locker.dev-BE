@@ -26,4 +26,6 @@ module.exports = server => {
   require('./locker')(server)
   require('./newsfeed')(server)
   require('./tags')(server)
+  require('./youtube')(server)
+  require('./listen')(server)
 }

@@ -14,7 +14,6 @@ const storage = cloudinaryStorage({
   cloudinary: cloudinary,
   folder: 'demo',
   allowedFormats: ['jpg', 'png', 'gif'],
-  transformation: [{ width: 500, height: 500, crop: 'scale' }],
 })
 
 const upload = multer({ storage }).single('profile_pic')

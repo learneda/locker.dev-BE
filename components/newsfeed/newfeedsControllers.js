@@ -36,8 +36,6 @@ module.exports = {
         res.status(200).json(response)
       } else if (response.msg === 'error') {
         res.status(500).json(response)
-      } else {
-        res.status(404).json(response)
       }
     } else {
       res.status(400).json({ msg: 'missing id on header params' })
@@ -54,8 +52,6 @@ module.exports = {
         res.status(500).json(response)
       } else if (response.msg === '403') {
         res.status(403).json({ msg: "post doesn't belong to you" })
-      } else {
-        res.status(404).json(response)
       }
     } else {
       res.status(400).json({ msg: 'missing id on header params' })

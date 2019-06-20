@@ -7,7 +7,6 @@ const db = require('../../dbConfig')
 
 module.exports = {
   getCourses(req, res, next) {
-    console.log('\n🦄\n', 'TRYING TO GET COURSES', req.query)
     const { page, search } = req.query
     let queryParams = {
       'fields[course]':

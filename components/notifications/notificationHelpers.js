@@ -31,15 +31,22 @@ module.exports = {
   async getNotifications(userId) {
     try {
       const notifications = await db('notifications as n')
+        .select(
+          'n.id',
+          'n.post_id',
+          'n.type',
+          'n.read',
+          'n.invoker',
+          'np.thumbnail_url',
+          'u.profile_picture'
+        )
         .limit(15)
-        .where('user_id', userId)
-        .join('newsfeed_posts as np', 'n.id', 'n.post_id')
-
-      if (!notifications.length > 0) {
-        return { msg: '404' }
-      }
+        .where('n.user_id', userId)
+        .join('newsfeed_posts as np', 'np.id', 'n.post_id')
+        .join('users as u', 'u.username', 'n.invoker')
       return { msg: 'success', notifications }
     } catch (err) {
+      console.log(err)
       return { msg: 'error', err }
     }
   },

@@ -49,7 +49,8 @@ module.exports = {
           'url',
           'type_id',
           'n.created_at AS posted_at_date',
-          'u.username'
+          'u.username',
+          'n.description'
         )
         .whereIn('n.id', filteredNewsfeedIds)
         .join('users as u', 'n.user_id', '=', 'u.id')
@@ -161,6 +162,7 @@ module.exports = {
           type_id: type.id,
         })
         .returning('*')
+      console.log(newInsert)
       const record = Object.assign(newInsert[0], userDetails)
 
       record.tags = []

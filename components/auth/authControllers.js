@@ -11,10 +11,10 @@ const selectRedirect = (res, route) => {
 
 module.exports = {
   gitHubHandler(req, res, next) {
-    selectRedirect(res, '/')
+    selectRedirect(res, '/success')
   },
   googleHandler(req, res, next) {
-    selectRedirect(res, '/')
+    selectRedirect(res, '/success')
   },
   meetupHandler(req, res, next) {
     selectRedirect(res, '/')

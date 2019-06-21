@@ -10,7 +10,7 @@ router.get('/github', passport.authenticate('github'))
 
 router.get(
   '/github/cb',
-  passport.authenticate('github'),
+  passport.authenticate('github', { failureRedirect: '/' }),
   controllers.gitHubHandler
 )
 /*  ================== GOOGLE ================== */
@@ -22,7 +22,7 @@ router.get(
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/failed' }),
+  passport.authenticate('google', { failureRedirect: '/' }),
   controllers.googleHandler
 )
 /*  ================== MEETUPS ================== */

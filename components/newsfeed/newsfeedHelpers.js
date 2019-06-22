@@ -140,16 +140,18 @@ module.exports = {
     try {
       // collecting userDetails to attach to the response obj
       const userDetails = await db('users')
-        .select('profile_picture', 'display_name')
+        .select('profile_picture', 'display_name', 'username')
         .where({
           id: user,
         })
         .first()
+      //! do i need ?
       const type = await db('types')
         .select('id')
         .where('type_title', post.type)
         .first()
       console.log('type => ', type)
+
       // inserting to newsfeed
       const newInsert = await db('newsfeed_posts')
         .insert({
@@ -159,7 +161,7 @@ module.exports = {
           url: post.post_url,
           user_thoughts: post.user_thoughts,
           thumbnail_url: post.thumbnail_url,
-          type_id: type.id,
+          type_id: post.type,
         })
         .returning('*')
       console.log(newInsert)

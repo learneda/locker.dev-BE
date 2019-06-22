@@ -61,58 +61,65 @@ module.exports = {
   },
   async createNewPost(req, res, next) {
     const { post_url, title, description, thumbnail_url } = req.body
+    console.log('🛸', req.body)
     const user_id = req.user.id || req.body.userId
     const mediaTypes = ['book', 'video', 'podcast', 'course', 'article']
 
     // selecting type id from types tbl. type title string comes from request body
-    const type = await db('types')
-      .select('id')
-      .where('type_title', req.body.type)
-      .first()
+    if (req.body.type) {
+      const type = await db('types')
+        .select('id')
+        .where('type_title', req.body.type)
+        .first()
 
-    if (mediaTypes.includes(req.body.type)) {
-      try {
-        //TODO: Gets root_url
-        const newUrl =
-          req.body.post_url.indexOf('http') > -1
-            ? req.body.post_url
-            : `http://${req.body.post_url}`
+      if (mediaTypes.includes(req.body.type)) {
+        try {
+          //TODO: Gets root_url
+          const newUrl =
+            req.body.post_url.indexOf('http') > -1
+              ? req.body.post_url
+              : `http://${req.body.post_url}`
 
-        let rootUrl = new URL(newUrl)
-        rootUrl = rootUrl.hostname
-          .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
-          .split('/')[0]
+          let rootUrl = new URL(newUrl)
+          rootUrl = rootUrl.hostname
+            .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
+            .split('/')[0]
 
-        // creating new insert record
-        const newPost = {
-          root_url: rootUrl,
-          post_url,
-          user_id,
-          title,
-          description,
-          thumbnail_url,
-          type_id: type.id,
+          // creating new insert record
+          const newPost = {
+            root_url: rootUrl,
+            post_url,
+            user_id,
+            title,
+            description,
+            thumbnail_url,
+            type_id: type.id,
+          }
+
+          // inserting record
+          const newInsert = await db('posts')
+            .insert(newPost)
+            .returning('*')
+
+          if (newInsert) {
+            return res.status(201).json(newInsert[0])
+          } else {
+            return res.status(300).json({ err: 'couldnt add new entry' })
+          }
+        } catch (err) {
+          console.log('META ERROR', err)
+          return res.status(500).json(err)
         }
-
-        // inserting record
-        const newInsert = await db('posts')
-          .insert(newPost)
-          .returning('*')
-
-        if (newInsert) {
-          return res.status(201).json(newInsert[0])
-        } else {
-          return res.status(300).json({ err: 'couldnt add new entry' })
-        }
-      } catch (err) {
-        console.log('META ERROR', err)
-        return res.status(500).json(err)
       }
     }
+
     // if the type in request body in NOT book, video, or podcast
     // will enter this if block
     if (req.user) {
       if (req.body.post_url) {
+        if (!req.body.type_id) {
+          req.body.type_id = 8
+        }
         try {
           const newUrl =
             req.body.post_url.indexOf('http') > -1
@@ -137,7 +144,6 @@ module.exports = {
             ? (metadata.image = null)
             : (metadata.image = metadata.image)
           try {
-            console.log('CHECKING TYPE ID', type)
             const newPost = {
               post_url: req.body.post_url,
               user_id: req.user.id,
@@ -145,7 +151,7 @@ module.exports = {
               description: metadata.description,
               thumbnail_url: metadata.image,
               root_url: rootUrl,
-              type_id: type.id,
+              type_id: req.body.type_id,
             }
             const newInsert = await db('posts')
               .insert(newPost)

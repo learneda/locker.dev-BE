@@ -1,6 +1,6 @@
 const db = require('../../dbConfig')
 module.exports = {
-  async getPostsWithTag(tag, userId) {
+  async getPostsWithTag(tag, userId, offset) {
     const posts = await db.raw(
       `SELECT n.*, to_json(array_agg(DISTINCT t.*)) AS tags, to_json(array_agg(DISTINCT c.*)) AS comments, to_json(array_agg(DISTINCT u.*)) AS user FROM post_tags AS pt LEFT OUTER JOIN newsfeed_posts AS n ON n.id = pt.newsfeed_id LEFT OUTER JOIN tags AS t ON t.id = pt.tag_id LEFT OUTER JOIN comments AS c ON c.post_id = pt.newsfeed_id LEFT OUTER JOIN users AS u ON u.id = n.user_id WHERE pt.tag_id IN (SELECT id FROM tags AS t WHERE t.hashtag = '${tag}') GROUP BY n.id`
     )
@@ -60,13 +60,24 @@ module.exports = {
 
         post.tags = tags
 
+        post.username = post.user[0].username
+
         post.posted_at_date = post.created_at
       }
     }
     await commentLoop()
+    console.log(offset)
+    if (Number(offset) < 5) {
+      const response = {
+        posts: responsePost.slice(0, 5).reverse(),
+        isFollowing: isFollowing.rows.length > 0 ? true : false,
+      }
+
+      return { msg: 'success', response }
+    }
 
     const response = {
-      posts: responsePost.reverse(),
+      posts: responsePost.slice(Number(offset), Number(offset) + 5).reverse(),
       isFollowing: isFollowing.rows.length > 0 ? true : false,
     }
 

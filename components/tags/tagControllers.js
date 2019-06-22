@@ -2,8 +2,10 @@ const helpers = require('./tagHelpers')
 module.exports = {
   async getTagPosts(req, res, next) {
     const tag = req.params.tag
+    const offset = req.query.offset
+
     if (tag) {
-      const response = await helpers.getPostsWithTag(tag, req.user.id)
+      const response = await helpers.getPostsWithTag(tag, req.user.id, offset)
       if (response.msg === 'success') {
         res.status(200).json(response)
       } else {

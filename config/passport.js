@@ -15,30 +15,33 @@ const html = require('./html')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 // ======= gets called when a new user signs up on production =======
-// async function learnLockerToms(userId) {
-//   await db('friendships').insert({
-//     user_id: userId,
-//     friend_id: 100,
-//   })
+async function learnLockerToms(userId) {
+  // Luis
+  await db('friendships').insert({
+    user_id: userId,
+    friend_id: 100,
+  })
+  // Cesar
+  await db('friendships').insert({
+    user_id: userId,
+    friend_id: 101,
+  })
+  // Riley
+  await db('friendships').insert({
+    user_id: userId,
+    friend_id: 104,
+  })
 
-//   await db('friendships').insert({
-//     user_id: userId,
-//     friend_id: 102,
-//   })
-
-//   await db('friendships').insert({
-//     user_id: userId,
-//     friend_id: 103,
-//   })
-//   await db('friendships').insert({
-//     user_id: userId,
-//     friend_id: 106,
-//   })
-//   await db('friendships').insert({
-//     user_id: userId,
-//     friend_id: 107,
-//   })
-// }
+  // Jasmine
+  await db('friendships').insert({
+    user_id: userId,
+    friend_id: 112,
+  })
+  // await db('friendships').insert({
+  //   user_id: userId,
+  //   friend_id: 107,
+  // })
+}
 
 passport.serializeUser((user, done) => done(null, user.id))
 
@@ -111,8 +114,8 @@ passport.use(
             const email = profile.emails[0].value
             const msg = {
               to: email,
-              from: 'do-not-reply@email.learnlocker.dev',
-              subject: 'Welcome to LearnLocker!',
+              from: 'info@learnlocker.dev',
+              subject: 'Welcome to locker.dev!',
               html: html(profile.username),
             }
             sgMail.send(msg)
@@ -128,7 +131,7 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
-                // await learnLockerToms(user_obj.id)
+                await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)
             })
@@ -160,8 +163,8 @@ passport.use(
         } else {
           const msg = {
             to: profile.emails[0].value,
-            from: 'do-not-reply@email.learnlocker.dev',
-            subject: 'Welcome to LearnLocker!',
+            from: 'info@learnlocker.dev',
+            subject: 'Welcome to locker.dev!',
             html: html(profile.displayName),
           }
           sgMail.send(msg)
@@ -178,7 +181,7 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
-                // await learnLockerToms(user_obj.id)
+                await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)
             })

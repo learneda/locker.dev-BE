@@ -44,7 +44,6 @@ module.exports = {
         .join('newsfeed_posts as np', 'np.id', 'n.post_id')
         .join('users as u', 'u.username', 'n.invoker')
         .orderBy('n.created_at', 'desc')
-        .groupBy('n.id')
 
       return { msg: 'success', notifications: notifications.reverse() }
     } catch (err) {

@@ -74,7 +74,9 @@ io.on('connection', async socket => {
                 type: 'comment',
                 invoker: msg.username,
               })
-              .then(res => {
+              .returning('*')
+              .then(result => {
+                console.log('HERE', result)
                 return db('online_users').where({ user_id: msg.postOwnerId })
               })
               .then(online_data => {
@@ -87,7 +89,7 @@ io.on('connection', async socket => {
                       if (notificationRes.length) {
                         io.to(online_data[0].socket_id).emit(
                           'join',
-                          notificationRes
+                          notificationRes[notificationRes.length - 1]
                         )
                       }
                     })

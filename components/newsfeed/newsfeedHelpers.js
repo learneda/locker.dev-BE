@@ -161,7 +161,7 @@ module.exports = {
           url: post.post_url,
           user_thoughts: post.user_thoughts,
           thumbnail_url: post.thumbnail_url,
-          type_id: post.type,
+          type_id: post.type.id,
         })
         .returning('*')
       console.log(newInsert)

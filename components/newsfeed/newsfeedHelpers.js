@@ -80,7 +80,7 @@ module.exports = {
           const likeCount = await db('posts_likes')
             .where('post_id', post.id)
             .countDistinct('user_id')
-          // attching post like count to post object
+          // attaching post like count to post object
           post.likes = Number(likeCount[0].count)
 
           const ponyCount = await db('posts_ponies')

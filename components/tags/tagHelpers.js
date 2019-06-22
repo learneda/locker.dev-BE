@@ -28,7 +28,7 @@ module.exports = {
         const likeCount = await db('posts_likes')
           .where('post_id', post.id)
           .countDistinct('user_id')
-        // attching post like count to post object
+        // attaching post like count to post object
         post.likes = Number(likeCount[0].count)
 
         const hasLiked = await db('posts_likes').where({
@@ -37,7 +37,7 @@ module.exports = {
         })
         // if response is not empty has hasLiked is true else false
         post.hasLiked = hasLiked.length > 0 ? true : false
-
+        console.log('\n 🦄 POST \n', post)
         post.profile_picture = post.user[0].profile_picture
 
         // =========== attaching pony data =============

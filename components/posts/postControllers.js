@@ -7,7 +7,7 @@ module.exports = {
       if (req.user) {
         const posts = await db('posts')
           .where({ user_id: req.user.id })
-          .orderBy('id', 'asc')
+          .orderBy('id', 'desc')
         return res.status(200).json(posts)
       }
     } catch (err) {
@@ -36,7 +36,7 @@ module.exports = {
           this.on('p.id', 'sp.post_id')
         })
         .where({ 'p.user_id': user_id })
-        .orderBy('p.id', 'asc')
+        .orderBy('p.id', 'desc')
 
       return res.status(200).json(posts)
     } catch (err) {

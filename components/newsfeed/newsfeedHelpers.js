@@ -145,11 +145,17 @@ module.exports = {
           id: user,
         })
         .first()
-      //! do i need ?
-      const type = await db('types')
-        .select('id')
-        .where('type_title', post.type)
-        .first()
+      //! type of number OORRR title
+      let type
+      if (post.type) {
+        const typeObject = await db('types')
+          .select('id')
+          .where('type_title', post.type)
+          .first()
+        type = typeObject.id
+      } else {
+        type = post.type_id
+      }
       console.log('type => ', type)
 
       // inserting to newsfeed
@@ -161,7 +167,7 @@ module.exports = {
           url: post.post_url,
           user_thoughts: post.user_thoughts,
           thumbnail_url: post.thumbnail_url,
-          type_id: post.type.id,
+          type_id: Number(type),
         })
         .returning('*')
       console.log(newInsert)

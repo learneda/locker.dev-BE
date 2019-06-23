@@ -26,6 +26,7 @@ module.exports = {
         )
     } catch (err) {
       console.log(err)
+      res.status(err.status).json(err)
     }
   },
 }

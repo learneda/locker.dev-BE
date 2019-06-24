@@ -13,7 +13,7 @@ module.exports = {
         params: {
           q,
           sort_by_date: 1,
-          type: 'podcast',
+          type: 'episode',
           offset: offset,
           language: 'English',
         },

@@ -123,12 +123,15 @@ module.exports = {
   async findTopTags() {
     try {
       const topTags = await db('tags as t')
+        .select('t.id', 't.hashtag')
         .limit(28)
-        .groupBy('id')
+        .orderBy('id', 'ace')
+
       if (topTags.length) {
         return { msg: 'success', topTags }
       }
     } catch (err) {
+      console.log(err)
       return { msg: 'error', err }
     }
   },

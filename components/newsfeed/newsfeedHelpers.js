@@ -309,7 +309,7 @@ module.exports = {
       }
 
       if (post.user_id === userId) {
-        let deletedPost = await db('newsfeed_post as n')
+        let deletedPost = await db('newsfeed_posts as n')
           .where('n.id', postId)
           .del()
           .returning('*')

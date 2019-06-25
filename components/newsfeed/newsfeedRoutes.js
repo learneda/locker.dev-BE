@@ -9,4 +9,6 @@ router.get('/:id', controllers.getSingleNewsfeedPost)
 
 router.delete('/:id', controllers.deleteNewsfeedPost)
 
+router.get('/profile/:id', controllers.getUserNewsfeedPosts)
+
 module.exports = router

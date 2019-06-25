@@ -37,7 +37,7 @@ module.exports = {
       ]
 
       // getting the final newsfeed post records with all correct IDs
-      const finalNewsfeed = await db('newsfeed_posts as n')
+      const profileFeed = await db('newsfeed_posts as n')
         .select(
           'display_name',
           'profile_picture',
@@ -57,7 +57,7 @@ module.exports = {
         .orderBy('n.created_at', 'desc')
 
       const commentLoop = async () => {
-        for (let post of finalNewsfeed) {
+        for (let post of profileFeed) {
           // correcting post.id value ....
           post.id = post.news_id
 
@@ -113,17 +113,17 @@ module.exports = {
       }
       await commentLoop()
       if (Number(offset) < 5) {
-        return { msg: 'success', newsFeed: finalNewsfeed.slice(0, 5) }
+        return { msg: 'success', newsFeed: profileFeed.slice(0, 5) }
       }
       if (Number(offset)) {
         return {
           msg: 'success',
-          newsFeed: finalNewsfeed.slice(Number(offset), Number(offset) + 5),
+          newsFeed: profileFeed.slice(Number(offset), Number(offset) + 5),
         }
       } else {
         return {
           msg: 'success',
-          newsFeed: finalNewsfeed,
+          newsFeed: profileFeed,
         }
       }
     } catch (err) {
@@ -320,6 +320,100 @@ module.exports = {
       }
     } catch (err) {
       return { msg: 'error', err }
+    }
+  },
+  async findUserPosts(userId, currentUser, offset) {
+    try {
+      const profileFeed = await db('newsfeed_posts as n')
+        .select(
+          'display_name',
+          'profile_picture',
+          'user_id',
+          'title',
+          'thumbnail_url',
+          'user_thoughts',
+          'n.id as news_id',
+          'url',
+          'type_id',
+          'n.created_at AS posted_at_date',
+          'u.username',
+          'n.description'
+        )
+        .where('n.user_id', userId)
+        .orderBy('n.created_at', 'desc')
+        .join('users as u', 'n.user_id', '=', 'u.id')
+
+      const commentLoop = async () => {
+        for (let post of profileFeed) {
+          post.id = post.news_id
+          const commentArray = await db('comments as c')
+            .select(
+              'c.id',
+              'c.created_at',
+              'c.content',
+              'c.user_id',
+              'c.post_id',
+              'u.username'
+            )
+            .where('c.post_id', '=', post.id)
+            .join('users as u', 'c.user_id', 'u.id')
+            .orderBy('c.id', 'asc')
+          // attach comment arr to post object
+          post.comments = commentArray
+
+          // get all existing records of this post on the likes tbl
+          const likeCount = await db('posts_likes')
+            .where('post_id', post.id)
+            .countDistinct('user_id')
+          // attaching post like count to post object
+          post.likes = Number(likeCount[0].count)
+
+          const ponyCount = await db('posts_ponies')
+            .where('post_id', post.id)
+            .countDistinct('user_id')
+
+          post.ponyCount = Number(ponyCount[0].count)
+
+          const hasPony = await db('posts_ponies').where({
+            post_id: post.id,
+            user_id: Number(currentUser),
+          })
+
+          post.hasPony = hasPony.length > 0 ? true : false
+
+          // checking if user has liked this post
+          const hasLiked = await db('posts_likes').where({
+            post_id: post.id,
+            user_id: Number(currentUser),
+          })
+          // if response is not empty has hasLiked is true else false
+          post.hasLiked = hasLiked.length > 0 ? true : false
+          // ========== ATTACHING TAGS ========
+          const tags = await db('post_tags')
+            .where({ newsfeed_id: post.id })
+            .join('tags', 'tags.id', 'post_tags.tag_id')
+
+          post.tags = tags
+        }
+      }
+      await commentLoop()
+      if (Number(offset) < 5) {
+        return { msg: 'success', newsFeed: profileFeed.slice(0, 5) }
+      }
+      if (Number(offset)) {
+        return {
+          msg: 'success',
+          newsFeed: profileFeed.slice(Number(offset), Number(offset) + 5),
+        }
+      } else {
+        return {
+          msg: 'success',
+          newsFeed: profileFeed,
+        }
+      }
+    } catch (err) {
+      console.log(err)
+      return err
     }
   },
 }

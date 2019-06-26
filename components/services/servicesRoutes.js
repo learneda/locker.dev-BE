@@ -8,4 +8,6 @@ router.get('/articles', routeCache.cacheSeconds(60), controllers.getArticles)
 
 router.get('/cheerio', controllers.launchCheerio)
 
+router.get('/clean-articles', controllers.cleanUp)
+
 module.exports = router

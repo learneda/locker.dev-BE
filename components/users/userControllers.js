@@ -157,7 +157,7 @@ module.exports = {
 
   /* ===== USER FOLLOWERS AND FOLLOWING COUNT ===== */
   async getUserFollowStats(req, res, next) {
-    const user_id = req.user === undefined ? req.body.user_id : req.user.id
+    const user_id = Number(req.params.id)
     try {
       const totalUserFollowers = await db('friendships')
         .where('friend_id', user_id)
@@ -391,6 +391,24 @@ module.exports = {
       res.status(200).json('post deleted')
     } else {
       res.status(500).json('something went wrong')
+    }
+  },
+  async getPostsCount(req, res, next) {
+    const userId = Number(req.params.id)
+    if (userId) {
+      try {
+        const count = await db('newsfeed_posts as n')
+          .where('n.user_id', userId)
+          .count()
+          .first()
+        if (count) {
+          res.status(200).json(count)
+        }
+      } catch (err) {
+        res.status(500).json(err)
+      }
+    } else {
+      res.status(400).json({msg: 'bad request'})
     }
   },
 }

@@ -9,7 +9,7 @@ const controllers = require('./userControllers')
 
 router.get('/all', controllers.getAllUsers)
 
-router.get('/followStats', controllers.getUserFollowStats)
+router.get('/followStats/:id', controllers.getUserFollowStats)
 
 router.get('/following', controllers.getUserFollowing)
 
@@ -36,5 +36,7 @@ router.delete('/unsubscribe', controllers.unsubscribeToUser)
 router.get('/following/:id', controllers.getFollowing)
 
 router.get('/avatars', controllers.fixAvatars)
+
+router.get('/posts/:id', controllers.getPostsCount)
 
 module.exports = router

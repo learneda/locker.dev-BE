@@ -82,6 +82,17 @@ module.exports = {
     }
     res.send('all okay')
   },
+  async cleanUp(req, res, next) {
+    try {
+      const cleanup = await db.raw(`DELETE FROM articles WHERE articles.id NOT IN (SELECT id FROM (SELECT DISTINCT ON (articles.url) * FROM articles) AS dublicates)`)
+      if (cleanup) {
+        res.status(200).json(cleanup)
+      }
+    } catch(err) {
+      console.log(err)
+      res.status(500).json(err)
+    }
+  }
 }
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======

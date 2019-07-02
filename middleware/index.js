@@ -11,6 +11,7 @@ const corsOptions = {
   credentials: true,
   origin: [
     'http://localhost:3000',
+    'http://localhost:3001',
     'https://learnedadev.netlify.com',
     'https://learnlocker.dev',
     'http://127.0.0.1:80',
@@ -24,7 +25,7 @@ module.exports = server => {
     cookieSession({
       name: 'learned-a',
       keys: [process.env.COOKIE_KEY],
-      maxAge: 3 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
     })
   )
   server.use(cors(corsOptions))

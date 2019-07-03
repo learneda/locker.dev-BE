@@ -1,6 +1,7 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('newsfeed_posts', tbl => {
     tbl.increments('id')
+
     tbl
       .integer('user_id')
       .references('id')
@@ -8,6 +9,7 @@ exports.up = function(knex, Promise) {
       .onDelete('cascade')
       .onUpdate('cascade')
       .unsigned()
+
     tbl.string('title')
     tbl.text('description')
     tbl.string('thumbnail_url', 500)

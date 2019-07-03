@@ -1,7 +1,16 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('posts_likes', tbl => {
     tbl.increments('id')
-    tbl.integer('post_id')
+
+    tbl
+      .integer('post_id')
+      .references('id')
+      .inTable('newsfeed_posts')
+      .onDelete('cascade')
+      .onUpdate('cascade')
+      .unsigned()
+      .notNullable()
+
     tbl
       .integer('user_id')
       .references('id')
@@ -9,6 +18,8 @@ exports.up = function(knex, Promise) {
       .onDelete('cascade')
       .onUpdate('cascade')
       .unsigned()
+      .notNullable()
+
     tbl.timestamp('created_at').defaultTo(knex.fn.now())
     tbl.timestamp('updated_at').defaultTo(knex.fn.now())
   })

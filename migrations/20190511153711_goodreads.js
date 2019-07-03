@@ -1,7 +1,14 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('goodreads', tbl => {
     tbl.increments('id')
-    tbl.integer('user_id')
+    tbl
+      .integer('user_id')
+      .references('id')
+      .inTable('users')
+      .onDelete('cascade')
+      .onUpdate('cascade')
+      .notNullable()
+
     tbl.text('book_id').nullable()
     tbl.text('title').nullable()
     tbl.text('author')

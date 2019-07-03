@@ -1,7 +1,7 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('folders', tbl => {
     tbl.increments('id')
-    tbl.string('folder_name').notNullable()
+    tbl.string('name').notNullable()
     tbl
       .integer('user_id')
       .references('id')

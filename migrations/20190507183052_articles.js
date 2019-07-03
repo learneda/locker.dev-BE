@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
     tbl.text('title').nullable()
     tbl.text('description').nullable()
     tbl.text('thumbnail').nullable()
-    tbl.text('created')
+    tbl.text('created').nullable()
     tbl.timestamp('created_at').defaultTo(knex.fn.now())
     tbl.timestamp('updated_at').defaultTo(knex.fn.now())
   })

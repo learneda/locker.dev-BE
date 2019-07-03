@@ -236,14 +236,16 @@ module.exports = {
   async getUsersWhoLikedPost(req, res, next) {
     const post_id = req.body.post_id
     try {
-      const selectPromise = await db('posts_likes')
+      const selectPromise = await db('posts_likes as pl')
         .where('post_id', post_id)
-        .distinct('user_id')
+        .join('users as u', 'u.id', 'pl.user_id')
+        .select('u.display_name', 'u.username', 'u.profile_picture')
+        .distinct('pl.user_id')
+
       if (selectPromise) {
         res.status(200).json(selectPromise)
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },

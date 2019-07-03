@@ -44,7 +44,7 @@ exports.seed = function(knex, Promise) {
   console.log(tagObjects)
 
   return knex('tags')
-    .del()
+    .truncate()
     .then(function() {
       // Inserts seed entries
       return knex('tags').insert(tagObjects)

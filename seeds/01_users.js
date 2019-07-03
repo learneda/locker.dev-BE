@@ -19,7 +19,7 @@ for (let i = 1; i < 100; i++) {
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
   return knex('users')
-    .del()
+    .truncate()
     .then(function() {
       // Inserts seed entries
       return knex('users').insert(fakeInsertData)

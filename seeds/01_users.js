@@ -5,9 +5,10 @@ for (let i = 1; i < 100; i++) {
   const username = faker.internet.userName()
   const location = faker.address.city()
   const profile_picture = faker.image.avatar()
-
+  const display_name = faker.name.firstName()
   const user = {
-    username: username,
+    display_name,
+    username,
     location,
     profile_picture,
   }

@@ -64,15 +64,15 @@ for (let i = 1; i < 100; i++) {
   const thumbnail_url = hardCodedImages[randomIndex]
   const title = faker.lorem.sentence()
   const description = faker.lorem.paragraph()
-  const user = {
-    post_url,
+  const post = {
     user_id: i,
-    title: title,
-    description: description,
+    post_url,
+    title,
+    description,
     thumbnail_url,
   }
 
-  fakeInsertData.push(user)
+  fakeInsertData.push(post)
 }
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries

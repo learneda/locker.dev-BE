@@ -241,11 +241,11 @@ module.exports = {
         .join('users as u', 'u.id', 'pl.user_id')
         .select('u.display_name', 'u.username', 'u.profile_picture')
         .distinct('pl.user_id')
-
       if (selectPromise) {
         res.status(200).json(selectPromise)
       }
     } catch (err) {
+      console.log(err)
       res.status(500).json(err)
     }
   },

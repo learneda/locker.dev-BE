@@ -26,7 +26,14 @@ module.exports = {
       },
       (error, response, body) => {
         if (!error && response.statusCode == 200) {
-          res.json(JSON.parse(body))
+          const json = JSON.parse(body)
+          const resultsWithUrl = json.results.map(course => {
+            course.url = `https://udemy.com${course.url}`
+            return course
+          })
+          json.results = resultsWithUrl
+          console.log(json)
+          res.json(json)
         }
       }
     )
@@ -84,15 +91,17 @@ module.exports = {
   },
   async cleanUp(req, res, next) {
     try {
-      const cleanup = await db.raw(`DELETE FROM articles WHERE articles.id NOT IN (SELECT id FROM (SELECT DISTINCT ON (articles.url) * FROM articles) AS dublicates)`)
+      const cleanup = await db.raw(
+        `DELETE FROM articles WHERE articles.id NOT IN (SELECT id FROM (SELECT DISTINCT ON (articles.url) * FROM articles) AS dublicates)`
+      )
       if (cleanup) {
         res.status(200).json(cleanup)
       }
-    } catch(err) {
+    } catch (err) {
       console.log(err)
       res.status(500).json(err)
     }
-  }
+  },
 }
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======

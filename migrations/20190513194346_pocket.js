@@ -1,7 +1,13 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('pocket', tbl => {
     tbl.increments('id')
-    tbl.integer('user_id')
+    tbl
+      .integer('user_id')
+      .references('id')
+      .inTable('users')
+      .onDelete('cascade')
+      .onUpdate('cascade')
+      .notNullable()
     tbl.text('resolved_title').nullable() // title
     tbl.text('resolved_url') // url
     tbl.boolean('favorited').defaultTo(false) // if !0 => true

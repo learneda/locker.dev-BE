@@ -1,5 +1,5 @@
 exports.up = function(knex, Promise) {
-  return knex.schema.createTable('tag_friendships', tbl => {
+  return knex.schema.createTable('integrations', tbl => {
     tbl.increments('id')
     tbl
       .integer('user_id')
@@ -7,17 +7,24 @@ exports.up = function(knex, Promise) {
       .inTable('users')
       .onDelete('cascade')
       .onUpdate('cascade')
-      .unsigned()
+      .notNullable()
+
     tbl
-      .integer('tag_id')
+      .integer('pocket_id')
       .references('id')
-      .inTable('tags')
+      .inTable('pocket')
       .onDelete('cascade')
       .onUpdate('cascade')
-      .notNullable()
+
+    tbl
+      .integer('goodreads_id')
+      .references('id')
+      .inTable('goodreads')
+      .onDelete('cascade')
+      .onUpdate('cascade')
   })
 }
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTableIfExists('tag_friendships')
+  return knex.schema.dropTableIfExists('locker')
 }

@@ -6,11 +6,17 @@ exports.up = function(knex, Promise) {
       .references('id')
       .inTable('users')
       .onDelete('cascade')
+      .onUpdate('cascade')
+      .notNullable()
+
     tbl
       .integer('post_id')
       .references('id')
       .inTable('posts')
       .onDelete('cascade')
+      .onUpdate('cascade')
+      .notNullable()
+
     tbl.boolean('read').defaultTo(false)
     tbl.string('type')
     tbl.string('invoker')

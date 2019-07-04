@@ -2,13 +2,15 @@ exports.up = function(knex, Promise) {
   return knex.schema.createTable('comments', tbl => {
     tbl.increments('id')
     tbl.text('content').notNullable()
+
     tbl
       .integer('post_id')
       .references('id')
-      .inTable('posts')
+      .inTable('newsfeed_posts')
       .onDelete('cascade')
       .onUpdate('cascade')
       .unsigned()
+
     tbl
       .integer('user_id')
       .references('id')

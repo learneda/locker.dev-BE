@@ -8,7 +8,13 @@ exports.up = function(knex, Promise) {
       .onDelete('cascade')
       .onUpdate('cascade')
       .unsigned()
-    tbl.integer('tag_id')
+    tbl
+      .integer('tag_id')
+      .references('id')
+      .inTable('tags')
+      .onDelete('cascade')
+      .onUpdate('cascade')
+      .unsigned()
   })
 }
 

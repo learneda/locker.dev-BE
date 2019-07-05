@@ -112,8 +112,8 @@ setInterval(async () => {
   let existingTitles = existingArticles.map((article, index) => {
     return article.title
   })
-  let existingCreated = existingArticles.map((article, index) => {
-    return article.created
+  let existingThumbnails = existingArticles.map((article, index) => {
+    return article.thumbnail
   })
   // GETTING FETCHING FREECODECAMP ARTICLES && HACKERNOON
   for (let i = 0; i < 2; i++) {
@@ -140,10 +140,13 @@ setInterval(async () => {
 
       Promise.all(tempo_articles).then(async articles => {
         let filteredArticles = articles.filter((article, index) => {
-          console.log(!existingTitles.includes(article.title), article.title)
+          console.log(
+            !existingTitles.includes(article.title) ||
+              !existingThumbnails.includes(article.thumbnail)
+          )
           return (
             !existingTitles.includes(article.title) ||
-            !existingCreated.includes(article.created)
+            !existingThumbnails.includes(article.thumbnail)
           )
         })
 

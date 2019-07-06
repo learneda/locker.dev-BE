@@ -145,7 +145,6 @@ setInterval(async () => {
       Promise.all(tempo_articles).then(async articles => {
         let filteredArticles = articles.filter((article, index) => {
           const splittedUrl = article.url.split('?')[0]
-          console.log(!existingUrls.includes(splittedUrl))
           return !existingUrls.includes(splittedUrl)
         })
 

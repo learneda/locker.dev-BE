@@ -91,7 +91,7 @@ module.exports = {
   async cleanUp(req, res, next) {
     try {
       const cleanup = await db.raw(
-        `DELETE FROM articles WHERE articles.id NOT IN (SELECT id FROM (SELECT DISTINCT ON (articles.url) * FROM articles) AS dublicates)`
+        `DELETE FROM articles WHERE articles.id NOT IN (SELECT id FROM (SELECT DISTINCT ON (articles.thumbnail) * FROM articles) AS dublicates)`
       )
       if (cleanup) {
         res.status(200).json(cleanup)
@@ -112,8 +112,12 @@ setInterval(async () => {
   let existingTitles = existingArticles.map((article, index) => {
     return article.title
   })
-  let existingCreated = existingArticles.map((article, index) => {
-    return article.created
+  let existingThumbnails = existingArticles.map((article, index) => {
+    return article.thumbnail
+  })
+
+  let existingUrls = existingArticles.map((article, index) => {
+    return article.url.split('?')[0]
   })
   // GETTING FETCHING FREECODECAMP ARTICLES && HACKERNOON
   for (let i = 0; i < 2; i++) {
@@ -140,11 +144,8 @@ setInterval(async () => {
 
       Promise.all(tempo_articles).then(async articles => {
         let filteredArticles = articles.filter((article, index) => {
-          console.log(!existingTitles.includes(article.title), article.title)
-          return (
-            !existingTitles.includes(article.title) ||
-            !existingCreated.includes(article.created)
-          )
+          const splittedUrl = article.url.split('?')[0]
+          return !existingUrls.includes(splittedUrl)
         })
 
         // INSERTING UNIQUE ARTICLES

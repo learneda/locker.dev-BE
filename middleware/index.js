@@ -32,7 +32,7 @@ module.exports = server => {
   server.use(cors(corsOptions))
   server.use(helmet())
   server.use(logger('dev'))
-  server.use(prerender.set('prerenderToken', process.env.PRERENDERED_TOKEN))
   server.use(passport.initialize())
   server.use(passport.session())
+  server.use(prerender.set('prerenderToken', process.env.PRERENDERED_TOKEN))
 }

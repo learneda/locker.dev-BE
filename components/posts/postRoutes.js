@@ -15,6 +15,8 @@ router.get('/like/count', controllers.getPostLikeCount)
 
 router.post('/like/users', controllers.getUsersWhoLikedPost)
 
+router.post('/pony/users', controllers.getUsersWhoPonyPost)
+
 router.post('/like', controllers.socialLikePost)
 
 router.get('/:id', controllers.getPost)

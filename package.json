@@ -44,6 +44,7 @@
 		"passport-local": "^1.0.0",
 		"passport-meetup-oauth2": "0.0.2",
 		"pg": "^7.11.0",
+		"prerender-node": "^3.2.4",
 		"qs": "^6.7.0",
 		"request": "^2.88.0",
 		"route-cache": "^0.4.4",

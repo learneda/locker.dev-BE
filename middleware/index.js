@@ -6,6 +6,7 @@ const passport = require('passport')
 const logger = require('morgan')
 const cors = require('cors')
 const path = require('path')
+const prerender = require('prerender-node')
 
 const corsOptions = {
   credentials: true,
@@ -31,6 +32,7 @@ module.exports = server => {
   server.use(cors(corsOptions))
   server.use(helmet())
   server.use(logger('dev'))
+  server.use(prerender.set('prerenderToken', process.env.PRERENDERED_TOKEN))
   server.use(passport.initialize())
   server.use(passport.session())
 }

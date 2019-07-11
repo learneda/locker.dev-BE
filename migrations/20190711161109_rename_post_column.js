@@ -3,6 +3,7 @@ exports.up = function(knex, Promise) {
     tbl.renameColumn('rating', 'mastery')
     tbl.boolean('recommended')
   })
+}
 
 exports.down = function(knex, Promise) {
   return knex.schema.table('posts', tbl => {

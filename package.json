@@ -30,14 +30,16 @@
 		"google-books-search": "^0.3.1",
 		"he": "^1.2.0",
 		"helmet": "^3.18.0",
-		"install": "^0.12.2",
 		"jsonwebtoken": "^8.5.1",
+<<<<<<< HEAD
 		"knex": "^0.17.3",
 		"moment": "^2.24.0",
+=======
+		"knex": "^0.19.0",
+>>>>>>> acf486f0975e0ef0f9771447b8efaf52c6f67516
 		"morgan": "^1.9.1",
 		"multer": "^1.4.1",
 		"multer-storage-cloudinary": "^2.2.1",
-		"npm": "^6.9.0",
 		"passport": "^0.4.0",
 		"passport-github": "^1.1.0",
 		"passport-goodreads": "^1.0.0",

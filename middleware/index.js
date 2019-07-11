@@ -12,6 +12,7 @@ const corsOptions = {
   credentials: true,
   origin: [
     'http://localhost:3000',
+    'http://localhost:5000',
     'http://localhost:3001',
     'https://learnedadev.netlify.com',
     'https://learnlocker.dev',

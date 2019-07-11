@@ -28,4 +28,5 @@ module.exports = server => {
   require('./tags')(server)
   require('./youtube')(server)
   require('./listen')(server)
+  require('./goals')(server)
 }

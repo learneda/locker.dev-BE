@@ -21,11 +21,11 @@ module.exports = {
     const { id } = req.body
     const {
       profile_picture,
-      displayName,
+      display_name,
       username,
       bio,
       location,
-      websiteUrl,
+      website_url,
       email,
     } = req.body
     if (id) {
@@ -34,8 +34,8 @@ module.exports = {
           .where({ id })
 
           .update({
-            display_name: displayName,
-            website_url: websiteUrl,
+            display_name: display_name,
+            website_url: website_url,
             profile_picture,
             username,
             bio,
@@ -408,7 +408,7 @@ module.exports = {
         res.status(500).json(err)
       }
     } else {
-      res.status(400).json({msg: 'bad request'})
+      res.status(400).json({ msg: 'bad request' })
     }
   },
 }

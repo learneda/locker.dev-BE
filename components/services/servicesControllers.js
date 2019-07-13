@@ -112,6 +112,7 @@ module.exports = {
     )
     const $ = cheerio.load(response.data)
     const lol = $('p[class="pricing ats-product-price"]').text()
+    console.log('WHT IS THIS ==>', lol)
     res.status(200).json({ responses: lol.split('$')[1] })
   },
 }

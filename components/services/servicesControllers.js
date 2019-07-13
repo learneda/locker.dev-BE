@@ -102,15 +102,22 @@ module.exports = {
     }
   },
   async gamestop(req, res, next) {
-    const search = req.body.game
-    console.log('THIS GOT HIT ')
-    const response = await axios.get(
-      `https://www.gamestop.com/browse?nav=16k-3-${search.replace(/\s+/g, '+')}`
-    )
-    const $ = cheerio.load(response.data)
-    const lol = $('p[class="pricing ats-product-price"]').text()
-    console.log('WHT IS THIS ==>', lol)
-    res.status(200).json({ responses: lol.split('$')[1] })
+    try {
+      const search = req.body.game
+      console.log('THIS GOT HIT ')
+      const response = await axios.get(
+        `https://www.gamestop.com/browse?nav=16k-3-${search.replace(
+          /\s+/g,
+          '+'
+        )}`
+      )
+      const $ = cheerio.load(response.data)
+      const lol = $('p[class="pricing ats-product-price"]').text()
+      console.log('WHT IS THIS ==>', lol)
+      res.status(200).json({ responses: lol.split('$')[1] })
+    } catch (err) {
+      console.log(err)
+    }
   },
 }
 

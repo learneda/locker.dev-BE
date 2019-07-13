@@ -101,6 +101,18 @@ module.exports = {
       res.status(500).json(err)
     }
   },
+  async gamestop(req, res, next) {
+    const search = req.body.game
+    const response = await axios.get(
+      `https://www.gamestop.com/browse?nav=16k-3-${search.replace(
+        /\s+/g,
+        '+'
+      )},28zu0`
+    )
+    const $ = cheerio.load(response.data)
+    const lol = $('p[class="pricing ats-product-price"]').text()
+    res.status(200).json({ responses: lol.split('$')[1] })
+  },
 }
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======

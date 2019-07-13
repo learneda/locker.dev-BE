@@ -10,4 +10,6 @@ router.get('/cheerio', controllers.launchCheerio)
 
 router.get('/clean-articles', controllers.cleanUp)
 
+router.post('/gamestop', controllers.gamestop)
+
 module.exports = router

@@ -128,7 +128,7 @@ module.exports = {
       GROUP BY tag_id, tags.hashtag
       ORDER BY COUNT(tag_id) DESC`)
 
-      if (topTags.length) {
+      if (topTags) {
         return { msg: 'success', topTags }
       }
     } catch (err) {

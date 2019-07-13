@@ -129,7 +129,7 @@ module.exports = {
       ORDER BY COUNT(tag_id) DESC`)
 
       if (topTags) {
-        return { msg: 'success', topTags }
+        return { msg: 'success', topTags: topTags.rows }
       }
     } catch (err) {
       console.log(err)

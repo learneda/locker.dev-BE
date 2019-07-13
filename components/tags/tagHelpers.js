@@ -122,10 +122,11 @@ module.exports = {
   },
   async findTopTags() {
     try {
-      const topTags = await db('tags as t')
-        .select('t.id', 't.hashtag')
-        .limit(28)
-        .orderBy('id', 'ace')
+      const topTags = await db.raw(`SELECT COUNT(tag_id), tag_id, tags.hashtag
+      FROM post_tags
+      LEFT OUTER JOIN tags ON tags.id = post_tags.tag_id
+      GROUP BY tag_id, tags.hashtag
+      ORDER BY COUNT(tag_id) DESC`)
 
       if (topTags.length) {
         return { msg: 'success', topTags }

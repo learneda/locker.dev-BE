@@ -105,10 +105,7 @@ module.exports = {
     const search = req.body.game
     console.log('THIS GOT HIT ')
     const response = await axios.get(
-      `https://www.gamestop.com/browse?nav=16k-3-${search.replace(
-        /\s+/g,
-        '+'
-      )},28zu0`
+      `https://www.gamestop.com/browse?nav=16k-3-${search.replace(/\s+/g, '+')}`
     )
     const $ = cheerio.load(response.data)
     const lol = $('p[class="pricing ats-product-price"]').text()

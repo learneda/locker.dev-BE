@@ -103,6 +103,7 @@ module.exports = {
   },
   async gamestop(req, res, next) {
     const search = req.body.game
+    console.log('THIS GOT HIT ')
     const response = await axios.get(
       `https://www.gamestop.com/browse?nav=16k-3-${search.replace(
         /\s+/g,

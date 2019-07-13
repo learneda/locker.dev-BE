@@ -51,11 +51,14 @@ module.exports = {
     }
   },
   async getTopTags(req, res, next) {
-    const response = await helpers.findTopTags()
-    if (response.msg === 'success') {
-      res.status(200).json(response.topTags)
-    } else {
-      res.status(500).json(response)
+    try {
+      const response = await helpers.findTopTags()
+      if (response.msg === 'success') {
+        res.status(200).json(response.topTags)
+      }
+    } catch (err) {
+      console.log(err)
+      res.status(500).json(err)
     }
   },
   async getUserFollowingTag(req, res, next) {

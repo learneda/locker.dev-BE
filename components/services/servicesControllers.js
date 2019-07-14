@@ -103,14 +103,13 @@ module.exports = {
   },
   async gamestop(req, res, next) {
     try {
+      const log = console.log
       const search = req.body.game
-      console.log('THIS GOT HIT ')
+      search.replace(/\s+/g, '+')
       const response = await axios.get(
-        `https://www.gamestop.com/browse?nav=16k-3-${search.replace(
-          /\s+/g,
-          '+'
-        )}`
+        `https://www.gamestop.com/browse?nav=16k-3-${search}`
       )
+      log('do i have a response with some data ?', $)
       const $ = cheerio.load(response.data)
       const lol = $('p[class="pricing ats-product-price"]').text()
       console.log('WHT IS THIS ==>', lol)

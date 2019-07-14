@@ -168,8 +168,14 @@ setInterval(async () => {
           return !existingUrls.includes(splittedUrl)
         })
 
+        // Filter out articles that lack a description
+
+        const descFilteredArticles = filteredArticles.filter(article =>
+          Boolean(article.description)
+        )
+
         // INSERTING UNIQUE ARTICLES
-        for (let article of filteredArticles) {
+        for (let article of descFilteredArticles) {
           await db('articles').insert({
             url: article.url,
             title: article.title,

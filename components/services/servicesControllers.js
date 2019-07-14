@@ -33,6 +33,8 @@ module.exports = {
           })
           json.results = resultsWithUrl
           res.json(json)
+        } else {
+          res.json(response)
         }
       }
     )
@@ -104,6 +106,7 @@ module.exports = {
   async gamestop(req, res, next) {
     try {
       const log = console.log
+      log('gamestop got hit')
       const search = req.body.game
       search.replace(/\s+/g, '+')
       const response = await axios.get(

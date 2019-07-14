@@ -4,6 +4,7 @@ const Feed = require('rss-to-json')
 const urlMetadata = require('url-metadata')
 const cheerio = require('cheerio')
 const db = require('../../dbConfig')
+const log = console.log
 
 module.exports = {
   getCourses(req, res, next) {
@@ -105,15 +106,15 @@ module.exports = {
   },
   async gamestop(req, res, next) {
     try {
-      const log = console.log
       log('gamestop got hit')
       const search = req.body.game
       search.replace(/\s+/g, '+')
       const response = await axios.get(
         `https://www.gamestop.com/browse?nav=16k-3-${search}`
       )
-      log('do i have a response with some data ?', $)
+      log('do i have a response with some data ?', response)
       const $ = cheerio.load(response.data)
+      log('after cheerio', $)
       const lol = $('p[class="pricing ats-product-price"]').text()
       console.log('WHT IS THIS ==>', lol)
       res.status(200).json({ responses: lol.split('$')[1] })
@@ -121,6 +122,7 @@ module.exports = {
       console.log(err)
     }
   },
+  async scrapRobin(req, res, next) {},
 }
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======

@@ -12,4 +12,6 @@ router.get('/clean-articles', controllers.cleanUp)
 
 router.post('/gamestop', controllers.gamestop)
 
+router.get('/robin', controllers.scrapRobin)
+
 module.exports = router

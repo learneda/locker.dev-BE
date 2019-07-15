@@ -4,6 +4,7 @@ const Feed = require('rss-to-json')
 const urlMetadata = require('url-metadata')
 const cheerio = require('cheerio')
 const db = require('../../dbConfig')
+const log = console.log
 
 module.exports = {
   getCourses(req, res, next) {
@@ -33,6 +34,8 @@ module.exports = {
           })
           json.results = resultsWithUrl
           res.json(json)
+        } else {
+          res.json(response)
         }
       }
     )
@@ -76,20 +79,49 @@ module.exports = {
   },
   async gamestop(req, res, next) {
     try {
-      const log = console.log
+      log('gamestop got hit')
       const search = req.body.game
       search.replace(/\s+/g, '+')
       const response = await axios.get(
         `https://www.gamestop.com/browse?nav=16k-3-${search}`
       )
-      log('do i have a response with some data ?', $)
+      log('do i have a response with some data ?', response)
       const $ = cheerio.load(response.data)
+      log('after cheerio', $)
       const lol = $('p[class="pricing ats-product-price"]').text()
       console.log('WHT IS THIS ==>', lol)
       res.status(200).json({ responses: lol.split('$')[1] })
     } catch (err) {
       console.log(err)
     }
+  },
+  async scrapDan(req, res, next) {
+    const response = await axios.get('https://overreacted.io/')
+    const $ = cheerio.load(response.data)
+    const urlsArr = []
+    $('article')
+      .find('header > h3 > a')
+      .each(function(i, ele) {
+        urlsArr[i] = `https://overreacted.io${$(this).attr('href')}`
+      })
+    // turn this into a functiooonnnnnn
+    // ======================
+    const metaPromises = urlsArr.map(url => urlMetadata(url))
+    let responses = await axios.all(metaPromises)
+    responses = responses.map(response => {
+      const { url, title, image, description } = response
+      const article = {
+        url,
+        title,
+        thumbnail:
+          image ||
+          'https://www.valuecoders.com/blog/wp-content/uploads/2016/08/react.png',
+        description,
+      }
+      return article
+    })
+    // ======================
+    await db('articles').insert(responses)
   },
 }
 

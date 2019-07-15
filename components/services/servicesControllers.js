@@ -207,7 +207,7 @@ setInterval(async () => {
       })
     })
   })
-}, 10000)
+}, 360000)
 
 // Scraping using Cheerio: robinwieruch.de & overreacted.io //
 setInterval(async () => {

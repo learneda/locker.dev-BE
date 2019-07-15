@@ -206,9 +206,9 @@ setInterval(async () => {
       })
     })
   })
-}, 86400000)
+}, 360000)
 
-// Scraping using Cheerio: robinwieruch.de //
+// Scraping using Cheerio: robinwieruch.de & overreacted.io //
 setInterval(async () => {
   // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
   const existingArticles = await db('articles')
@@ -243,9 +243,9 @@ setInterval(async () => {
     const splittedUrl = article.url.split('?')[0]
     return !existingUrls.includes(splittedUrl)
   })
-  await db('articles').insert(filteredArticles)
-  await scrapeDan()
-}, 10000)
+  db('articles').insert(filteredArticles)
+  scrapeDan()
+}, 100000000)
 
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')

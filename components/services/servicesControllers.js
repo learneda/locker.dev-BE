@@ -69,7 +69,7 @@ module.exports = {
       q = q.toLowerCase()
       articles = await db('articles')
         .whereRaw(
-          `LOWER(title) LIKE '%${q}%' OR LOWER(description) LIKE '%${q}%' `
+          `LOWER(title) LIKE '%${q}%' OR LOWER(description) LIKE '%${q}%' OR LOWER(url) LIKE '%${q}%'`
         )
         .orderBy('created_at', 'desc')
         .limit(limit)

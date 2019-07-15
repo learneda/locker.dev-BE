@@ -6,6 +6,22 @@ const cheerio = require('cheerio')
 const db = require('../../dbConfig')
 const log = console.log
 
+async function runThruUrlMetadata(arr) {
+  const metaPromises = arr.map(url => urlMetadata(url))
+  let responses = await axios.all(metaPromises)
+  responses = responses.map(response => {
+    const { url, title, image, description } = response
+    const article = {
+      url,
+      title,
+      thumbnail: image,
+      description,
+    }
+    return article
+  })
+  return responses
+}
+
 module.exports = {
   getCourses(req, res, next) {
     const { page, search } = req.query
@@ -122,34 +138,6 @@ module.exports = {
       console.log(err)
     }
   },
-  async scrapDan(req, res, next) {
-    const response = await axios.get('https://overreacted.io/')
-    const $ = cheerio.load(response.data)
-    const urlsArr = []
-    $('article')
-      .find('header > h3 > a')
-      .each(function(i, ele) {
-        urlsArr[i] = `https://overreacted.io${$(this).attr('href')}`
-      })
-    // turn this into a functiooonnnnnn
-    // ======================
-    const metaPromises = urlsArr.map(url => urlMetadata(url))
-    let responses = await axios.all(metaPromises)
-    responses = responses.map(response => {
-      const { url, title, image, description } = response
-      const article = {
-        url,
-        title,
-        thumbnail:
-          image ||
-          'https://www.valuecoders.com/blog/wp-content/uploads/2016/08/react.png',
-        description,
-      }
-      return article
-    })
-    // ======================
-    await db('articles').insert(responses)
-  },
 }
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======
@@ -217,3 +205,26 @@ setInterval(async () => {
     })
   }
 }, 3600000)
+async function scrapDan() {
+  const response = await axios.get('https://overreacted.io/')
+  const $ = cheerio.load(response.data)
+  const urlsArr = []
+  $('article')
+    .find('header > h3 > a')
+    .each(function(i, ele) {
+      urlsArr[i] = `https://overreacted.io${$(this).attr('href')}`
+    })
+
+  const existingArticles = await db('articles')
+
+  // FILTERING TITLES
+  let existingUrls = existingArticles.map((article, index) => {
+    return article.url
+  })
+
+  const filteredUrl = urlsArr.filter(url => !existingUrls.includes(url))
+
+  await db('articles').insert(await runThruUrlMetadata(filteredUrl))
+}
+
+setInterval(() => scrapDan(), 3600000)

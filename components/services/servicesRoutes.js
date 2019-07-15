@@ -12,6 +12,8 @@ router.get('/scrapeCeddia', controllers.scrapeCeddia)
 
 router.get('/scrapeAlligator', controllers.scrapeAlligator)
 
+router.get('/scrapeLogRocket', controllers.scrapeLogRocket)
+
 router.get('/clean-articles', controllers.cleanUp)
 
 router.post('/gamestop', controllers.gamestop)

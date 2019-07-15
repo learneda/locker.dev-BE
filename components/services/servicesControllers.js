@@ -146,7 +146,7 @@ module.exports = {
       })
     // first 3 entries are not articles
     urls = urls.slice(3)
-    // url are relatice ... prepending rootUrl
+    // url are relative ... prepending rootUrl
     urls = urls.map(url => rootUrl + url)
     // Need to slice only a few promises to prevent promise overflow
     const metaPromises = urls.slice(0, 10).map(url => urlMetadata(url))
@@ -179,6 +179,31 @@ module.exports = {
       .each(function(i, ele) {
         urls[i] = $(this).attr('href')
       })
+    const articles = await runThruUrlMetadata(urls)
+    // Existing articles
+    const existingArticles = await db('articles')
+    const existingUrls = existingArticles.map((article, index) => {
+      return article.url.split('?')[0]
+    })
+    // Filter articles
+    const filteredArticles = articles.filter(article => {
+      const splittedUrl = article.url.split('?')[0]
+      return !existingUrls.includes(splittedUrl)
+    })
+    await db('articles').insert(filteredArticles)
+    res.status(200).send('all okay')
+  },
+  async scrapeLogRocket(req, res, next) {
+    const rootUrl = `https://blog.logrocket.com/`
+    const response = await axios.get(rootUrl)
+    const $ = cheerio.load(response.data)
+    let urls = []
+    $('.listfeaturedtag')
+      .find('div > div > div > div > a')
+      .each(function(i, ele) {
+        urls[i] = $(this).attr('href')
+      })
+    console.log(urls)
     const articles = await runThruUrlMetadata(urls)
     // Existing articles
     const existingArticles = await db('articles')
@@ -314,8 +339,8 @@ setInterval(async () => {
   scrapeDan()
   scrapeCeddia()
   scrapeAlligator()
+  scrapeLogRocket()
 }, 100000000)
-
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')
   const $ = cheerio.load(response.data)

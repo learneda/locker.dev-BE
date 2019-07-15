@@ -129,6 +129,52 @@ module.exports = {
     }
     res.send('all okay')
   },
+  async scrapeCeddia(req, res, next) {
+    const { begin, end } = req.query
+    const existingArticles = await db('articles')
+
+    let existingUrls = existingArticles.map((article, index) => {
+      return article.url.split('?')[0]
+    })
+
+    const rootUrl = `https://daveceddia.com`
+    const archiveUrl = `https://daveceddia.com/archives/`
+
+    const response = await axios.get(archiveUrl)
+
+    const $ = cheerio.load(response.data)
+
+    let urls = []
+    $('ul')
+      .find('li > a')
+      .each(function(i, ele) {
+        urls[i] = $(this).attr('href')
+      })
+    urls = urls.slice(3)
+
+    urls = urls.map(url => rootUrl + url)
+    const metaPromises = urls.slice(begin, end).map(url => urlMetadata(url))
+    let responses = await axios.all(metaPromises)
+    console.log(responses)
+    console.log(urls.length)
+
+    responses = responses.map(response => {
+      const { url, title, image, description } = response
+      const article = {
+        url,
+        title,
+        thumbnail: image,
+        description,
+      }
+      return article
+    })
+    const filteredArticles = responses.filter(article => {
+      const splittedUrl = article.url.split('?')[0]
+      return !existingUrls.includes(splittedUrl)
+    })
+    await db('articles').insert(filteredArticles)
+    res.status(200).send(responses)
+  },
   async gamestop(req, res, next) {
     try {
       log('gamestop got hit')

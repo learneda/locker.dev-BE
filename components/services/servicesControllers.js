@@ -93,6 +93,33 @@ module.exports = {
       res.status(500).json(err)
     }
   },
+  async launchCheerio(req, res, next) {
+    for (let num = 8; num <= 13; num++) {
+      const url = `https://www.robinwieruch.de//page/${num}/`
+      const response = await axios.get(url)
+      const $ = cheerio.load(response.data)
+      const urls = []
+      $('section[class="post"]')
+        .find('div > div > div > a')
+        .each(function(i, ele) {
+          urls[i] = $(this).attr('href')
+        })
+      const metaPromises = urls.map(url => urlMetadata(url))
+      let responses = await axios.all(metaPromises)
+      responses = responses.map(response => {
+        const { url, title, image, description } = response
+        const article = {
+          url,
+          title,
+          thumbnail: image,
+          description,
+        }
+        return article
+      })
+      await db('articles').insert(responses)
+    }
+    res.send('all okay')
+  },
   async gamestop(req, res, next) {
     try {
       log('gamestop got hit')

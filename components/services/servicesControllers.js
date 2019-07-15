@@ -93,8 +93,13 @@ module.exports = {
       res.status(500).json(err)
     }
   },
-  async launchCheerio(req, res, next) {
-    for (let num = 8; num <= 13; num++) {
+  async scrapeRobin(req, res, next) {
+    const existingArticles = await db('articles')
+
+    let existingUrls = existingArticles.map((article, index) => {
+      return article.url.split('?')[0]
+    })
+    for (let num = 2; num <= 7; num++) {
       const url = `https://www.robinwieruch.de//page/${num}/`
       const response = await axios.get(url)
       const $ = cheerio.load(response.data)
@@ -116,7 +121,11 @@ module.exports = {
         }
         return article
       })
-      await db('articles').insert(responses)
+      const filteredArticles = responses.filter(article => {
+        const splittedUrl = article.url.split('?')[0]
+        return !existingUrls.includes(splittedUrl)
+      })
+      await db('articles').insert(filteredArticles)
     }
     res.send('all okay')
   },
@@ -197,7 +206,7 @@ setInterval(async () => {
       })
     })
   })
-}, 20000)
+}, 86400000)
 
 // Scraping using Cheerio: robinwieruch.de //
 setInterval(async () => {
@@ -235,10 +244,10 @@ setInterval(async () => {
     return !existingUrls.includes(splittedUrl)
   })
   await db('articles').insert(filteredArticles)
-  await scrapDan()
-}, 1000)
+  await scrapeDan()
+}, 10000)
 
-async function scrapDan() {
+async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')
   const $ = cheerio.load(response.data)
   const urlsArr = []

@@ -208,7 +208,8 @@ setInterval(async () => {
     return !existingUrls.includes(splittedUrl)
   })
   await db('articles').insert(filteredArticles)
-}, 60000)
+  await scrapDan()
+}, 1000)
 
 async function scrapDan() {
   const response = await axios.get('https://overreacted.io/')
@@ -231,5 +232,3 @@ async function scrapDan() {
 
   await db('articles').insert(await runThruUrlMetadata(filteredUrl))
 }
-
-setInterval(() => scrapDan(), 1000)

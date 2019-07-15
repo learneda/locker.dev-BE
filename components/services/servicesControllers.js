@@ -61,33 +61,6 @@ module.exports = {
     }
     return res.status(500).send('no articles found')
   },
-  async launchCheerio(req, res, next) {
-    for (let num = 8; num <= 13; num++) {
-      const url = `https://www.robinwieruch.de//page/${num}/`
-      const response = await axios.get(url)
-      const $ = cheerio.load(response.data)
-      const urls = []
-      $('section[class="post"]')
-        .find('div > div > div > a')
-        .each(function(i, ele) {
-          urls[i] = $(this).attr('href')
-        })
-      const metaPromises = urls.map(url => urlMetadata(url))
-      let responses = await axios.all(metaPromises)
-      responses = responses.map(response => {
-        const { url, title, image, description } = response
-        const article = {
-          url,
-          title,
-          thumbnail: image,
-          description,
-        }
-        return article
-      })
-      await db('articles').insert(responses)
-    }
-    res.send('all okay')
-  },
   async cleanUp(req, res, next) {
     try {
       const cleanup = await db.raw(
@@ -120,32 +93,26 @@ module.exports = {
   },
 }
 
-// ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======
+// ======= Scrapping RSS Feeds Every <ms> ======
 setInterval(async () => {
   // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
   const existingArticles = await db('articles')
 
-  // FILTERING TITLES
-  let existingTitles = existingArticles.map((article, index) => {
-    return article.title
-  })
-  let existingThumbnails = existingArticles.map((article, index) => {
-    return article.thumbnail
-  })
-
+  // FILTERING BY BASE URL
   let existingUrls = existingArticles.map((article, index) => {
     return article.url.split('?')[0]
   })
   // GETTING FETCHING FREECODECAMP ARTICLES && HACKERNOON
-  for (let i = 0; i < 2; i++) {
-    const url =
-      i === 0
-        ? 'https://medium.freecodecamp.org/feed'
-        : 'https://hackernoon.com/feed'
+  const scrappingArray = [
+    'https://medium.freecodecamp.org/feed',
+    'https://www.smashingmagazine.com/feed',
+    'https://davidwalsh.name/feed',
+  ]
+  scrappingArray.map(url => {
     Feed.load(url, function(err, rss) {
       const tempo_articles = rss.items.map(item => {
         // for each article, get its url and parse it
-        let url = item.url
+        let url = item.url.split('?')[0]
         return urlMetadata(url)
           .then(article => ({
             created: item.created,
@@ -166,9 +133,8 @@ setInterval(async () => {
         })
 
         // Filter out articles that lack a description
-
-        const descFilteredArticles = filteredArticles.filter(article =>
-          Boolean(article.description)
+        const descFilteredArticles = filteredArticles.filter(
+          article => !!article.description
         )
 
         // INSERTING UNIQUE ARTICLES
@@ -183,5 +149,43 @@ setInterval(async () => {
         }
       })
     })
-  }
-}, 3600000)
+  })
+}, 20000)
+
+// Scraping using Cheerio: robinwieruch.de //
+setInterval(async () => {
+  // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
+  const existingArticles = await db('articles')
+
+  // FILTERING BY BASE URL
+  let existingUrls = existingArticles.map((article, index) => {
+    return article.url.split('?')[0]
+  })
+  // Scrapping w/ cheerio
+  const url = `https://www.robinwieruch.de/`
+  const response = await axios.get(url)
+  const $ = cheerio.load(response.data)
+  const urls = []
+  $('section[class="post"]')
+    .find('div > div > div > a')
+    .each(function(i, ele) {
+      urls[i] = $(this).attr('href')
+    })
+  const metaPromises = urls.map(url => urlMetadata(url))
+  let articles = await axios.all(metaPromises)
+  articles = articles.map(item => {
+    const { url, title, image, description } = item
+    const article = {
+      url,
+      title,
+      thumbnail: image,
+      description,
+    }
+    return article
+  })
+  const filteredArticles = articles.filter(article => {
+    const splittedUrl = article.url.split('?')[0]
+    return !existingUrls.includes(splittedUrl)
+  })
+  await db('articles').insert(filteredArticles)
+}, 86400000)

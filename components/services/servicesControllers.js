@@ -130,33 +130,27 @@ module.exports = {
     res.send('all okay')
   },
   async scrapeCeddia(req, res, next) {
-    const { begin, end } = req.query
     const existingArticles = await db('articles')
-
     let existingUrls = existingArticles.map((article, index) => {
       return article.url.split('?')[0]
     })
-
     const rootUrl = `https://daveceddia.com`
     const archiveUrl = `https://daveceddia.com/archives/`
-
     const response = await axios.get(archiveUrl)
-
     const $ = cheerio.load(response.data)
-
     let urls = []
     $('ul')
       .find('li > a')
       .each(function(i, ele) {
         urls[i] = $(this).attr('href')
       })
+    // first 3 entries are not articles
     urls = urls.slice(3)
-
+    // url are relatice ... prepending rootUrl
     urls = urls.map(url => rootUrl + url)
-    const metaPromises = urls.slice(begin, end).map(url => urlMetadata(url))
+    // Need to slice only a few promises to prevent promise overflow
+    const metaPromises = urls.slice(0, 10).map(url => urlMetadata(url))
     let responses = await axios.all(metaPromises)
-    console.log(responses)
-    console.log(urls.length)
 
     responses = responses.map(response => {
       const { url, title, image, description } = response
@@ -173,7 +167,7 @@ module.exports = {
       return !existingUrls.includes(splittedUrl)
     })
     await db('articles').insert(filteredArticles)
-    res.status(200).send(responses)
+    res.status(200).send('all okay')
   },
   async gamestop(req, res, next) {
     try {
@@ -255,7 +249,9 @@ setInterval(async () => {
   })
 }, 360000)
 
-// Scraping using Cheerio: robinwieruch.de & overreacted.io //
+// Scraping using Cheerio:
+//  robinwieruch.de & overreacted.io & Ceddia
+
 setInterval(async () => {
   // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
   const existingArticles = await db('articles')
@@ -292,6 +288,7 @@ setInterval(async () => {
   })
   db('articles').insert(filteredArticles)
   scrapeDan()
+  scrapeCeddia()
 }, 100000000)
 
 async function scrapeDan() {

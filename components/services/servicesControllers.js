@@ -220,4 +220,4 @@ setInterval(async () => {
     return !existingUrls.includes(splittedUrl)
   })
   await db('articles').insert(filteredArticles)
-}, 86400000)
+}, 60000)

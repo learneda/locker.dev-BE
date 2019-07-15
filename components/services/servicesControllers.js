@@ -163,6 +163,7 @@ setInterval(async () => {
     'https://medium.freecodecamp.org/feed',
     'https://www.smashingmagazine.com/feed',
     'https://davidwalsh.name/feed',
+    'https://css-tricks.com/feed/',
   ]
   scrappingArray.map(url => {
     Feed.load(url, function(err, rss) {
@@ -206,7 +207,7 @@ setInterval(async () => {
       })
     })
   })
-}, 360000)
+}, 10000)
 
 // Scraping using Cheerio: robinwieruch.de & overreacted.io //
 setInterval(async () => {

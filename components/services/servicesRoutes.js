@@ -10,6 +10,8 @@ router.get('/scrapeRobin', controllers.scrapeRobin)
 
 router.get('/scrapeCeddia', controllers.scrapeCeddia)
 
+router.get('/scrapeAlligator', controllers.scrapeAlligator)
+
 router.get('/clean-articles', controllers.cleanUp)
 
 router.post('/gamestop', controllers.gamestop)

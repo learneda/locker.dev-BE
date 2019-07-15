@@ -169,6 +169,30 @@ module.exports = {
     await db('articles').insert(filteredArticles)
     res.status(200).send('all okay')
   },
+  async scrapeAlligator(req, res, next) {
+    const rootUrl = `https://alligator.io/explore/`
+    const response = await axios.get(rootUrl)
+    const $ = cheerio.load(response.data)
+    let urls = []
+    $('.front-flex')
+      .find('a')
+      .each(function(i, ele) {
+        urls[i] = $(this).attr('href')
+      })
+    const articles = await runThruUrlMetadata(urls)
+    // Existing articles
+    const existingArticles = await db('articles')
+    const existingUrls = existingArticles.map((article, index) => {
+      return article.url.split('?')[0]
+    })
+    // Filter articles
+    const filteredArticles = articles.filter(article => {
+      const splittedUrl = article.url.split('?')[0]
+      return !existingUrls.includes(splittedUrl)
+    })
+    await db('articles').insert(filteredArticles)
+    res.status(200).send('all okay')
+  },
   async gamestop(req, res, next) {
     try {
       log('gamestop got hit')
@@ -289,6 +313,7 @@ setInterval(async () => {
   db('articles').insert(filteredArticles)
   scrapeDan()
   scrapeCeddia()
+  scrapeAlligator()
 }, 100000000)
 
 async function scrapeDan() {

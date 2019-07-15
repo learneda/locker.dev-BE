@@ -122,7 +122,34 @@ module.exports = {
       console.log(err)
     }
   },
-  async scrapRobin(req, res, next) {},
+  async scrapDan(req, res, next) {
+    const response = await axios.get('https://overreacted.io/')
+    const $ = cheerio.load(response.data)
+    const urlsArr = []
+    $('article')
+      .find('header > h3 > a')
+      .each(function(i, ele) {
+        urlsArr[i] = `https://overreacted.io${$(this).attr('href')}`
+      })
+    // turn this into a functiooonnnnnn
+    // ======================
+    const metaPromises = urlsArr.map(url => urlMetadata(url))
+    let responses = await axios.all(metaPromises)
+    responses = responses.map(response => {
+      const { url, title, image, description } = response
+      const article = {
+        url,
+        title,
+        thumbnail:
+          image ||
+          'https://www.valuecoders.com/blog/wp-content/uploads/2016/08/react.png',
+        description,
+      }
+      return article
+    })
+    // ======================
+    await db('articles').insert(responses)
+  },
 }
 
 // ======= getting freeCodeCampArticles && Hackernoon Every <ms> ======

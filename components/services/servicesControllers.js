@@ -62,12 +62,16 @@ module.exports = {
     let articles
     if (!q) {
       articles = await db('articles')
+        .select('*')
+        .distinct('id')
         .orderBy('created_at', 'desc')
         .limit(limit)
         .offset(offset)
     } else {
       q = q.toLowerCase()
       articles = await db('articles')
+        .select('*')
+        .distinct('id')
         .whereRaw(
           `LOWER(title) LIKE '%${q}%' OR LOWER(description) LIKE '%${q}%' OR LOWER(url) LIKE '%${q}%'`
         )

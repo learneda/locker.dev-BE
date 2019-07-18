@@ -345,6 +345,7 @@ setInterval(async () => {
   scrapeAlligator()
   scrapeLogRocket()
 }, 100000000)
+
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')
   const $ = cheerio.load(response.data)

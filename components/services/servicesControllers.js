@@ -93,131 +93,7 @@ module.exports = {
       res.status(500).json(err)
     }
   },
-  async scrapeRobin(req, res, next) {
-    const existingArticles = await db('articles')
 
-    let existingUrls = existingArticles.map((article, index) => {
-      return article.url.split('?')[0]
-    })
-    for (let num = 2; num <= 7; num++) {
-      const url = `https://www.robinwieruch.de//page/${num}/`
-      const response = await axios.get(url)
-      const $ = cheerio.load(response.data)
-      const urls = []
-      $('section[class="post"]')
-        .find('div > div > div > a')
-        .each(function(i, ele) {
-          urls[i] = $(this).attr('href')
-        })
-      const metaPromises = urls.map(url => urlMetadata(url))
-      let responses = await axios.all(metaPromises)
-      responses = responses.map(response => {
-        const { url, title, image, description } = response
-        const article = {
-          url,
-          title,
-          thumbnail: image,
-          description,
-        }
-        return article
-      })
-      const filteredArticles = responses.filter(article => {
-        const splittedUrl = article.url.split('?')[0]
-        return !existingUrls.includes(splittedUrl)
-      })
-      await db('articles').insert(filteredArticles)
-    }
-    res.send('all okay')
-  },
-  async scrapeCeddia(req, res, next) {
-    const existingArticles = await db('articles')
-    let existingUrls = existingArticles.map((article, index) => {
-      return article.url.split('?')[0]
-    })
-    const rootUrl = `https://daveceddia.com`
-    const archiveUrl = `https://daveceddia.com/archives/`
-    const response = await axios.get(archiveUrl)
-    const $ = cheerio.load(response.data)
-    let urls = []
-    $('ul')
-      .find('li > a')
-      .each(function(i, ele) {
-        urls[i] = $(this).attr('href')
-      })
-    // first 3 entries are not articles
-    urls = urls.slice(3)
-    // url are relative ... prepending rootUrl
-    urls = urls.map(url => rootUrl + url)
-    // Need to slice only a few promises to prevent promise overflow
-    const metaPromises = urls.slice(0, 10).map(url => urlMetadata(url))
-    let responses = await axios.all(metaPromises)
-
-    responses = responses.map(response => {
-      const { url, title, image, description } = response
-      const article = {
-        url,
-        title,
-        thumbnail: image,
-        description,
-      }
-      return article
-    })
-    const filteredArticles = responses.filter(article => {
-      const splittedUrl = article.url.split('?')[0]
-      return !existingUrls.includes(splittedUrl)
-    })
-    await db('articles').insert(filteredArticles)
-    res.status(200).send('all okay')
-  },
-  async scrapeAlligator(req, res, next) {
-    const rootUrl = `https://alligator.io/explore/`
-    const response = await axios.get(rootUrl)
-    const $ = cheerio.load(response.data)
-    let urls = []
-    $('.front-flex')
-      .find('a')
-      .each(function(i, ele) {
-        urls[i] = $(this).attr('href')
-      })
-    const articles = await runThruUrlMetadata(urls)
-    // Existing articles
-    const existingArticles = await db('articles')
-    const existingUrls = existingArticles.map((article, index) => {
-      return article.url.split('?')[0]
-    })
-    // Filter articles
-    const filteredArticles = articles.filter(article => {
-      const splittedUrl = article.url.split('?')[0]
-      return !existingUrls.includes(splittedUrl)
-    })
-    await db('articles').insert(filteredArticles)
-    res.status(200).send('all okay')
-  },
-  async scrapeLogRocket(req, res, next) {
-    const rootUrl = `https://blog.logrocket.com/`
-    const response = await axios.get(rootUrl)
-    const $ = cheerio.load(response.data)
-    let urls = []
-    $('.listfeaturedtag')
-      .find('div > div > div > div > a')
-      .each(function(i, ele) {
-        urls[i] = $(this).attr('href')
-      })
-    console.log(urls)
-    const articles = await runThruUrlMetadata(urls)
-    // Existing articles
-    const existingArticles = await db('articles')
-    const existingUrls = existingArticles.map((article, index) => {
-      return article.url.split('?')[0]
-    })
-    // Filter articles
-    const filteredArticles = articles.filter(article => {
-      const splittedUrl = article.url.split('?')[0]
-      return !existingUrls.includes(splittedUrl)
-    })
-    await db('articles').insert(filteredArticles)
-    res.status(200).send('all okay')
-  },
   async gamestop(req, res, next) {
     try {
       log('gamestop got hit')
@@ -236,6 +112,131 @@ module.exports = {
       console.log(err)
     }
   },
+}
+
+async function scrapeAlligator() {
+  const rootUrl = `https://alligator.io/explore/`
+  const response = await axios.get(rootUrl)
+  const $ = cheerio.load(response.data)
+  let urls = []
+  $('.front-flex')
+    .find('a')
+    .each(function(i, ele) {
+      urls[i] = $(this).attr('href')
+    })
+  const articles = await runThruUrlMetadata(urls)
+  // Existing articles
+  const existingArticles = await db('articles')
+  const existingUrls = existingArticles.map((article, index) => {
+    return article.url.split('?')[0]
+  })
+  // Filter articles
+  const filteredArticles = articles.filter(article => {
+    const splittedUrl = article.url.split('?')[0]
+    return !existingUrls.includes(splittedUrl)
+  })
+  await db('articles').insert(filteredArticles)
+}
+
+async function scrapeCeddia() {
+  const existingArticles = await db('articles')
+  let existingUrls = existingArticles.map((article, index) => {
+    return article.url.split('?')[0]
+  })
+  const rootUrl = `https://daveceddia.com`
+  const archiveUrl = `https://daveceddia.com/archives/`
+  const response = await axios.get(archiveUrl)
+  const $ = cheerio.load(response.data)
+  let urls = []
+  $('ul')
+    .find('li > a')
+    .each(function(i, ele) {
+      urls[i] = $(this).attr('href')
+    })
+  // first 3 entries are not articles
+  urls = urls.slice(3)
+  // url are relative ... prepending rootUrl
+  urls = urls.map(url => rootUrl + url)
+  // Need to slice only a few promises to prevent promise overflow
+  const metaPromises = urls.slice(0, 10).map(url => urlMetadata(url))
+  let responses = await axios.all(metaPromises)
+
+  responses = responses.map(response => {
+    const { url, title, image, description } = response
+    const article = {
+      url,
+      title,
+      thumbnail: image,
+      description,
+    }
+    return article
+  })
+  const filteredArticles = responses.filter(article => {
+    const splittedUrl = article.url.split('?')[0]
+    return !existingUrls.includes(splittedUrl)
+  })
+  await db('articles').insert(filteredArticles)
+}
+
+async function scrapeLogRocket() {
+  const rootUrl = `https://blog.logrocket.com/`
+  const response = await axios.get(rootUrl)
+  const $ = cheerio.load(response.data)
+  let urls = []
+  $('.listfeaturedtag')
+    .find('div > div > div > div > a')
+    .each(function(i, ele) {
+      urls[i] = $(this).attr('href')
+    })
+  console.log(urls)
+  const articles = await runThruUrlMetadata(urls)
+  // Existing articles
+  const existingArticles = await db('articles')
+  const existingUrls = existingArticles.map((article, index) => {
+    return article.url.split('?')[0]
+  })
+  // Filter articles
+  const filteredArticles = articles.filter(article => {
+    const splittedUrl = article.url.split('?')[0]
+    return !existingUrls.includes(splittedUrl)
+  })
+  await db('articles').insert(filteredArticles)
+}
+
+async function scrapeRobin() {
+  const existingArticles = await db('articles')
+
+  let existingUrls = existingArticles.map((article, index) => {
+    return article.url.split('?')[0]
+  })
+  for (let num = 2; num <= 7; num++) {
+    const url = `https://www.robinwieruch.de//page/${num}/`
+    const response = await axios.get(url)
+    const $ = cheerio.load(response.data)
+    const urls = []
+    $('section[class="post"]')
+      .find('div > div > div > a')
+      .each(function(i, ele) {
+        urls[i] = $(this).attr('href')
+      })
+    const metaPromises = urls.map(url => urlMetadata(url))
+    let responses = await axios.all(metaPromises)
+    responses = responses.map(response => {
+      const { url, title, image, description } = response
+      const article = {
+        url,
+        title,
+        thumbnail: image,
+        description,
+      }
+      return article
+    })
+    const filteredArticles = responses.filter(article => {
+      const splittedUrl = article.url.split('?')[0]
+      return !existingUrls.includes(splittedUrl)
+    })
+    await db('articles').insert(filteredArticles)
+  }
 }
 
 // ======= Scrapping RSS Feeds Every <ms> ======
@@ -340,7 +341,9 @@ setInterval(async () => {
   scrapeCeddia()
   scrapeAlligator()
   scrapeLogRocket()
-}, 100000000)
+  log('yay')
+}, 30000)
+
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')
   const $ = cheerio.load(response.data)

@@ -341,8 +341,7 @@ setInterval(async () => {
   scrapeCeddia()
   scrapeAlligator()
   scrapeLogRocket()
-  log('yay')
-}, 30000)
+}, 100000000)
 
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')

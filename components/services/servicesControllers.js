@@ -62,12 +62,16 @@ module.exports = {
     let articles
     if (!q) {
       articles = await db('articles')
+        .select('*')
+        .distinct('id')
         .orderBy('created_at', 'desc')
         .limit(limit)
         .offset(offset)
     } else {
       q = q.toLowerCase()
       articles = await db('articles')
+        .select('*')
+        .distinct('id')
         .whereRaw(
           `LOWER(title) LIKE '%${q}%' OR LOWER(description) LIKE '%${q}%' OR LOWER(url) LIKE '%${q}%'`
         )
@@ -111,6 +115,36 @@ module.exports = {
     } catch (err) {
       console.log(err)
     }
+    let existingUrls = existingArticles.map((article, index) => {
+      return article.url.split('?')[0]
+    })
+    const url = `https://www.robinwieruch.de/`
+    const response = await axios.get(url)
+    const $ = cheerio.load(response.data)
+    const urls = []
+    $('section[class="post"]')
+      .find('div > div > div > a')
+      .each(function(i, ele) {
+        urls[i] = $(this).attr('href')
+      })
+    const metaPromises = urls.map(url => urlMetadata(url))
+    let responses = await axios.all(metaPromises)
+    responses = responses.map(response => {
+      const { url, title, image, description } = response
+      const article = {
+        url,
+        title,
+        thumbnail: image,
+        description,
+      }
+      return article
+    })
+    const filteredArticles = responses.filter(article => {
+      const splittedUrl = article.url.split('?')[0]
+      return !existingUrls.includes(splittedUrl)
+    })
+    await db('articles').insert(filteredArticles)
+    res.send('all okay')
   },
 }
 
@@ -341,7 +375,7 @@ setInterval(async () => {
   scrapeCeddia()
   scrapeAlligator()
   scrapeLogRocket()
-}, 100000000)
+}, 30000)
 
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')

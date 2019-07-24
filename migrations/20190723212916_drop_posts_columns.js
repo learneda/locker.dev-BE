@@ -5,8 +5,10 @@ exports.up = function(knex) {
 }
 
 exports.down = function(knex) {
-  tbl.boolean('recommended')
-  tbl.boolean('completed')
-  tbl.boolean('shared')
-  tbl.integer('mastry')
+  return knex.schema.table('posts', => {
+    tbl.boolean('recommended')
+    tbl.boolean('completed')
+    tbl.boolean('shared')
+    tbl.integer('mastry')
+  })
 }

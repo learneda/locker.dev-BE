@@ -8,6 +8,4 @@ router.get('/articles', routeCache.cacheSeconds(60), controllers.getArticles)
 
 router.get('/clean-articles', controllers.cleanUp)
 
-router.post('/gamestop', controllers.gamestop)
-
 module.exports = router

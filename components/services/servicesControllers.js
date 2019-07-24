@@ -97,55 +97,6 @@ module.exports = {
       res.status(500).json(err)
     }
   },
-
-  async gamestop(req, res, next) {
-    try {
-      log('gamestop got hit')
-      const search = req.body.game
-      search.replace(/\s+/g, '+')
-      const response = await axios.get(
-        `https://www.gamestop.com/browse?nav=16k-3-${search}`
-      )
-      log('do i have a response with some data ?', response)
-      const $ = cheerio.load(response.data)
-      log('after cheerio', $)
-      const lol = $('p[class="pricing ats-product-price"]').text()
-      console.log('WHT IS THIS ==>', lol)
-      res.status(200).json({ responses: lol.split('$')[1] })
-    } catch (err) {
-      console.log(err)
-    }
-    let existingUrls = existingArticles.map((article, index) => {
-      return article.url.split('?')[0]
-    })
-    const url = `https://www.robinwieruch.de/`
-    const response = await axios.get(url)
-    const $ = cheerio.load(response.data)
-    const urls = []
-    $('section[class="post"]')
-      .find('div > div > div > a')
-      .each(function(i, ele) {
-        urls[i] = $(this).attr('href')
-      })
-    const metaPromises = urls.map(url => urlMetadata(url))
-    let responses = await axios.all(metaPromises)
-    responses = responses.map(response => {
-      const { url, title, image, description } = response
-      const article = {
-        url,
-        title,
-        thumbnail: image,
-        description,
-      }
-      return article
-    })
-    const filteredArticles = responses.filter(article => {
-      const splittedUrl = article.url.split('?')[0]
-      return !existingUrls.includes(splittedUrl)
-    })
-    await db('articles').insert(filteredArticles)
-    res.send('all okay')
-  },
 }
 
 async function scrapeAlligator() {
@@ -238,39 +189,40 @@ async function scrapeLogRocket() {
 }
 
 async function scrapeRobin() {
+  // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
   const existingArticles = await db('articles')
 
+  // FILTERING BY BASE URL
   let existingUrls = existingArticles.map((article, index) => {
     return article.url.split('?')[0]
   })
-  for (let num = 2; num <= 7; num++) {
-    const url = `https://www.robinwieruch.de//page/${num}/`
-    const response = await axios.get(url)
-    const $ = cheerio.load(response.data)
-    const urls = []
-    $('section[class="post"]')
-      .find('div > div > div > a')
-      .each(function(i, ele) {
-        urls[i] = $(this).attr('href')
-      })
-    const metaPromises = urls.map(url => urlMetadata(url))
-    let responses = await axios.all(metaPromises)
-    responses = responses.map(response => {
-      const { url, title, image, description } = response
-      const article = {
-        url,
-        title,
-        thumbnail: image,
-        description,
-      }
-      return article
+  // Scrapping w/ cheerio
+  const url = `https://www.robinwieruch.de/`
+  const response = await axios.get(url)
+  const $ = cheerio.load(response.data)
+  const urls = []
+  $('section[class="post"]')
+    .find('div > div > div > a')
+    .each(function(i, ele) {
+      urls[i] = $(this).attr('href')
     })
-    const filteredArticles = responses.filter(article => {
-      const splittedUrl = article.url.split('?')[0]
-      return !existingUrls.includes(splittedUrl)
-    })
-    await db('articles').insert(filteredArticles)
-  }
+  const metaPromises = urls.map(url => urlMetadata(url))
+  let articles = await axios.all(metaPromises)
+  articles = articles.map(item => {
+    const { url, title, image, description } = item
+    const article = {
+      url,
+      title,
+      thumbnail: image,
+      description,
+    }
+    return article
+  })
+  const filteredArticles = articles.filter(article => {
+    const splittedUrl = article.url.split('?')[0]
+    return !existingUrls.includes(splittedUrl)
+  })
+  db('articles').insert(filteredArticles)
 }
 
 // ======= Scrapping RSS Feeds Every <ms> ======
@@ -337,45 +289,12 @@ setInterval(async () => {
 //  robinwieruch.de & overreacted.io & Ceddia
 
 setInterval(async () => {
-  // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
-  const existingArticles = await db('articles')
-
-  // FILTERING BY BASE URL
-  let existingUrls = existingArticles.map((article, index) => {
-    return article.url.split('?')[0]
-  })
-  // Scrapping w/ cheerio
-  const url = `https://www.robinwieruch.de/`
-  const response = await axios.get(url)
-  const $ = cheerio.load(response.data)
-  const urls = []
-  $('section[class="post"]')
-    .find('div > div > div > a')
-    .each(function(i, ele) {
-      urls[i] = $(this).attr('href')
-    })
-  const metaPromises = urls.map(url => urlMetadata(url))
-  let articles = await axios.all(metaPromises)
-  articles = articles.map(item => {
-    const { url, title, image, description } = item
-    const article = {
-      url,
-      title,
-      thumbnail: image,
-      description,
-    }
-    return article
-  })
-  const filteredArticles = articles.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
-  })
-  db('articles').insert(filteredArticles)
+  scrapeRobin()
   scrapeDan()
   scrapeCeddia()
   scrapeAlligator()
   scrapeLogRocket()
-}, 100000000)
+}, 360000)
 
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')

@@ -3,12 +3,12 @@ exports.up = function(knex) {
     tbl.boolean('recommended')
     tbl.boolean('completed')
     tbl.boolean('shared')
-    tbl.integer('mastry')
+    tbl.integer('mastery')
   })
 }
 
 exports.down = function(knex) {
-  return knex.schema.table('goals', => {
-    tbl.dropColumns('mastry', 'completed', 'shared', 'recommended')
+  return knex.schema.table('goals', tbl => {
+    tbl.dropColumns('mastery', 'completed', 'shared', 'recommended')
   })
 }

@@ -1,7 +1,7 @@
 const db = require('../../dbConfig')
 
 module.exports = {
-  async setGoal(post_id, goal, user_id) {
+  async setGoal(user_id, post_id, goal) {
     let goal_due
     console.log('this is goal', goal)
     switch (goal) {
@@ -28,5 +28,30 @@ module.exports = {
     VALUES
     (${post_id}, ${user_id}, NOW() + '${goal_due}')`)
     return { msg: 'success' }
+  },
+  async fetchGoals() {
+    const goals = await db('goals')
+    return goals
+  },
+  async fetchGoalsByUserId(user_id) {
+    const goals = await db('goals').where({ user_id })
+    return goals
+  },
+  async deleteGoal(user_id, id) {
+    const goal = await db('goals')
+      .where({ id })
+      .first()
+
+    if (!goal.id) {
+      return { msg: 'not found' }
+    }
+    if (goal.user_id === user_id) {
+      const response = await db('goals')
+        .where({ id })
+        .del()
+      return { msg: 'success' }
+    } else {
+      return { msg: 'not authorized' }
+    }
   },
 }

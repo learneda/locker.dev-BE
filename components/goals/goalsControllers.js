@@ -4,10 +4,25 @@ module.exports = {
     const { postId, goal } = req.body
     const userId = req.body.userId === undefined ? req.user.id : req.body.userId
     if (postId && goal) {
-      const response = await helpers.setGoal(postId, goal, userId)
+      const response = await helpers.setGoal(userId, postId, goal)
       if (response.msg === 'success') {
-        res.status(200).json(response)
+        res.status(201).json(response)
       }
     }
+  },
+  async fetchGoals(req, res, next) {
+    const response = await helpers.fetchGoals()
+    res.status(200).json(response)
+  },
+  async fetchGoalsByUserId(req, res, next) {
+    const userId = req.params.id || req.user.id || req.body.id
+    const response = await helpers.fetchGoalsByUserId(userId)
+    res.status(200).json(response)
+  },
+  async deleteGoal(req, res, next) {
+    const userId = req.user.id || req.body.userId
+    const goalId = req.params.id || req.body.id
+    const response = await helpers.deleteGoal(userId, goalId)
+    res.status(200).json(response)
   },
 }

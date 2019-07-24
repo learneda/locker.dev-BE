@@ -26,8 +26,9 @@ module.exports = {
     }
     const inserting = await db.raw(`INSERT INTO goals (post_id, user_id, goal_due)
     VALUES
-    (${post_id}, ${user_id}, NOW() + '${goal_due}')`)
-    return { msg: 'success' }
+    (${post_id}, ${user_id}, NOW() + '${goal_due}') RETURNING *`)
+
+    return { msg: 'success', goal: inserting.rows[0] }
   },
   async fetchGoals() {
     const goals = await db('goals')
@@ -49,7 +50,9 @@ module.exports = {
       const response = await db('goals')
         .where({ id })
         .del()
-      return { msg: 'success' }
+        .returning('*')
+
+      return { msg: 'success', goal: response[0] }
     } else {
       return { msg: 'not authorized' }
     }

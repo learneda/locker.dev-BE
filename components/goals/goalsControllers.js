@@ -25,4 +25,18 @@ module.exports = {
     const response = await helpers.deleteGoal(userId, goalId)
     res.status(200).json(response)
   },
+  async setGoalStatus(req, res, next) {
+    const goal = req.body
+    const userId = req.user.id
+    const response = await helpers.setGoalStatus(userId, goal)
+    try {
+      if (response.msg === 'success') {
+        res.status(200).json(response)
+      } else if (response.msg === 'not authorized') {
+        res.status(401).json(response)
+      }
+    } catch (err) {
+      res.status(500).json(err)
+    }
+  },
 }

@@ -5,7 +5,6 @@ const helmet = require('helmet')
 const passport = require('passport')
 const logger = require('morgan')
 const cors = require('cors')
-const path = require('path')
 const prerender = require('prerender-node')
 
 const corsOptions = {
@@ -14,8 +13,10 @@ const corsOptions = {
     'http://localhost:3000',
     'http://localhost:5000',
     'http://localhost:3001',
+    'http://localhost:8000',
     'https://learnedadev.netlify.com',
     'https://learnlocker.dev',
+    'https://learnlocker.app',
     'http://127.0.0.1:80',
     'https://127.0.0.1:80',
   ],

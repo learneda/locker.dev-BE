@@ -57,7 +57,7 @@ module.exports = {
       return { msg: 'not authorized' }
     }
   },
-  f, // async setGoalStatus(user_id, goal) {
+  // async setGoalStatus(user_id, goal) {
   //   if (!goal.id) {
   //     return { msg: 'not found' }
   //   }

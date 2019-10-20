@@ -57,24 +57,24 @@ module.exports = {
       return { msg: 'not authorized' }
     }
   },
-  async setGoalStatus(user_id, goal) {
-    if (!goal.id) {
-      return { msg: 'not found' }
-    }
+  f, // async setGoalStatus(user_id, goal) {
+  //   if (!goal.id) {
+  //     return { msg: 'not found' }
+  //   }
 
-    const goal = await db('goals')
-      .where({ id: goal.id })
-      .first()
+  //   const goal = await db('goals')
+  //     .where({ id: goal.id })
+  //     .first()
 
-    if (goal.user_id === user_id) {
-      const response = await db('goals')
-        .update(goal)
-        .where({ id: goal.id })
-        .returning('*')
+  //   if (goal.user_id === user_id) {
+  //     const response = await db('goals')
+  //       .update(goal)
+  //       .where({ id: goal.id })
+  //       .returning('*')
 
-      return { msg: 'success', goal: response[0] }
-    } else {
-      return { msg: 'not authorized' }
-    }
-  },
+  //     return { msg: 'success', goal: response[0] }
+  //   } else {
+  //     return { msg: 'not authorized' }
+  //   }
+  // },
 }

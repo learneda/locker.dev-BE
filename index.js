@@ -1,5 +1,7 @@
 require('dotenv').config()
 const server = require('express')()
+const axios = require('axios')
+
 require('./config/passport')
 require('./middleware/index')(server)
 require('./components')(server)
@@ -9,6 +11,13 @@ const port = process.env.PORT || 8000
 
 const myServer = server.listen(port, () => {
   console.log(`\n ==== API RUNNING === ${port}\n`)
+})
+server.get('/universities', (req, res) => {
+  axios
+    .get('https://prompt.com/admissions/api/universities/')
+    .then(response => {
+      res.status(200).json(response.data)
+    })
 })
 
 server.get('/', (req, res) => {

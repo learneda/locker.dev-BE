@@ -22,6 +22,7 @@ server.get('/universities', (req, res) => {
       console.error(err)
     })
 })
+
 server.get('/', (req, res) => {
   res.send('localhost up & alive')
 })

@@ -58,21 +58,24 @@ module.exports = {
     }
   },
   async setGoalStatus(user_id, goal) {
+    // If no goal.id exist, no goal to return in database
     if (!goal.id) {
       return { msg: 'not found' }
     }
-
-    const goal = await db('goals')
-      .where({ id: goal.id })
+    // Find the ith goal, return object
+    const goalById = await db('goals')
+      .where({ id })
       .first()
-
+    // If the goal belongs to the user requesting,
+    // update ith goal with payload
+    // return the updated recrod
     if (goal.user_id === user_id) {
-      const response = await db('goals')
+      const [response] = await db('goals')
         .update(goal)
         .where({ id: goal.id })
         .returning('*')
-
-      return { msg: 'success', goal: response[0] }
+      //? I believe .first() gives an error
+      return { msg: 'success', goal: response }
     } else {
       return { msg: 'not authorized' }
     }

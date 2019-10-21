@@ -18,6 +18,7 @@ const corsOptions = {
     'https://learnlocker.dev',
     'http://127.0.0.1:80',
     'https://127.0.0.1:80',
+    'https://prompt.netlify.com',
   ],
 }
 

@@ -35,7 +35,7 @@ module.exports = server => {
   )
   server.use(cors(corsOptions))
   server.use(helmet())
-  server.user(compression())
+  server.use(compression())
   server.use(logger('dev'))
   server.use(passport.initialize())
   server.use(passport.session())

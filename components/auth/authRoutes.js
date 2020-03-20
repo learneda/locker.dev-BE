@@ -5,24 +5,25 @@ const xpath = require('xpath')
 const dom = require('xmldom').DOMParser
 const axios = require('axios')
 const db = require('../../dbConfig')
+const generateToken = require('../../utils').generateToken
 /*  ================== GITHUB ================== */
 router.get('/github', passport.authenticate('github'))
 
 router.get(
   '/github/cb',
-  passport.authenticate('github', { failureRedirect: '/' }),
+  passport.authenticate('github', {failureRedirect: '/'}),
   controllers.gitHubHandler
 )
 /*  ================== GOOGLE ================== */
 
 router.get(
   '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', {scope: ['profile', 'email']})
 )
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
+  passport.authenticate('google', {failureRedirect: '/'}),
   controllers.googleHandler
 )
 /*  ================== MEETUPS ================== */
@@ -37,6 +38,19 @@ router.get(
 /*  ================== GOODREADS ================== */
 
 router.get('/goodreads', passport.authenticate('goodreads'))
+// allow developer to generate a token 4 REST client useage
+if (process.env.NODE_ENV === 'development') {
+  router.get('/token', async (req, res) => {
+    /*  ================== Make sure to run the seeds! ================== */
+    const user = await db('users')
+      .where({id: 1})
+      .first()
+    const token = generateToken(user)
+    res.status(200).json({
+      token,
+    })
+  })
+}
 
 router.get(
   '/goodreads/cb',
@@ -106,7 +120,7 @@ router.get(
         // get all existing Records to filter out duplicates
         const existingRecords = await db('goodreads')
           .select('book_id')
-          .where({ user_id: userId })
+          .where({user_id: userId})
 
         // IF USER HAS ANY EXISTING RECORDS
         if (existingRecords.length) {

@@ -1,12 +1,13 @@
 const router = require('express').Router()
 const controllers = require('./folderControllers')
+const utils = require('../../utils')
 
-router.post('/', controllers.createFolder)
+router.post('/', utils.isRequestAuthenticated, controllers.createFolder)
 
-router.post('/add/post', controllers.addPost)
+router.get('/:id', controllers.getPostsByFolderId)
 
-router.get('/', controllers.getUserFolders)
+router.post('/add/item', utils.isRequestAuthenticated, controllers.addPost)
 
-router.get('/:id', controllers.getPostByFolderId)
+router.get('/user/:id', controllers.getUserFolders)
 
 module.exports = router

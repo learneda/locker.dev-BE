@@ -1,7 +1,7 @@
 const db = require('../dbConfig')
 
 /**
- * @param socket socket-io instance
+ * @param socket {SocketIO.Server} socket-io instance
  * @description Helper function that configures socket-io instance
  */
 exports.configureSocket = socket => {

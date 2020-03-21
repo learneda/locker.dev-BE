@@ -7,8 +7,8 @@ const MeetupStrategy = require('passport-meetup-oauth2').Strategy
 const LocalStrategy = require('passport-local').Strategy
 const GoodreadsStrategy = require('passport-goodreads').Strategy
 const bcrypt = require('bcrypt')
-const xpath = require('xpath')
-const dom = require('xmldom').DOMParser
+const xpath = require('xpath') // FIXME: unused import
+const dom = require('xmldom').DOMParser // FIXME: unused import
 const sgMail = require('@sendgrid/mail')
 const db = require('../dbConfig')
 const html = require('./html')
@@ -192,7 +192,6 @@ passport.use(
     }
   )
 )
-console.log(process.env.MEETUP_KEY, process.env.MEETUP_SECRET)
 /*  ================== MEETUPS ================== */
 
 passport.use(

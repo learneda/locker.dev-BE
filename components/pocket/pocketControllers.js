@@ -3,7 +3,6 @@ const axios = require('axios')
 var qs = require('qs')
 
 const db = require('../../dbConfig')
-console.log(process.env.POCKET_KEY)
 
 var token
 

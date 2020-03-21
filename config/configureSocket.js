@@ -1,5 +1,9 @@
 const db = require('../dbConfig')
 
+/**
+ * @param socket socket-io instance
+ * @description Helper function that configures socket-io instance
+ */
 exports.configureSocket = socket => {
   socket.on('connection', async socket => {
     await db('online_users')

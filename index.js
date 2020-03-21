@@ -5,17 +5,17 @@ require('./config/passport')
 require('./middleware/index')(server)
 require('./components')(server)
 const db = require('./dbConfig')
-const c = require('chalk')
+const { cyan, magenta, yellow, red, white, blue } = require('chalk')
 
 const port = process.env.PORT || 8000
 
 const myServer = server.listen(port, () => {
   console.log(
-    `\n 🦄 ${c.red('===')}${c.white('===')}${c.blue('===')} ${c.yellow(
+    `\n 🦄 ${red('===')}${white('===')}${blue('===')} ${yellow(
       'localhost'
-    )} ${c.cyan('listens and obeys')} ${c.magenta(`on port: ${port}`)} ${c.red(
+    )} ${cyan('listens and obeys')} ${magenta(`on port: ${port}`)} ${red(
       '==='
-    )}${c.white('===')}${c.blue('===')}  🚀`
+    )}${white('===')}${blue('===')}  🚀\n`
   )
 })
 server.get('/', (req, res) => {

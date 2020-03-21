@@ -1,5 +1,4 @@
 const helpers = require('./folderHelpers')
-const utils = require('../../utils/getRequestUser')
 
 module.exports = {
   async createFolder(req, res, next) {
@@ -53,6 +52,47 @@ module.exports = {
     }
     try {
       const helper = await helpers.getPostsByFolderId(Number(folder_id))
+      return res.status(helper.statusCode).json(helper.response)
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ msg: 'fatal error' })
+    }
+  },
+  async updateFolderByFolderId(req, res, next) {
+    const folder_id = req.params.id
+    const name = req.body.name
+    const user_id = req.user.id
+
+    if (!folder_id && folder_name) {
+      return res.status(400).json({
+        err:
+          'must include folder_id in query string, and folder_name in the body',
+      })
+    }
+    try {
+      const updatedFolder = await helpers.updateSingleFolder(
+        folder_id,
+        name,
+        user_id
+      )
+      return res.status(updatedFolder.statusCode).json(updatedFolder.response)
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ msg: 'fatal error' })
+    }
+  },
+  async deleteFolderByFolderId(req, res, next) {
+    const folder_id = req.params.id
+    const user_id = req.user.id
+
+    if (!folder_id) {
+      return res
+        .status(400)
+        .json({ err: 'must include folder_id in query string..' })
+    }
+
+    try {
+      const helper = await helpers.deleteFolderByFolderId(folder_id, user_id)
       return res.status(helper.statusCode).json(helper.response)
     } catch (err) {
       console.log(err)

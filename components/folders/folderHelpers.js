@@ -86,13 +86,48 @@ module.exports = {
   },
   async getSingleFolder(folder_id) {
     try {
-      const folder = await db('folders as s')
+      const folder = await db('folders')
         .where({ id: folder_id })
         .first()
       return { statusCode: 200, response: { msg: 'success', folder } }
     } catch (e) {
       // console.log(e)
-      return { err: 'fatal error' }
+      return { statusCode: 500, response: 'fatal error' }
+    }
+  },
+  async updateSingleFolder(folder_id, name, user_id) {
+    const isOwner = await folderUtils.isOwner(user_id, folder_id)
+    if (!isOwner) {
+      return { statusCode: 401, response: { msg: 'not authorized' } }
+    }
+    try {
+      const updatedFolder = await db('folders')
+        .where({ id: folder_id })
+        .update({
+          name,
+        })
+        .returning('*')
+      return { statusCode: 200, response: { msg: 'success', updatedFolder } }
+    } catch (e) {
+      console.log(e)
+      return { statusCode: 500, response: 'fatal error' }
+    }
+  },
+  async deleteFolderByFolderId(folder_id, user_id) {
+    const isOwner = await folderUtils.isOwner(user_id, folder_id)
+    if (!isOwner) {
+      return { statusCode: 401, response: { msg: 'not authorized' } }
+    }
+
+    try {
+      await db('folders')
+        .where({ id: folder_id })
+        .del()
+        .returning('*')
+      return { statusCode: 204, response: { msg: 'successfully deleted' } }
+    } catch (e) {
+      console.log(e)
+      return { statusCode: 500, response: 'fatal error' }
     }
   },
 }

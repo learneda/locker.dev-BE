@@ -19,15 +19,7 @@ module.exports = {
   },
   async editProfile(req, res, next) {
     const { id } = req.body
-    const {
-      profile_picture,
-      display_name,
-      username,
-      bio,
-      location,
-      website_url,
-      email,
-    } = req.body
+    const { profile_picture, display_name, username, bio, location, website_url, email } = req.body
     if (id) {
       try {
         const user = await db('users')
@@ -99,14 +91,7 @@ module.exports = {
     try {
       const selectPromise = await db('users')
         .where({ username: username })
-        .select(
-          'username',
-          'display_name',
-          'profile_picture',
-          'bio',
-          'location',
-          'website_url'
-        )
+        .select('username', 'display_name', 'profile_picture', 'bio', 'location', 'website_url')
       if (selectPromise) {
         res.status(200).json(selectPromise)
       } else {
@@ -213,10 +198,8 @@ module.exports = {
 
     //* Creates a new array with random elements from ARR (no duplicates) [should be a utility import]
     const pickRandom = (arr, count) => {
-      let _arr = [...arr]
-      return [...Array(count)].map(
-        () => _arr.splice(Math.floor(Math.random() * _arr.length), 1)[0]
-      )
+      const _arr = [...arr]
+      return [...Array(count)].map(() => _arr.splice(Math.floor(Math.random() * _arr.length), 1)[0])
     }
     if (friendsId.length) {
       // generates an array of users that people I follow are following
@@ -240,10 +223,8 @@ module.exports = {
         const friendOfFriendsDetails = await db('users')
           .where('id', friendsOfFriends[i].followed_by_id)
           .first()
-        friendsOfFriends[i].followed_by_username =
-          friendOfFriendsDetails.username
-        friendsOfFriends[i].followed_by_display_name =
-          friendOfFriendsDetails.followed_by_display_name
+        friendsOfFriends[i].followed_by_username = friendOfFriendsDetails.username
+        friendsOfFriends[i].followed_by_display_name = friendOfFriendsDetails.followed_by_display_name
       }
       if (friendsOfFriends.length < count) {
         const users = await db('friendships')
@@ -254,12 +235,7 @@ module.exports = {
             'users.username'
           )
           .join('users', 'friendships.friend_id', 'users.id')
-          .groupBy(
-            'friendships.friend_id',
-            'users.display_name',
-            'users.username',
-            'users.profile_picture'
-          )
+          .groupBy('friendships.friend_id', 'users.display_name', 'users.username', 'users.profile_picture')
           .having('friendships.friend_id', '>', '2')
           // .count('friendships.friend_id as followers')
           .limit(20)
@@ -277,12 +253,7 @@ module.exports = {
           'users.username'
         )
         .join('users', 'friendships.friend_id', 'users.id')
-        .groupBy(
-          'friendships.friend_id',
-          'users.display_name',
-          'users.username',
-          'users.profile_picture'
-        )
+        .groupBy('friendships.friend_id', 'users.display_name', 'users.username', 'users.profile_picture')
         .having('friendships.friend_id', '>', '2')
         .count('friendships.friend_id as followers')
         .limit(20)
@@ -297,13 +268,7 @@ module.exports = {
 
     try {
       const following = await db('friendships')
-        .select(
-          'users.id',
-          'users.profile_picture',
-          'users.display_name',
-          'users.username',
-          'users.bio'
-        )
+        .select('users.id', 'users.profile_picture', 'users.display_name', 'users.username', 'users.bio')
         .join('users', 'friendships.friend_id', '=', 'users.id')
         .where('friendships.user_id', id)
         .orderBy('friendships.created_at', 'desc')
@@ -360,9 +325,7 @@ module.exports = {
 
       res.json(savedPostIds)
     } catch (err) {
-      res
-        .status(400)
-        .json({ error: 'there was an error due to my sloppy code' })
+      res.status(400).json({ error: 'there was an error due to my sloppy code' })
       console.log(err)
     }
   },

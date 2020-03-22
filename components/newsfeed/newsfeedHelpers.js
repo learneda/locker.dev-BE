@@ -22,19 +22,17 @@ module.exports = {
       friendshipTagArr = friendshipTagArr.map(tag => tag.tag_id)
 
       // an array of all post objects that contain the tags a user follows
-      let tagPostArr = await db('post_tags').whereIn('tag_id', friendshipTagArr)
+      const tagPostArr = await db('post_tags').whereIn('tag_id', friendshipTagArr)
 
       // creating arr of newsfeed_post record ids
-      let tagPostIdsArr = tagPostArr.map(obj => obj.newsfeed_id) // these only come from association of tags a user follows
+      const tagPostIdsArr = tagPostArr.map(obj => obj.newsfeed_id) // these only come from association of tags a user follows
 
       // creating an arr of newfeed_posts id integers that come from following other users(friendships)
-      let newsfeedIdsArr = newsFeed.map(post => post.id)
+      const newsfeedIdsArr = newsFeed.map(post => post.id)
 
       // creating ultimate array with post ids integers that come from following friends and following tags
       // using Set() to get rid of duplicate newsfeed post id's
-      const filteredNewsfeedIds = [
-        ...new Set([...tagPostIdsArr, ...newsfeedIdsArr]),
-      ]
+      const filteredNewsfeedIds = [...new Set([...tagPostIdsArr, ...newsfeedIdsArr])]
 
       // getting the final newsfeed post records with all correct IDs
       const profileFeed = await db('newsfeed_posts as n')
@@ -57,19 +55,12 @@ module.exports = {
         .orderBy('n.created_at', 'desc')
 
       const commentLoop = async () => {
-        for (let post of profileFeed) {
+        for (const post of profileFeed) {
           // correcting post.id value ....
           post.id = post.news_id
 
           const commentArray = await db('comments as c')
-            .select(
-              'c.id',
-              'c.created_at',
-              'c.content',
-              'c.user_id',
-              'c.post_id',
-              'u.username'
-            )
+            .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'u.username')
             .where('c.post_id', '=', post.id)
             .join('users as u', 'c.user_id', 'u.id')
             .orderBy('c.id', 'asc')
@@ -180,7 +171,7 @@ module.exports = {
         const tagArr = myTrim(lowerCaseTags).split('#')
         console.log('tagArr', tagArr)
         const tagLoop = async () => {
-          for (let tag of tagArr) {
+          for (const tag of tagArr) {
             if (tag) {
               const isExisting = await db('tags')
                 .where('hashtag', tag)
@@ -240,14 +231,7 @@ module.exports = {
 
       // attaching post's comments
       const commentArray = await db('comments as c')
-        .select(
-          'c.id',
-          'c.created_at',
-          'c.content',
-          'c.user_id',
-          'c.post_id',
-          'u.username'
-        )
+        .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'u.username')
         .where('c.post_id', '=', postId)
         .join('users as u', 'c.user_id', 'u.id')
         .orderBy('c.id', 'asc')
@@ -344,17 +328,10 @@ module.exports = {
         .join('users as u', 'n.user_id', '=', 'u.id')
 
       const commentLoop = async () => {
-        for (let post of profileFeed) {
+        for (const post of profileFeed) {
           post.id = post.news_id
           const commentArray = await db('comments as c')
-            .select(
-              'c.id',
-              'c.created_at',
-              'c.content',
-              'c.user_id',
-              'c.post_id',
-              'u.username'
-            )
+            .select('c.id', 'c.created_at', 'c.content', 'c.user_id', 'c.post_id', 'u.username')
             .where('c.post_id', '=', post.id)
             .join('users as u', 'c.user_id', 'u.id')
             .orderBy('c.id', 'asc')

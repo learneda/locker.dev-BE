@@ -1,10 +1,10 @@
 require('dotenv').config()
 const axios = require('axios')
-var qs = require('qs')
+const qs = require('qs')
 
 const db = require('../../dbConfig')
 
-var token
+let token
 
 module.exports = {
   async login(req, res, next) {
@@ -23,9 +23,7 @@ module.exports = {
         token = code.split('=')[1]
 
         console.log(code.split('=')[1])
-        res.redirect(
-          `https://getpocket.com/auth/authorize?request_token=${token}&redirect_uri=${redirect_uri}`
-        )
+        res.redirect(`https://getpocket.com/auth/authorize?request_token=${token}&redirect_uri=${redirect_uri}`)
       })
   },
   async pocketCB(req, res, next) {
@@ -50,8 +48,7 @@ module.exports = {
               access_token: decoded.access_token,
             })
             .then(async result => {
-              for (post in result.data.list) {
-                console.log(result.data.list[post], '🦄')
+              for (const post in result.data.list) {
                 const obj = result.data.list[post]
                 await db('pocket')
                   .insert({
@@ -59,8 +56,7 @@ module.exports = {
                     resolved_url: obj.resolved_url,
                     excerpt: obj.excerpt,
                     top_image_url: obj.top_image_url,
-                    favorited: +obj.time_favorited === 0 ? false : true,
-                    top_image_url: obj.top_image_url,
+                    favorited: obj.time_favorited === 0 ? false : true,
                     user_id: req.user.id,
                     item_id: obj.item_id,
                     type_id: 6,

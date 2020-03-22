@@ -1,5 +1,10 @@
 const db = require('../../dbConfig')
 
+function getMonthDaysLeft() {
+  const date = new Date()
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() - date.getDate()
+}
+
 module.exports = {
   async setGoal(user_id, post_id, goal) {
     let goal_due
@@ -12,13 +17,6 @@ module.exports = {
         goal_due = '7 days'
         break
       case 3:
-        function getMonthDaysLeft() {
-          date = new Date()
-          return (
-            new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() -
-            date.getDate()
-          )
-        }
         goal_due = `${getMonthDaysLeft()} days`
         break
       default:
@@ -64,7 +62,7 @@ module.exports = {
     }
     // Find the ith goal, return object
     const goalById = await db('goals')
-      .where({ id })
+      .where({ id: goal.id })
       .first()
     // If the goal belongs to the user requesting,
     // update ith goal with payload

@@ -66,10 +66,7 @@ passport.use(
         .where('email', email)
         .first()
       if (existingUser) {
-        const passwordCheck = bcrypt.compareSync(
-          password,
-          existingUser.password
-        )
+        const passwordCheck = bcrypt.compareSync(password, existingUser.password)
         if (passwordCheck === true) {
           done(null, existingUser)
         } else {

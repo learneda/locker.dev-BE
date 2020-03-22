@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix",
-    "prettier": "prettier --config .prettierrc '**/*.ts' --write",
+    "prettier": "prettier --config .prettierrc '**/*.{ts,js}' --write",
     "localpg": "knex migrate:rollback && knex migrate:latest && knex seed:run",
     "prodpg": "heroku run knex migrate:rollback && heroku run knex migrate:latest && heroku run knex seed:run"
   },

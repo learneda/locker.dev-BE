@@ -7,11 +7,7 @@ module.exports = {
         .where('l.user_id', req.user.id)
         .join('pocket as p', 'p.id', 'l.pocket_id')
 
-      const goodreadsLocker = await db('locker as l').join(
-        'goodreads as g',
-        'g.id',
-        'l.goodreads_id'
-      )
+      const goodreadsLocker = await db('locker as l').join('goodreads as g', 'g.id', 'l.goodreads_id')
 
       const locker = [...goodreadsLocker, ...pocketLocker]
 

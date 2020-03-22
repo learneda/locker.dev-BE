@@ -1,8 +1,6 @@
 require('dotenv').config()
 
-const googleTranslate = require('google-translate')(
-  process.env.GOOGLE_TRANSLATE_KEY
-)
+const googleTranslate = require('google-translate')(process.env.GOOGLE_TRANSLATE_KEY)
 
 module.exports = {
   async translate(req, res, next) {

@@ -20,9 +20,7 @@ module.exports = {
         res.status(500).json({ err })
       }
     } else {
-      res
-        .status(404)
-        .json({ err: 'must include folder_name in the request body.' })
+      res.status(404).json({ err: 'must include folder_name in the request body.' })
     }
   },
 
@@ -49,11 +47,9 @@ module.exports = {
         res.status(500).json({ err })
       }
     } else {
-      res
-        .status(404)
-        .json({
-          err: 'must include folder_id && post_id in the request body..',
-        })
+      res.status(404).json({
+        err: 'must include folder_id && post_id in the request body..',
+      })
     }
   },
   async getUserFolders(req, res, next) {

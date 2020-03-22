@@ -10,9 +10,7 @@ for (let i = 1; i < 100; i++) {
   for (let j = 0; j < 5; j++) {
     // picks a new friend from friends array and
     // removes pickedId from friends array
-    const friendId = friends
-      .splice(Math.floor(Math.random() * friends.length), 1)
-      .pop()
+    const friendId = friends.splice(Math.floor(Math.random() * friends.length), 1).pop()
     const friendShip = {
       user_id: i,
       friend_id: friendId,

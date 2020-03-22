@@ -25,9 +25,8 @@ async function runThruUrlMetadata(arr) {
 module.exports = {
   getCourses(req, res, next) {
     const { page, search } = req.query
-    let queryParams = {
-      'fields[course]':
-        'title,headline,image_480x270,url,description,avg_rating,num_reviews',
+    const queryParams = {
+      'fields[course]': 'title,headline,image_480x270,url,description,avg_rating,num_reviews',
       ordering: 'relevance',
       search,
     }
@@ -58,7 +57,7 @@ module.exports = {
   },
   async getArticles(req, res, next) {
     const limit = 12
-    let { offset, q } = req.query
+    const { offset, q } = req.query
     let articles
     if (!q) {
       articles = await db('articles')
@@ -68,13 +67,11 @@ module.exports = {
         .limit(limit)
         .offset(offset)
     } else {
-      q = q.toLowerCase()
+      const query = q.toLowerCase()
       articles = await db('articles')
         .select('*')
         .distinct('id')
-        .whereRaw(
-          `LOWER(title) LIKE '%${q}%' OR LOWER(description) LIKE '%${q}%' OR LOWER(url) LIKE '%${q}%'`
-        )
+        .whereRaw(`LOWER(title) LIKE '%${q}%' OR LOWER(description) LIKE '%${q}%' OR LOWER(url) LIKE '%${q}%'`)
         .orderBy('created_at', 'desc')
         .limit(limit)
         .offset(offset)
@@ -103,7 +100,7 @@ async function scrapeAlligator() {
   const rootUrl = `https://alligator.io/explore/`
   const response = await axios.get(rootUrl)
   const $ = cheerio.load(response.data)
-  let urls = []
+  const urls = []
   $('.front-flex')
     .find('a')
     .each(function(i, ele) {
@@ -125,7 +122,7 @@ async function scrapeAlligator() {
 
 async function scrapeCeddia() {
   const existingArticles = await db('articles')
-  let existingUrls = existingArticles.map((article, index) => {
+  const existingUrls = existingArticles.map((article, index) => {
     return article.url.split('?')[0]
   })
   const rootUrl = `https://daveceddia.com`
@@ -167,7 +164,7 @@ async function scrapeLogRocket() {
   const rootUrl = `https://blog.logrocket.com/`
   const response = await axios.get(rootUrl)
   const $ = cheerio.load(response.data)
-  let urls = []
+  const urls = []
   $('.listfeaturedtag')
     .find('div > div > div > div > a')
     .each(function(i, ele) {
@@ -193,7 +190,7 @@ async function scrapeRobin() {
   const existingArticles = await db('articles')
 
   // FILTERING BY BASE URL
-  let existingUrls = existingArticles.map((article, index) => {
+  const existingUrls = existingArticles.map((article, index) => {
     return article.url.split('?')[0]
   })
   // Scrapping w/ cheerio
@@ -231,7 +228,7 @@ setInterval(async () => {
   const existingArticles = await db('articles')
 
   // FILTERING BY BASE URL
-  let existingUrls = existingArticles.map((article, index) => {
+  const existingUrls = existingArticles.map((article, index) => {
     return article.url.split('?')[0]
   })
   // GETTING FETCHING FREECODECAMP ARTICLES && HACKERNOON
@@ -245,7 +242,7 @@ setInterval(async () => {
     Feed.load(url, function(err, rss) {
       const tempo_articles = rss.items.map(item => {
         // for each article, get its url and parse it
-        let url = item.url.split('?')[0]
+        const url = item.url.split('?')[0]
         return urlMetadata(url)
           .then(article => ({
             created: item.created,
@@ -260,18 +257,16 @@ setInterval(async () => {
       })
 
       Promise.all(tempo_articles).then(async articles => {
-        let filteredArticles = articles.filter((article, index) => {
+        const filteredArticles = articles.filter((article, index) => {
           const splittedUrl = article.url.split('?')[0]
           return !existingUrls.includes(splittedUrl)
         })
 
         // Filter out articles that lack a description
-        const descFilteredArticles = filteredArticles.filter(
-          article => !!article.description
-        )
+        const descFilteredArticles = filteredArticles.filter(article => !!article.description)
 
         // INSERTING UNIQUE ARTICLES
-        for (let article of descFilteredArticles) {
+        for (const article of descFilteredArticles) {
           await db('articles').insert({
             url: article.url,
             title: article.title,
@@ -288,14 +283,6 @@ setInterval(async () => {
 // Scraping using Cheerio:
 //  robinwieruch.de & overreacted.io & Ceddia
 
-setInterval(async () => {
-  scrapeRobin()
-  scrapeDan()
-  scrapeCeddia()
-  scrapeAlligator()
-  scrapeLogRocket()
-}, 360000)
-
 async function scrapeDan() {
   const response = await axios.get('https://overreacted.io/')
   const $ = cheerio.load(response.data)
@@ -309,7 +296,7 @@ async function scrapeDan() {
   const existingArticles = await db('articles')
 
   // FILTERING TITLES
-  let existingUrls = existingArticles.map((article, index) => {
+  const existingUrls = existingArticles.map((article, index) => {
     return article.url
   })
 
@@ -317,3 +304,11 @@ async function scrapeDan() {
 
   await db('articles').insert(await runThruUrlMetadata(filteredUrl))
 }
+
+setInterval(async () => {
+  scrapeRobin()
+  scrapeDan()
+  scrapeCeddia()
+  scrapeAlligator()
+  scrapeLogRocket()
+}, 360000)

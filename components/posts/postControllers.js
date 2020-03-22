@@ -75,15 +75,10 @@ module.exports = {
       if (mediaTypes.includes(req.body.type)) {
         try {
           //TODO: Gets root_url
-          const newUrl =
-            req.body.post_url.indexOf('http') > -1
-              ? req.body.post_url
-              : `http://${req.body.post_url}`
+          const newUrl = req.body.post_url.indexOf('http') > -1 ? req.body.post_url : `http://${req.body.post_url}`
 
           let rootUrl = new URL(newUrl)
-          rootUrl = rootUrl.hostname
-            .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
-            .split('/')[0]
+          rootUrl = rootUrl.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0]
 
           // creating new insert record
           const newPost = {
@@ -121,28 +116,20 @@ module.exports = {
           req.body.type_id = 8
         }
         try {
-          const newUrl =
-            req.body.post_url.indexOf('http') > -1
-              ? req.body.post_url
-              : `http://${req.body.post_url}`
+          const newUrl = req.body.post_url.indexOf('http') > -1 ? req.body.post_url : `http://${req.body.post_url}`
 
           // gets root hostname for a URL
           let rootUrl = new URL(newUrl)
-          rootUrl = rootUrl.hostname
-            .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
-            .split('/')[0]
+          rootUrl = rootUrl.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0]
 
           const metadata = await urlMetadata(newUrl)
           // console.log(metadata);
-          metadata.description === null
-            ? (metadata.description = 'No description')
-            : (metadata.description = metadata.description)
-          metadata.title === null
-            ? (metadata.title = 'No title')
-            : (metadata.title = metadata.title)
-          metadata.image === null
-            ? (metadata.image = null)
-            : (metadata.image = metadata.image)
+          if (metadata.description === null) {
+            metadata.description = 'No description'
+          }
+          if (metadata.title === null) {
+            metadata.title = 'No title'
+          }
           try {
             const newPost = {
               post_url: req.body.post_url,
@@ -159,7 +146,7 @@ module.exports = {
             if (newInsert) {
               res.status(201).json(newInsert[0])
             } else {
-              res.status(300).json({ err: 'couldnt add new entry' })
+              res.status(300).json({ err: 'could not add new entry' })
             }
           } catch (err) {
             console.log('META ERROR', err)
@@ -167,7 +154,7 @@ module.exports = {
           }
         } catch (err) {
           console.log('META ERROR', err)
-          res.status(500).json({ err: 'couldnt add new entry' })
+          res.status(500).json({ err: 'could not add new entry' })
         }
       } else {
         res.status(400).json({ message: 'Please provide a post url ' })
@@ -186,9 +173,7 @@ module.exports = {
         .returning('*')
         .then(deletedRecord => {
           const deletedCollection = deletedRecord[0]
-          res
-            .status(200)
-            .json({ deletedRecord: deletedCollection, msg: 'succesful delete' })
+          res.status(200).json({ deletedRecord: deletedCollection, msg: 'delete successful' })
         })
         .catch(err => res.json({ msg: 'post id not found' }))
     } else {

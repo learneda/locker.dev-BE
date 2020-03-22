@@ -6,12 +6,14 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
+    // when migration complete, turn false
     "allowJs": true,
-    "noImplicitAny": false, // one day we should comply
-    "strictNullChecks": false /* Enable strict null checks. */,
-    "strictFunctionTypes": false /* Enable strict checking of function types. */,
-    "strictBindCallApply": true /* Enable strict 'bind', 'call', and 'apply' methods on functions. */,
-    "strictPropertyInitialization": false /* Enable strict checking of property initialization in classes. */,
+    // one day we should comply with these
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
     "noImplicitThis": false
   },
   "lib": ["es2015"],

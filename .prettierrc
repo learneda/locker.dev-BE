@@ -1,9 +1,6 @@
 {
-  "arrowParens": "avoid",
-  "bracketSpacing": true,
-  "printWidth": 80,
-  "requirePragma": false,
-  "semi": true,
+  "printWidth": 120,
+  "semi": false,
   "singleQuote": true,
-  "trailingComma": "none"
+  "trailingComma": "es5"
 }

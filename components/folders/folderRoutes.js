@@ -1,12 +1,17 @@
 const router = require('express').Router()
 const controllers = require('./folderControllers')
+const utils = require('../../utils')
 
-router.post('/', controllers.createFolder)
+router.post('/', utils.isRequestAuthenticated, controllers.createFolder)
 
-router.post('/add/post', controllers.addPost)
+router.get('/:id', controllers.getPostsByFolderId)
 
-router.get('/', controllers.getUserFolders)
+router.put('/:id', utils.isRequestAuthenticated, controllers.updateFolderByFolderId)
 
-router.get('/:id', controllers.getPostByFolderId)
+router.delete('/:id', utils.isRequestAuthenticated, controllers.deleteFolderByFolderId)
+
+router.post('/add/item', utils.isRequestAuthenticated, controllers.addPost)
+
+router.get('/user/:id', controllers.getUserFolders)
 
 module.exports = router

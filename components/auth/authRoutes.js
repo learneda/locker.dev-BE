@@ -5,6 +5,9 @@ const xpath = require('xpath')
 const dom = require('xmldom').DOMParser
 const axios = require('axios')
 const db = require('../../dbConfig')
+const generateToken = require('../../utils').generateToken
+require('dotenv').config() // Need access to process.env.DEV_USER_ID
+
 /*  ================== GITHUB ================== */
 router.get('/github', passport.authenticate('github'))
 
@@ -16,11 +19,13 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/' }), controllers.googleHandler)
 /*  ================== MEETUPS ================== */
 
+/*  ================== MEETUPS ================== */
 router.get('/meetup', passport.authenticate('meetup'))
 
 router.get('/meetup/cb', passport.authenticate('meetup'), controllers.meetupHandler)
 /*  ================== GOODREADS ================== */
 
+/*  ================== GOODREADS ================== */
 router.get('/goodreads', passport.authenticate('goodreads'))
 
 router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) => {

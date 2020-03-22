@@ -10,7 +10,7 @@ exports.configureSocket = io => {
       .del()
       .whereNotIn('socket_id', Object.keys(io.sockets.sockets))
 
-    socket.on('join', async function(data) {
+    socket.on('join', async data => {
       const online_user = await db('online_users').insert({
         user_id: data.user_id,
         socket_id: socket.id,
@@ -27,7 +27,7 @@ exports.configureSocket = io => {
       }
     })
 
-    socket.on('disconnect', async reason => {
+    socket.on('disconnect', async () => {
       await db('online_users')
         .del()
         .where({ socket_id: socket.id })
@@ -57,15 +57,12 @@ exports.configureSocket = io => {
                   invoker: msg.username,
                 })
                 .returning('*')
-                .then(result => {
-                  return db('online_users').where({ user_id: msg.postOwnerId })
-                })
+                .then(() => db('online_users').where({ user_id: msg.postOwnerId }))
                 .then(online_data => {
                   if (online_data.length) {
                     db('notifications')
                       .where({ read: false, user_id: online_data[0].user_id })
                       .then(notificationRes => {
-                        console.log('here', notificationRes)
                         if (notificationRes.length) {
                           io.to(online_data[0].socket_id).emit('join', notificationRes[notificationRes.length - 1])
                         }
@@ -93,14 +90,14 @@ exports.configureSocket = io => {
         db('posts_likes')
           .del()
           .where({ user_id: data.user_id, post_id: data.id })
-          .then(res => {
+          .then(() => {
             socket.broadcast.emit('like', data)
             socket.emit('like', data)
           })
       } else {
         db('posts_likes')
           .insert({ user_id: data.user_id, post_id: data.id })
-          .then(res => {
+          .then(() => {
             socket.broadcast.emit('like', data)
             socket.emit('like', data)
           })
@@ -112,9 +109,7 @@ exports.configureSocket = io => {
               type: 'like',
               invoker: data.username,
             })
-            .then(res => {
-              return db('online_users').where({ user_id: data.postOwnerId })
-            })
+            .then(() => db('online_users').where({ user_id: data.postOwnerId }))
             .then(online_data => {
               if (online_data.length) {
                 db('notifications')
@@ -134,14 +129,14 @@ exports.configureSocket = io => {
         db('posts_ponies')
           .del()
           .where({ user_id: data.user_id, post_id: data.id })
-          .then(res => {
+          .then(() => {
             socket.broadcast.emit('pony', data)
             socket.emit('pony', data)
           })
       } else {
         db('posts_ponies')
           .insert({ user_id: data.user_id, post_id: data.id })
-          .then(res => {
+          .then(() => {
             socket.broadcast.emit('pony', data)
             socket.emit('pony', data)
           })
@@ -153,9 +148,7 @@ exports.configureSocket = io => {
               type: 'pony',
               invoker: data.username,
             })
-            .then(res => {
-              return db('online_users').where({ user_id: data.postOwnerId })
-            })
+            .then(() => db('online_users').where({ user_id: data.postOwnerId }))
             .then(online_data => {
               if (online_data.length) {
                 db('notifications')

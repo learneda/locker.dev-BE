@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "target": "ESNext",
+    "target": "ES3",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "sourceMap": true,

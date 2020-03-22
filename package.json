@@ -5,7 +5,8 @@
   "type": "git",
   "main": "index.js",
   "engines": {
-    "node": "13.5.0"
+    "node": "13.5.0",
+    "npm": "6.14.1"
   },
   "scripts": {
     "start": "node index.js",

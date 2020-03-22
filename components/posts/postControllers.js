@@ -75,9 +75,7 @@ module.exports = {
         try {
           //TODO: Gets root_url
           const newUrl = req.body.post_url.indexOf('http') > -1 ? req.body.post_url : `http://${req.body.post_url}`
-
-          let rootUrl = new URL(newUrl)
-          rootUrl = rootUrl.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0]
+          const rootUrl = new URL(newUrl).hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0]
 
           // creating new insert record
           const newPost = {
@@ -98,7 +96,7 @@ module.exports = {
           if (newInsert) {
             return res.status(201).json(newInsert[0])
           } else {
-            return res.status(300).json({ err: 'couldnt add new entry' })
+            return res.status(300).json({ err: 'could not add new entry' })
           }
         } catch (err) {
           console.log('META ERROR', err)
@@ -118,8 +116,7 @@ module.exports = {
           const newUrl = req.body.post_url.indexOf('http') > -1 ? req.body.post_url : `http://${req.body.post_url}`
 
           // gets root hostname for a URL
-          let rootUrl = new URL(newUrl)
-          rootUrl = rootUrl.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0]
+          const rootUrl = new URL(newUrl).hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0]
 
           const metadata = await urlMetadata(newUrl)
           // console.log(metadata);
@@ -164,7 +161,7 @@ module.exports = {
   },
 
   async deletePost(req, res, next) {
-    const id = req.params.id
+    const { id } = req.params
     if (req.user) {
       db('posts')
         .where({ id, user_id: req.user.id })
@@ -182,7 +179,7 @@ module.exports = {
 
   async socialLikePost(req, res, next) {
     const user_id = req.user.id
-    const post_id = req.body.post_id
+    const { post_id } = req.body
     if (req.user) {
       try {
         const insertPromise = await db('posts_likes').insert({
@@ -203,7 +200,7 @@ module.exports = {
     }
   },
   async getPostLikeCount(req, res, next) {
-    const post_id = req.body.post_id
+    const { post_id } = req.body
     try {
       const selectPromise = await db('posts_likes')
         .where({ post_id })
@@ -218,7 +215,7 @@ module.exports = {
   },
 
   async getUsersWhoLikedPost(req, res, next) {
-    const post_id = req.body.post_id
+    const { post_id } = req.body
     try {
       const selectPromise = await db('posts_likes as pl')
         .where('post_id', post_id)
@@ -235,7 +232,7 @@ module.exports = {
   },
 
   async getUsersWhoPonyPost(req, res, next) {
-    const post_id = req.body.post_id
+    const { post_id } = req.body
     try {
       const selectPromise = await db('posts_ponies as pp')
         .where('post_id', post_id)
@@ -252,7 +249,7 @@ module.exports = {
   },
 
   async editPost(req, res, next) {
-    const id = req.params.id
+    const { id } = req.params
     const { post_url, title, description, user_thoughts } = req.body
     const shared = req.body.shared || false
 

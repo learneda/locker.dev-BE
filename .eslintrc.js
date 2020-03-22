@@ -22,7 +22,7 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   rules: {
-    'no-console': 0,
+    'no-console': 1,
     '@typescript-eslint/no-var-requires': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/camelcase': 0,

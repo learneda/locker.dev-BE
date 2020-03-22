@@ -9,12 +9,12 @@
     // when migration complete, turn false
     "allowJs": true,
     // one day we should comply with these
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
-    "noImplicitThis": false
+    "noImplicitThis": true
   },
   "lib": ["es2015"],
   "include": ["./**/*.ts"],

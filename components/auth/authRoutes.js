@@ -2,10 +2,11 @@ const router = require('express').Router()
 const controllers = require('./authControllers')
 const passport = require('passport')
 const xpath = require('xpath')
-const dom = require('xmldom').DOMParser
+const { DOMParser } = require('xmldom')
 const axios = require('axios')
 const db = require('../../dbConfig')
-const generateToken = require('../../utils').generateToken
+const { generateToken } = require('../../utils')
+
 require('dotenv').config() // Need access to process.env.DEV_USER_ID
 
 /*  ================== GITHUB ================== */
@@ -40,7 +41,7 @@ router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) =>
     .then(async response => {
       // GETTING XML DATA
       const xml = response.data
-      const doc = new dom().parseFromString(xml)
+      const doc = new DOMParser().parseFromString(xml)
       // GETTING VALUE OF ALL ID ELEMENTS WITH THIS ELEMENT NESTED PATH = <REVIEW /> => <BOOK/> => <ID/>
       const ids = xpath.select('//review/book/id', doc)
       // GETTING VALUE OF ALL SHELVES ELEMENTS WITH THIS ELEMENT NESTED PATH = <shelves /> => <shelf class ="name"/>  with className of name

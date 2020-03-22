@@ -4,3 +4,4 @@
 /public/uploads
 .eslintcache
 dist
+package-lock.json

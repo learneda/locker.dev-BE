@@ -12,8 +12,8 @@ module.exports = {
     const responsePost = posts.rows
 
     const commentLoop = async () => {
-      for (let post of responsePost) {
-        for (let comment of post.comments) {
+      for (const post of responsePost) {
+        for (const comment of post.comments) {
           if (comment) {
             const username = await db('users')
               .select('username')

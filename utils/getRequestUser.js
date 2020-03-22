@@ -16,9 +16,7 @@ module.exports = {
     } else {
       // else check if passport attached a user obj from cookie session
       if (!req.user) {
-        res
-          .status(400)
-          .json({ err: 'probably missing token or cookie session' })
+        res.status(400).json({ err: 'probably missing token or cookie session' })
       } else {
         next()
       }

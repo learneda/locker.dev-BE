@@ -4,14 +4,13 @@ const db = require('../dbConfig')
  * @param socket {SocketIO.Server} socket-io instance
  * @description Helper function that configures socket-io instance
  */
-exports.configureSocket = socket => {
-  socket.on('connection', async socket => {
+exports.configureSocket = io => {
+  io.on('connection', async socket => {
     await db('online_users')
       .del()
-      .whereNotIn('socket_id', Object.keys(socket.sockets.sockets))
+      .whereNotIn('socket_id', Object.keys(io.sockets.sockets))
 
     socket.on('join', async function(data) {
-      console.log(data, 'DATA', socket.id)
       const online_user = await db('online_users').insert({
         user_id: data.user_id,
         socket_id: socket.id,
@@ -23,22 +22,18 @@ exports.configureSocket = socket => {
           user_id: data.user_id,
         })
         if (notifications.length) {
-          socket.to(socket.id).emit('join', notifications)
-        } else {
-          console.log(notifications, 'you aint got no notifications')
+          io.to(socket.id).emit('join', notifications)
         }
       }
     })
 
     socket.on('disconnect', async reason => {
-      console.log(reason, socket.id)
-      const deleteInsert = await db('online_users')
+      await db('online_users')
         .del()
         .where({ socket_id: socket.id })
     })
 
     socket.on('comments', msg => {
-      console.log('response', msg)
       if (msg.action === 'create') {
         db('comments')
           .insert({
@@ -50,7 +45,6 @@ exports.configureSocket = socket => {
           .then(res => {
             res[0]['username'] = msg.username
             res[0]['action'] = msg.action
-            console.log(res[0], 'response after inserting')
             socket.broadcast.emit('comments', res[0])
             socket.emit('comments', res[0])
 
@@ -64,23 +58,16 @@ exports.configureSocket = socket => {
                 })
                 .returning('*')
                 .then(result => {
-                  console.log('HERE', result)
                   return db('online_users').where({ user_id: msg.postOwnerId })
                 })
                 .then(online_data => {
-                  console.log(online_data, 'is user online?')
                   if (online_data.length) {
                     db('notifications')
                       .where({ read: false, user_id: online_data[0].user_id })
                       .then(notificationRes => {
                         console.log('here', notificationRes)
                         if (notificationRes.length) {
-                          socket
-                            .to(online_data[0].socket_id)
-                            .emit(
-                              'join',
-                              notificationRes[notificationRes.length - 1]
-                            )
+                          io.to(online_data[0].socket_id).emit('join', notificationRes[notificationRes.length - 1])
                         }
                       })
                   }
@@ -89,15 +76,12 @@ exports.configureSocket = socket => {
           })
       }
       if (msg.action === 'destroy') {
-        console.log('inside destroy')
         db('comments')
           .where('id', msg.comment_id)
           .del()
           .returning('*')
           .then(res => {
-            console.log(res, 'after del()')
             res[0]['action'] = msg.action
-            console.log(res[0], 'response after inserting')
             socket.emit('comments', res[0])
             socket.broadcast.emit('comments', res[0])
           })
@@ -136,11 +120,8 @@ exports.configureSocket = socket => {
                 db('notifications')
                   .where({ read: false, user_id: online_data[0].user_id })
                   .then(notificationRes => {
-                    console.log('here', notificationRes)
                     if (notificationRes.length) {
-                      socket
-                        .to(online_data[0].socket_id)
-                        .emit('join', notificationRes)
+                      io.to(online_data[0].socket_id).emit('join', notificationRes)
                     }
                   })
               }
@@ -149,7 +130,6 @@ exports.configureSocket = socket => {
       }
     })
     socket.on('pony', data => {
-      console.log(data)
       if (data.action === 'pony_down') {
         db('posts_ponies')
           .del()
@@ -181,11 +161,8 @@ exports.configureSocket = socket => {
                 db('notifications')
                   .where({ read: false, user_id: online_data[0].user_id })
                   .then(notificationRes => {
-                    console.log('here', notificationRes)
                     if (notificationRes.length) {
-                      socket
-                        .to(online_data[0].socket_id)
-                        .emit('join', notificationRes)
+                      io.to(online_data[0].socket_id).emit('join', notificationRes)
                     }
                   })
               }

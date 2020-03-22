@@ -1,7 +1,7 @@
 {
   "name": "learned-be",
   "version": "1.0.0",
-  "description": "learned-",
+  "description": "LearnLocker backend",
   "type": "git",
   "main": "index.js",
   "engines": {

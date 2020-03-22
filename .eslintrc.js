@@ -31,7 +31,7 @@ module.exports = {
     '@typescript-eslint/member-delimiter-style': 0,
     'import/no-unresolved': 0,
     // airbnb rules to reconsider later
-    eqeqeq: 0,
+    eqeqeq: 1,
     'func-names': 0,
     'no-plusplus': 0,
     'import/extensions': 0,

@@ -12,9 +12,7 @@ module.exports = {
         res.status(200).json({ msg: response.msg })
       }
     } else {
-      res
-        .status(400)
-        .json({ msg: 'missing params. requires tags on header params' })
+      res.status(400).json({ msg: 'missing params. requires tags on header params' })
     }
   },
   async followTag(req, res, next) {

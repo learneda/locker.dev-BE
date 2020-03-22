@@ -5,15 +5,10 @@ module.exports = {
     const { folder_name } = req.body
     const user_id = req.user.id
     if (!folder_name) {
-      return res
-        .status(400)
-        .json({ err: 'must include folder_name in the request body.' })
+      return res.status(400).json({ err: 'must include folder_name in the request body.' })
     }
     try {
-      const { statusCode, response } = await helpers.createFolder(
-        user_id,
-        folder_name
-      )
+      const { statusCode, response } = await helpers.createFolder(user_id, folder_name)
       return res.status(statusCode).json(response)
     } catch ({ statusCode, response }) {
       return res.status(statusCode).json(response)
@@ -29,10 +24,7 @@ module.exports = {
       })
     }
     try {
-      const { statusCode, response } = await helpers.addItemToFolder(
-        user_id,
-        req.body
-      )
+      const { statusCode, response } = await helpers.addItemToFolder(user_id, req.body)
       return res.status(statusCode).json(response)
     } catch ({ statusCode, response }) {
       return res.status(statusCode).json(response)
@@ -42,9 +34,7 @@ module.exports = {
   async getUserFolders(req, res) {
     const user_id = req.params.id
     try {
-      const { statusCode, response } = await helpers.getUserFolders(
-        Number(user_id)
-      )
+      const { statusCode, response } = await helpers.getUserFolders(Number(user_id))
       return res.status(statusCode).json(response)
     } catch ({ statusCode, response }) {
       return res.status(statusCode).json(response)
@@ -53,14 +43,10 @@ module.exports = {
   async getPostsByFolderId(req, res) {
     const folder_id = req.params.id
     if (!folder_id) {
-      return res
-        .status(400)
-        .json({ err: 'must include folder_id in query string..' })
+      return res.status(400).json({ err: 'must include folder_id in query string..' })
     }
     try {
-      const { statusCode, response } = await helpers.getPostsByFolderId(
-        Number(folder_id)
-      )
+      const { statusCode, response } = await helpers.getPostsByFolderId(Number(folder_id))
       return res.status(statusCode).json(response)
     } catch ({ statusCode, response }) {
       return res.status(statusCode).json(response)
@@ -73,16 +59,11 @@ module.exports = {
 
     if (!folder_id && name) {
       return res.status(400).json({
-        err:
-          'must include folder_id in query string, and folder name in the body',
+        err: 'must include folder_id in query string, and folder name in the body',
       })
     }
     try {
-      const { statusCode, response } = await helpers.updateSingleFolder(
-        folder_id,
-        name,
-        user_id
-      )
+      const { statusCode, response } = await helpers.updateSingleFolder(folder_id, name, user_id)
       return res.status(statusCode).json(response)
     } catch ({ statusCode, response }) {
       return res.status(statusCode).json(response)
@@ -93,16 +74,11 @@ module.exports = {
     const user_id = req.user.id
 
     if (!folder_id) {
-      return res
-        .status(400)
-        .json({ err: 'must include folder_id in query string..' })
+      return res.status(400).json({ err: 'must include folder_id in query string..' })
     }
 
     try {
-      const { statusCode, response } = await helpers.deleteFolderByFolderId(
-        folder_id,
-        user_id
-      )
+      const { statusCode, response } = await helpers.deleteFolderByFolderId(folder_id, user_id)
       return res.status(statusCode).json(response)
     } catch ({ statusCode, response }) {
       return res.status(statusCode).json(response)

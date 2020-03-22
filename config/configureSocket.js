@@ -1,14 +1,14 @@
 const db = require('../dbConfig')
 
 /**
- * @param socket {SocketIO.Server} socket-io instance
+ * @param io {SocketIO.Server} socket-io instance
  * @description Helper function that configures socket-io instance
  */
-exports.configureSocket = socket => {
-  socket.on('connection', async socket => {
+exports.configureSocket = io => {
+  io.on('connection', async socket => {
     await db('online_users')
       .del()
-      .whereNotIn('socket_id', Object.keys(socket.sockets.sockets))
+      .whereNotIn('socket_id', Object.keys(io.sockets.sockets))
 
     socket.on('join', async data => {
       const online_user = await db('online_users').insert({
@@ -22,7 +22,7 @@ exports.configureSocket = socket => {
           user_id: data.user_id,
         })
         if (notifications.length) {
-          socket.to(socket.id).emit('join', notifications)
+          io.to(socket.id).emit('join', notifications)
         }
       }
     })
@@ -34,7 +34,6 @@ exports.configureSocket = socket => {
     })
 
     socket.on('comments', msg => {
-      console.log('response', msg)
       if (msg.action === 'create') {
         db('comments')
           .insert({
@@ -58,21 +57,14 @@ exports.configureSocket = socket => {
                   invoker: msg.username,
                 })
                 .returning('*')
-                .then(() =>
-                  db('online_users').where({ user_id: msg.postOwnerId })
-                )
+                .then(() => db('online_users').where({ user_id: msg.postOwnerId }))
                 .then(online_data => {
                   if (online_data.length) {
                     db('notifications')
                       .where({ read: false, user_id: online_data[0].user_id })
                       .then(notificationRes => {
                         if (notificationRes.length) {
-                          socket
-                            .to(online_data[0].socket_id)
-                            .emit(
-                              'join',
-                              notificationRes[notificationRes.length - 1]
-                            )
+                          io.to(online_data[0].socket_id).emit('join', notificationRes[notificationRes.length - 1])
                         }
                       })
                   }
@@ -124,9 +116,7 @@ exports.configureSocket = socket => {
                   .where({ read: false, user_id: online_data[0].user_id })
                   .then(notificationRes => {
                     if (notificationRes.length) {
-                      socket
-                        .to(online_data[0].socket_id)
-                        .emit('join', notificationRes)
+                      io.to(online_data[0].socket_id).emit('join', notificationRes)
                     }
                   })
               }
@@ -165,9 +155,7 @@ exports.configureSocket = socket => {
                   .where({ read: false, user_id: online_data[0].user_id })
                   .then(notificationRes => {
                     if (notificationRes.length) {
-                      socket
-                        .to(online_data[0].socket_id)
-                        .emit('join', notificationRes)
+                      io.to(online_data[0].socket_id).emit('join', notificationRes)
                     }
                   })
               }

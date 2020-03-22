@@ -31,15 +31,7 @@ module.exports = {
   async getNotifications(userId) {
     try {
       const notifications = await db('notifications as n')
-        .select(
-          'n.id',
-          'n.post_id',
-          'n.type',
-          'n.read',
-          'n.invoker',
-          'np.thumbnail_url',
-          'u.profile_picture'
-        )
+        .select('n.id', 'n.post_id', 'n.type', 'n.read', 'n.invoker', 'np.thumbnail_url', 'u.profile_picture')
         .where('n.user_id', userId)
         .join('newsfeed_posts as np', 'np.id', 'n.post_id')
         .join('users as u', 'u.username', 'n.invoker')

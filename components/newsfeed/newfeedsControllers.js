@@ -15,10 +15,7 @@ module.exports = {
   async postToNewsfeed(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     if (req.body.post) {
-      const response = await helpers.createNewsfeedRecord(
-        user_id,
-        req.body.post
-      )
+      const response = await helpers.createNewsfeedRecord(user_id, req.body.post)
       if (response.msg === 'success') {
         res.status(200).json(response.record)
       } else {
@@ -61,11 +58,7 @@ module.exports = {
     const userId = req.params.id
     const currentUserId = req.user.id
     if (userId) {
-      const response = await helpers.findUserPosts(
-        userId,
-        currentUserId,
-        offset
-      )
+      const response = await helpers.findUserPosts(userId, currentUserId, offset)
       if (response.msg === 'success') {
         res.status(200).json(response)
       } else {

@@ -10,7 +10,7 @@
     "noImplicitAny": false, // one day we should comply
     "strictNullChecks": false /* Enable strict null checks. */,
     "strictFunctionTypes": false /* Enable strict checking of function types. */,
-    "strictBindCallApply": false /* Enable strict 'bind', 'call', and 'apply' methods on functions. */,
+    "strictBindCallApply": true /* Enable strict 'bind', 'call', and 'apply' methods on functions. */,
     "strictPropertyInitialization": false /* Enable strict checking of property initialization in classes. */,
     "noImplicitThis": false
   },

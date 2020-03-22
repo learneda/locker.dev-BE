@@ -7,7 +7,7 @@ module.exports = {
       database: process.env.DB_LOCAL,
       user: process.env.DB_LOCAL_USER,
       password: process.env.DB_LOCAL_PASSWORD,
-      host : process.env.DB_LOCAL_HOST,
+      host: process.env.DB_LOCAL_HOST,
     },
     useNullAsDefault: true,
     pool: {

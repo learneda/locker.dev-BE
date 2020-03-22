@@ -8,7 +8,7 @@ const server = require('express')()
 // Configures passport auth
 require('./config/passport')
 // Configures middleware
-require('./middleware/index')(server)
+require('./middleware')(server)
 // Configures services (routes)
 require('./components')(server)
 
@@ -24,5 +24,5 @@ server.get('/', (req, res) => {
 
 // Instantiates Socket-IO instance
 const io = require('socket.io')(myServer)
-
+// Configure SocketIO
 configureSocket(io)

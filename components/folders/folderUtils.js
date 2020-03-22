@@ -5,9 +5,6 @@ module.exports = {
     const folder = await db('folders as s')
       .where({ id: folder_id })
       .first()
-    if (Number(folder.user_id) === Number(user_id)) {
-      return true
-    }
-    return false
+    return Number(folder.user_id) === Number(user_id)
   },
 }

@@ -61,7 +61,6 @@ module.exports = {
   },
   async createNewPost(req, res, next) {
     const { post_url, title, description, thumbnail_url } = req.body
-    console.log('🛸', req.body)
     const user_id = req.user.id || req.body.userId
     const mediaTypes = ['book', 'video', 'podcast', 'course', 'article']
 
@@ -316,7 +315,7 @@ module.exports = {
         if (selectCountPromise) {
           res.status(200).json(selectCountPromise)
         } else {
-          res.status(303).json({ err: 'couldnt find user' })
+          res.status(303).json({ err: 'could not find user' })
         }
       } catch (err) {
         console.log(err)

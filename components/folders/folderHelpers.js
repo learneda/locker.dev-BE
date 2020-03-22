@@ -14,8 +14,7 @@ module.exports = {
         response: { msg: 'success', folder: folderInsertRecord },
       }
     } catch (err) {
-      console.log(err)
-      return { statusCode: 400, response: { msg: 'something went wrong', err } }
+      return { statusCode: 500, response: { msg: 'something went wrong', err } }
     }
   },
   async addItemToFolder(user_id, body) {
@@ -37,8 +36,7 @@ module.exports = {
         response: { msg: 'success', folderPostsRecord },
       }
     } catch (err) {
-      // console.log(err)
-      return { statusCode: 400, response: { msg: 'something went wrong' } }
+      return { statusCode: 500, response: { msg: 'something went wrong' } }
     }
   },
   async getUserFolders(user_id) {
@@ -47,18 +45,16 @@ module.exports = {
       if (folders) {
         return { statusCode: 200, response: { msg: 'success', folders } }
       } else {
-        return { statusCode: 400, response: { msg: 'something went wrong?' } }
+        return { statusCode: 404, response: { msg: 'something went wrong?' } }
       }
     } catch (err) {
-      console.log(err)
-      return { msg: 'something went wrong' }
+      return { statusCode: 500, response: { msg: 'something went wrong' } }
     }
   },
   async getPostsByFolderId(folder_id) {
     try {
-      console.log(folder_id)
       const posts = await db('folder_posts as fp')
-        .where({ folder_id: folder_id })
+        .where({ folder_id })
         .join('posts as p', 'p.id', 'fp.post_id')
         .select(
           'p.id',
@@ -77,10 +73,9 @@ module.exports = {
       if (posts) {
         return { statusCode: 200, response: { msg: 'success', posts } }
       } else {
-        return { statusCode: 400, response: { msg: 'something went wrong' } }
+        return { statusCode: 404, response: { msg: 'something went wrong' } }
       }
     } catch (err) {
-      console.log(err)
       return { statusCode: 500, response: { msg: 'fatal error' } }
     }
   },
@@ -92,7 +87,7 @@ module.exports = {
       return { statusCode: 200, response: { msg: 'success', folder } }
     } catch (e) {
       // console.log(e)
-      return { statusCode: 500, response: 'fatal error' }
+      return { statusCode: 500, response: { msg: 'fatal error' } }
     }
   },
   async updateSingleFolder(folder_id, name, user_id) {
@@ -108,9 +103,8 @@ module.exports = {
         })
         .returning('*')
       return { statusCode: 200, response: { msg: 'success', updatedFolder } }
-    } catch (e) {
-      console.log(e)
-      return { statusCode: 500, response: 'fatal error' }
+    } catch (err) {
+      return { statusCode: 500, response: { msg: 'fatal error' } }
     }
   },
   async deleteFolderByFolderId(folder_id, user_id) {
@@ -125,9 +119,8 @@ module.exports = {
         .del()
         .returning('*')
       return { statusCode: 204, response: { msg: 'successfully deleted' } }
-    } catch (e) {
-      console.log(e)
-      return { statusCode: 500, response: 'fatal error' }
+    } catch (err) {
+      return { statusCode: 500, response: { msg: 'fatal error' } }
     }
   },
 }

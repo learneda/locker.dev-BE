@@ -6,28 +6,29 @@ const dom = require('xmldom').DOMParser
 const axios = require('axios')
 const db = require('../../dbConfig')
 const generateToken = require('../../utils').generateToken
+
 /*  ================== GITHUB ================== */
 router.get('/github', passport.authenticate('github'))
 
 router.get(
   '/github/cb',
-  passport.authenticate('github', {failureRedirect: '/'}),
+  passport.authenticate('github', { failureRedirect: '/' }),
   controllers.gitHubHandler
 )
-/*  ================== GOOGLE ================== */
 
+/*  ================== GOOGLE ================== */
 router.get(
   '/google',
-  passport.authenticate('google', {scope: ['profile', 'email']})
+  passport.authenticate('google', { scope: ['profile', 'email'] })
 )
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', {failureRedirect: '/'}),
+  passport.authenticate('google', { failureRedirect: '/' }),
   controllers.googleHandler
 )
-/*  ================== MEETUPS ================== */
 
+/*  ================== MEETUPS ================== */
 router.get('/meetup', passport.authenticate('meetup'))
 
 router.get(
@@ -35,15 +36,16 @@ router.get(
   passport.authenticate('meetup'),
   controllers.meetupHandler
 )
-/*  ================== GOODREADS ================== */
 
+/*  ================== GOODREADS ================== */
 router.get('/goodreads', passport.authenticate('goodreads'))
-// allow developer to generate a token 4 REST client useage
+
+// allow developer to generate a token 4 REST client usage
 if (process.env.NODE_ENV === 'development') {
   router.get('/token', async (req, res) => {
     /*  ================== Make sure to run the seeds! ================== */
     const user = await db('users')
-      .where({id: 1})
+      .where({ id: 1 })
       .first()
     const token = generateToken(user)
     res.status(200).json({
@@ -56,7 +58,6 @@ router.get(
   '/goodreads/cb',
   passport.authorize('goodreads'),
   (req, res, next) => {
-    console.log(req.user, req.user.id, 'IS user defined ???')
     var userId = req.user.id
     axios
       .get('https://www.goodreads.com/review/list?v=2', {
@@ -71,8 +72,8 @@ router.get(
         const doc = new dom().parseFromString(xml)
         // GETTING VALUE OF ALL ID ELEMENTS WITH THIS ELEMENT NESTED PATH = <REVIEW /> => <BOOK/> => <ID/>
         const ids = xpath.select('//review/book/id', doc)
-        // GETTING VALUE OF ALL SHELFS ELEMENTS WITH THIS ELEMENT NESTED PATH = <shelves /> => <shelf class ="name"/>  with className of name
-        const shelfs = xpath.select('//shelves/shelf/@name', doc)
+        // GETTING VALUE OF ALL SHELVES ELEMENTS WITH THIS ELEMENT NESTED PATH = <shelves /> => <shelf class ="name"/>  with className of name
+        const shelves = xpath.select('//shelves/shelf/@name', doc)
         // GETTING VALUE OF ALL ID ELEMENTS WITH THIS ELEMENT NESTED PATH = <review /> => <BOOK/> => <authors/> => <author />
         const titles = xpath.select('//review/book/title', doc)
         const authors = xpath.select('//review/book/authors/author/name', doc)
@@ -94,7 +95,7 @@ router.get(
               id: ids[i].firstChild.data,
               title: titles[i].firstChild.data,
               author: authors[i].firstChild.data,
-              shelf: shelfs[i].value,
+              shelf: shelves[i].value,
               link: links[i].firstChild.data,
               rating: ratings[i].firstChild.data,
               image: images[i].firstChild.data,
@@ -107,7 +108,7 @@ router.get(
               id: ids[i].firstChild.data,
               title: titles[i].firstChild.data,
               author: authors[i].firstChild.data,
-              shelf: shelfs[i].value,
+              shelf: shelves[i].value,
               link: links[i].firstChild.data,
               rating: ratings[i].firstChild.data,
               image: images[i].firstChild.data,
@@ -120,7 +121,7 @@ router.get(
         // get all existing Records to filter out duplicates
         const existingRecords = await db('goodreads')
           .select('book_id')
-          .where({user_id: userId})
+          .where({ user_id: userId })
 
         // IF USER HAS ANY EXISTING RECORDS
         if (existingRecords.length) {
@@ -202,7 +203,9 @@ router.get('/current_user', (req, res) => {
     } else {
       res.status(200).send(false)
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log('error:', error)
+  }
 })
 /*  ================== GET Social Network IDs ================== */
 

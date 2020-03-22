@@ -6,17 +6,19 @@ module.exports = {
       const token = req.headers.authorization
       jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
         if (err) {
-          res.status(401).json({message: 'not verified'})
+          res.status(401).json({ message: 'not verified' })
         } else {
           req.decodedToken = decodedToken
-          req['user'] = decodedToken
+          req.user = decodedToken
           next()
         }
       })
     } else {
-      // else check if passport attached a user obj from cookie sessions
+      // else check if passport attached a user obj from cookie session
       if (!req.user) {
-        res.status(400).json({err: 'probably missing token or cookie session'})
+        res
+          .status(400)
+          .json({ err: 'probably missing token or cookie session' })
       } else {
         next()
       }

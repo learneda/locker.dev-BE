@@ -8,11 +8,12 @@ module.exports = {
     ecmaVersion: 8,
   },
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['@typescript-eslint', 'prettier', 'import'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:import/errors',
     'plugin:prettier/recommended',
   ],
   rules: {
@@ -22,5 +23,7 @@ module.exports = {
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/no-unused-vars': 0,
     'no-useless-catch': 0,
+    '@typescript-eslint/member-delimiter-style': 0,
+    'import/no-unresolved': 0,
   },
 }

@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "target": "es2018",
-    "module": "commonjs",
+    "baseUrl": "./",
+    "target": "ESNext",
     "esModuleInterop": true,
-    "noImplicitAny": true,
     "moduleResolution": "node",
-    "allowJs": true,
+    "sourceMap": true,
     "outDir": "dist",
-    "sourceMap": true
+    "allowJs": true,
+    "noImplicitAny": false, // one day we should comply
+    "strictNullChecks": false /* Enable strict null checks. */,
+    "strictFunctionTypes": false /* Enable strict checking of function types. */,
+    "strictBindCallApply": false /* Enable strict 'bind', 'call', and 'apply' methods on functions. */,
+    "strictPropertyInitialization": false /* Enable strict checking of property initialization in classes. */,
+    "noImplicitThis": false
   },
+  "lib": ["es2015"],
   "include": ["./**/*.ts"],
-  "exclude": ["node_modules, dist"]
+  "exclude": ["node_modules", "dist"]
 }

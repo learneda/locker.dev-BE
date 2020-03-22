@@ -1,10 +1,9 @@
-require('dotenv').config()
-const { configureSocket } = require('./config/')
-const { logServerPrompt } = require('./utils')
-
+import { config } from 'dotenv'
+import { configureSocket } from './config'
+import { logServerPrompt } from './utils'
+config()
 // Instantiates server
 const server = require('express')()
-
 // Configures passport auth
 require('./config/passport')
 // Configures middleware
@@ -12,7 +11,7 @@ require('./middleware')(server)
 // Configures services (routes)
 require('./components')(server)
 
-const port = process.env.PORT || 8000
+const port = Number(process.env.PORT) || 8000
 
 // Wakes up server
 const myServer = server.listen(port, logServerPrompt(port))

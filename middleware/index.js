@@ -31,6 +31,8 @@ module.exports = server => {
       name: 'learned-a',
       keys: [process.env.COOKIE_KEY],
       maxAge: 24 * 60 * 60 * 1000,
+      SameSite: 'None',
+      secure,
     })
   )
   server.use(cors(corsOptions))

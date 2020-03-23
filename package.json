@@ -19,9 +19,7 @@
     "prodpg": "heroku run knex migrate:rollback && heroku run knex migrate:latest && heroku run knex seed:run"
   },
   "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix"

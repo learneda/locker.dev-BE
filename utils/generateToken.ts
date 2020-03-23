@@ -1,7 +1,7 @@
-import { sign } from 'jsonwebtoken'
-import { isString } from 'lodash'
+const { sign } = require('jsonwebtoken')
+const _ = require('lodash')
 
-export type User = {
+type User = {
   id: number
 }
 
@@ -9,8 +9,8 @@ export type User = {
  * @param user active user
  * @returns auth token
  */
-export const generateToken = (user: User) => {
-  if (isString(process.env.JWT_SECRET)) {
+const generateToken = (user: User) => {
+  if (_.isString(process.env.JWT_SECRET)) {
     const payload = {
       id: user.id,
     }
@@ -21,3 +21,5 @@ export const generateToken = (user: User) => {
   }
   throw new Error('process.env.JWT_SECRET undefined')
 }
+
+module.exports = { generateToken }

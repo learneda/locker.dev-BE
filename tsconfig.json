@@ -6,6 +6,7 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
+    "module": "CommonJS",
     // when migration complete, turn false
     "allowJs": true,
     // one day we should comply with these

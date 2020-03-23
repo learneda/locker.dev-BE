@@ -56,5 +56,6 @@ module.exports = {
     'prefer-template': 0,
     'no-lonely-if': 0,
     'import/prefer-default-export': 0, // leave off
+    '@typescript-eslint/no-explicit-any': 0,
   },
 }

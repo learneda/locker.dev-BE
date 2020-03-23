@@ -5,7 +5,6 @@ const xpath = require('xpath')
 const { DOMParser } = require('xmldom')
 const axios = require('axios')
 const db = require('../../dbConfig')
-const { generateToken } = require('../../utils')
 
 require('dotenv').config() // Need access to process.env.DEV_USER_ID
 

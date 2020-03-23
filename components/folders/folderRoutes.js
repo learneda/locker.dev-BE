@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const controllers = require('./folderControllers')
-const utils = require('../../utils')
+const utils = require('../../utils/getRequestUser')
 
 router.post('/', utils.isRequestAuthenticated, controllers.createFolder)
 

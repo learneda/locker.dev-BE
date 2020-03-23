@@ -1,15 +1,15 @@
 require('dotenv').config()
-const { verify } = require('jsonwebtoken')
-const { isString } = require('lodash')
+const jwt = require('jsonwebtoken')
+const _ = require('lodash')
 
 /**
  * @description Authentication middleware
  */
-exports.isRequestAuthenticated = (req: any, res: any, next: any) => {
+exports.isRequestAuthenticated = (req, res, next) => {
   // if we are in dev env allow req from REST clients to authenticate with token!
-  if (process.env.NODE_ENV === 'development' && req.headers.authorization && isString(process.env.JWT_SECRET)) {
+  if (process.env.NODE_ENV === 'development' && req.headers.authorization && _.isString(process.env.JWT_SECRET)) {
     const token = req.headers.authorization
-    verify(token, process.env.JWT_SECRET, (err: any, decodedToken: any) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err) {
         res.status(401).json({ message: 'not verified' })
       } else {

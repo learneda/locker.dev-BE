@@ -1,6 +1,6 @@
 require('dotenv').config()
-const { configureSocket } = require('./config')
-const utils = require('./utils')
+const { configureSocket } = require('./config/configureSocket')
+const { logServerPrompt } = require('./utils/logServerPrompt')
 const server = require('express')()
 
 // Configures passport auth
@@ -13,10 +13,10 @@ require('./components')(server)
 const port = Number(process.env.PORT) || 8000
 
 // Wakes up server
-const myServer = server.listen(port, () => utils.logServerPrompt(port))
+const myServer = server.listen(port, () => logServerPrompt(port))
 
 // Sanity check
-server.get('/', (req: any, res: any) => {
+server.get('/', (req, res) => {
   res.send('localhost listens and obeys')
 })
 

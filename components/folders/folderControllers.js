@@ -54,7 +54,7 @@ module.exports = {
   },
   async updateFolderByFolderId(req, res) {
     const folder_id = req.params.id
-    const name = req.body.name
+    const { name } = req.body
     const user_id = req.user.id
 
     if (!folder_id && name) {

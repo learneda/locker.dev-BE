@@ -1,10 +1,13 @@
 require('dotenv').config()
 const db = require('../../dbConfig')
+
 const localhost_url = 'http://localhost:3000'
 const url = 'https://learnlocker.dev'
 
 const selectRedirect = (res, route) => {
-  process.env.NODE_ENV === 'production' ? res.redirect(`${url}${route}`) : res.redirect(`${localhost_url}${route}`)
+  return process.env.NODE_ENV === 'production'
+    ? res.redirect(`${url}${route}`)
+    : res.redirect(`${localhost_url}${route}`)
 }
 
 module.exports = {
@@ -22,7 +25,7 @@ module.exports = {
     selectRedirect(res, '/landing')
   },
   async getSocialNetworkIDs(req, res, next) {
-    const id = req.user.id
+    const { id } = req.user
     const socialIds = await db('users')
       .select('github_id', 'google_id')
       .where({ id })

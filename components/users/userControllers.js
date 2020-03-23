@@ -3,7 +3,7 @@ const faker = require('faker')
 
 module.exports = {
   async getAllUsers(req, res, next) {
-    const user = req.user
+    const { user } = req
     if (user) {
       try {
         const users = await db('users')
@@ -87,7 +87,7 @@ module.exports = {
     }
   },
   async getUserDetailsByUserName(req, res, next) {
-    const username = req.params.username
+    const { username } = req.params
     try {
       const selectPromise = await db('users')
         .where({ username: username })
@@ -103,8 +103,8 @@ module.exports = {
     }
   },
   async subscribeToUser(req, res, next) {
-    const user_id = req.body.user_id
-    const friend_id = req.body.friend_id
+    const { user_id } = req.body
+    const { friend_id } = req.body
     try {
       const insertPromise = await db('friendships')
         .insert({
@@ -124,7 +124,7 @@ module.exports = {
   },
   async unsubscribeToUser(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
-    const friend_id = req.body.friend_id
+    const { friend_id } = req.body
     try {
       const deletePromise = await db('friendships')
         .where({ user_id, friend_id })
@@ -167,7 +167,7 @@ module.exports = {
     }
   },
 
-  async getFollowing(req, res, next) {
+  async getFollowing(req, res) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     const friend_id = req.params.id
     try {
@@ -264,7 +264,7 @@ module.exports = {
 
   // gets all user following with user data
   async getUserFollowing(req, res) {
-    const id = req.query.id
+    const { id } = req.query
 
     try {
       const following = await db('friendships')
@@ -280,7 +280,7 @@ module.exports = {
 
   // gets all user followers with user data
   async getUserFollowers(req, res) {
-    const id = req.query.id
+    const { id } = req.query
 
     try {
       const followers = await db('friendships')
@@ -316,8 +316,8 @@ module.exports = {
     res.send('done')
   },
   async getSavedPostIds(req, res) {
-    const user_id = req.query.user_id
-    const saved_from_id = req.query.saved_from_id
+    const { user_id } = req.query
+    const { saved_from_id } = req.query
     try {
       const savedPostIds = await db('saved_post_id')
         .where('user_id', user_id)

@@ -4,7 +4,6 @@ const Feed = require('rss-to-json')
 const urlMetadata = require('url-metadata')
 const cheerio = require('cheerio')
 const db = require('../../dbConfig')
-const log = console.log
 
 async function runThruUrlMetadata(arr) {
   const metaPromises = arr.map(url => urlMetadata(url))

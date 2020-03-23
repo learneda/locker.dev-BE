@@ -3,7 +3,7 @@ const helpers = require('./newsfeedHelpers')
 module.exports = {
   async getNewsfeed(req, res, next) {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
-    const offset = req.query.offset
+    const { offset } = req.query
     const newsfeedResponse = await helpers.generateNewsFeed(user_id, offset)
     if (newsfeedResponse) {
       res.status(200).json(newsfeedResponse.newsFeed)
@@ -54,7 +54,7 @@ module.exports = {
     }
   },
   async getUserNewsfeedPosts(req, res, next) {
-    const offset = req.query.offset
+    const { offset } = req.query
     const userId = req.params.id
     const currentUserId = req.user.id
     if (userId) {

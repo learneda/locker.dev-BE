@@ -176,17 +176,15 @@ module.exports = {
 
   async socialLikePost(req, res, next) {
     const user_id = req.user.id
-    const { post_id } = req.body
+    const { id } = req.body
+    if (!user_id || !id) {
+      return res.status(400).json({ msg: 'requires user_id & post_id' })
+    }
     if (req.user) {
       try {
-        const insertPromise = await db('posts_likes').insert({
-          user_id,
-          post_id,
-        })
+        const insertPromise = await helpers.postsLikesInsert(user_id, id)
         if (insertPromise) {
-          res.status(200).json({ msg: 'success' })
-        } else {
-          res.status(200).json({ msg: 'requires user_id & post_id' })
+          res.status(insertPromise.statusCode).json({ msg: 'success', insertRecord: insertPromise.response })
         }
       } catch (err) {
         res.status(500).json(err)

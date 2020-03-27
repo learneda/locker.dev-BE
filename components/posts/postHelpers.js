@@ -34,4 +34,17 @@ module.exports = {
       return { statusCode: 500, response: { msg: 'fatal error', err } }
     }
   },
+  async postsLikesInsert(user_id, post_id) {
+    try {
+      const likeRecord = await db('posts_likes')
+        .insert({
+          user_id,
+          post_id,
+        })
+        .returning('*')
+      return { statusCode: 201, response: { msg: 'success', likeRecord } }
+    } catch (err) {
+      return { statusCode: 500, response: { msg: 'fatal error', err } }
+    }
+  },
 }

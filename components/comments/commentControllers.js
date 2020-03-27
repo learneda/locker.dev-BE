@@ -31,7 +31,7 @@ module.exports = {
           .where('id', req.params.id)
           .del()
         if (deletePromise) {
-          res.status(200).json({ msg: 'comment successfully deleted' })
+          res.status(204).json({ msg: 'comment successfully deleted' })
         } else {
           res.status(317).json({ msg: 'something went wrong' })
         }

@@ -21,7 +21,7 @@ module.exports = {
           })
           res.status(200).json(results)
         } else {
-          console.log(error)
+          throw new Error(error)
         }
       })
     } else {

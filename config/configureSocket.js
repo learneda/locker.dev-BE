@@ -35,56 +35,60 @@ exports.configureSocket = io => {
 
     socket.on('comments', msg => {
       if (msg.action === 'create') {
-        db('comments')
-          .insert({
-            content: msg.content,
-            user_id: msg.user_id,
-            post_id: msg.post_id,
-          })
-          .returning('*')
-          .then(res => {
-            res[0]['username'] = msg.username
-            res[0]['action'] = msg.action
-            socket.broadcast.emit('comments', res[0])
-            socket.emit('comments', res[0])
+        msg['created_at'] = Date.now()
+        socket.broadcast.emit('comments', msg)
+        socket.emit('comments', msg)
 
-            if (msg.user_id != msg.postOwnerId) {
-              db('notifications')
-                .insert({
-                  user_id: msg.postOwnerId,
-                  post_id: msg.post_id,
-                  type: 'comment',
-                  invoker: msg.username,
-                })
-                .returning('*')
-                .then(() => db('online_users').where({ user_id: msg.postOwnerId }))
-                .then(online_data => {
-                  if (online_data.length) {
-                    db('notifications')
-                      .where({ read: false, user_id: online_data[0].user_id })
-                      .then(notificationRes => {
-                        if (notificationRes.length) {
-                          io.to(online_data[0].socket_id).emit('join', notificationRes[notificationRes.length - 1])
-                        }
-                      })
-                  }
-                })
-            }
-          })
+        // db('comments')
+        //   .insert({
+        //     content: msg.content,
+        //     user_id: msg.user_id,
+        //     post_id: msg.post_id,
+        //   })
+        //   .returning('*')
+        //   .then(res => {
+        //     res[0]['username'] = msg.username
+        //     res[0]['action'] = msg.action
+        //     socket.broadcast.emit('comments', res[0])
+        //     socket.emit('comments', res[0])
+
+        //     if (msg.user_id != msg.postOwnerId) {
+        //       db('notifications')
+        //         .insert({
+        //           user_id: msg.postOwnerId,
+        //           post_id: msg.post_id,
+        //           type: 'comment',
+        //           invoker: msg.username,
+        //         })
+        //         .returning('*')
+        //         .then(() => db('online_users').where({ user_id: msg.postOwnerId }))
+        //         .then(online_data => {
+        //           if (online_data.length) {
+        //             db('notifications')
+        //               .where({ read: false, user_id: online_data[0].user_id })
+        //               .then(notificationRes => {
+        //                 if (notificationRes.length) {
+        //                   io.to(online_data[0].socket_id).emit('join', notificationRes[notificationRes.length - 1])
+        //                 }
+        //               })
+        //           }
+        //         })
+        //     }
+        //   })
       }
-      if (msg.action === 'destroy') {
-        db('comments')
-          .where('id', msg.comment_id)
-          .del()
-          .returning('*')
-          .then(res => {
-            res[0]['action'] = msg.action
-            socket.emit('comments', res[0])
-            socket.broadcast.emit('comments', res[0])
-          })
-      }
+      // if (msg.action === 'destroy') {
+      //   db('comments')
+      //     .where('id', msg.comment_id)
+      //     .del()
+      //     .returning('*')
+      //     .then(res => {
+      //       res[0]['action'] = msg.action
+      //       socket.emit('comments', res[0])
+      //       socket.broadcast.emit('comments', res[0])
+      //     })
+      // }
     })
-
+    // ================================= REMEMBER TO FIX NOTIFICATIONS ========================
     socket.on('like', data => {
       if (data.action === 'unlike') {
         db('posts_likes')
@@ -101,7 +105,7 @@ exports.configureSocket = io => {
             socket.broadcast.emit('like', data)
             socket.emit('like', data)
           })
-        if (data.user_id != data.postOwnerId) {
+        if (data.user_id !== data.postOwnerId) {
           db('notifications')
             .insert({
               user_id: data.postOwnerId,
@@ -140,7 +144,7 @@ exports.configureSocket = io => {
             socket.broadcast.emit('pony', data)
             socket.emit('pony', data)
           })
-        if (data.user_id != data.postOwnerId) {
+        if (data.user_id !== data.postOwnerId) {
           db('notifications')
             .insert({
               user_id: data.postOwnerId,

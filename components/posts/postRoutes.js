@@ -19,6 +19,12 @@ router.post('/ponies/users', controllers.getUsersWhoPonyPost)
 
 router.post('/like', controllers.socialLikePost)
 
+router.delete('/like', controllers.deleteSocialLike)
+
+router.post('/pony', controllers.postPonyUp)
+
+router.delete('/pony', controllers.postPonyDownAway)
+
 router.get('/:id', controllers.getPost)
 
 router.get('/all/:id', controllers.getAllUserPosts)

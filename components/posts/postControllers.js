@@ -1,5 +1,6 @@
 const db = require('../../dbConfig')
 const urlMetadata = require('url-metadata')
+const helpers = require('./postHelpers')
 
 module.exports = {
   async getAllCurrentUserPost(req, res, next) {
@@ -11,7 +12,7 @@ module.exports = {
         return res.status(200).json(posts)
       }
     } catch (err) {
-      console.log(err)
+      throw new Error('something went wrong')
     }
   },
   async getAllUserPosts(req, res, next) {
@@ -40,7 +41,7 @@ module.exports = {
 
       return res.status(200).json(posts)
     } catch (err) {
-      console.log(err)
+      throw new Error('something went wrong')
     }
   },
 
@@ -99,7 +100,6 @@ module.exports = {
             return res.status(300).json({ err: 'could not add new entry' })
           }
         } catch (err) {
-          console.log('META ERROR', err)
           return res.status(500).json(err)
         }
       }
@@ -119,7 +119,6 @@ module.exports = {
           const rootUrl = new URL(newUrl).hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0]
 
           const metadata = await urlMetadata(newUrl)
-          // console.log(metadata);
           if (metadata.description === null) {
             metadata.description = 'No description'
           }
@@ -145,11 +144,9 @@ module.exports = {
               res.status(300).json({ err: 'could not add new entry' })
             }
           } catch (err) {
-            console.log('META ERROR', err)
             res.status(500).json(err)
           }
         } catch (err) {
-          console.log('META ERROR', err)
           res.status(500).json({ err: 'could not add new entry' })
         }
       } else {
@@ -192,11 +189,21 @@ module.exports = {
           res.status(200).json({ msg: 'requires user_id & post_id' })
         }
       } catch (err) {
-        console.log(err)
         res.status(500).json(err)
       }
     } else {
       res.status(401).json({ msg: 'unauthorized' })
+    }
+  },
+  async deleteSocialLike(req, res, next) {
+    const user_id = req.user.id
+    // check if the record that I want to remove is owned by user_id
+    try {
+      const helper = await helpers.deleteSocialLike(...req.body, user_id)
+      return res.status(helper.statusCode).json(helper.response)
+    } catch (err) {
+      // check if by throwing an error inside the helper will this get executed ?
+      res.status(500).json(err)
     }
   },
   async getPostLikeCount(req, res, next) {
@@ -209,7 +216,6 @@ module.exports = {
         res.status(200).json(selectPromise)
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },
@@ -226,7 +232,6 @@ module.exports = {
         res.status(200).json(selectPromise)
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },
@@ -243,8 +248,26 @@ module.exports = {
         res.status(200).json(selectPromise)
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
+    }
+  },
+  async postPonyUp(req, res, next) {
+    const user_id = req.user.id
+    try {
+      const helper = await helpers.postPonyUp(req.body.post_id, user_id)
+      return res.status(helper.statusCode).json(helper.response)
+    } catch (err) {
+      return res.status(500).json(err)
+    }
+  },
+
+  async postPonyDownAway(req, res, next) {
+    const { post_id } = req.body
+    try {
+      const helper = await helpers.postPonyDownAway(post_id, req.user.id)
+      return res.status(helper.statusCode).json(helper.response)
+    } catch (err) {
+      return res.status(500).json(err)
     }
   },
 
@@ -265,7 +288,6 @@ module.exports = {
         res.status(200).json(post)
       })
       .catch(err => {
-        console.log(err)
         res.status(500).json({ msg: 'something went wrong' })
       })
   },
@@ -282,7 +304,6 @@ module.exports = {
           res.status(404).json({ error: 'something went wrong' })
         }
       } catch (err) {
-        console.log(err)
         res.status(500).json({ err })
       }
     }
@@ -300,7 +321,6 @@ module.exports = {
           res.status(303).json({ err: 'could not find user' })
         }
       } catch (err) {
-        console.log(err)
         res.status(500).json(err)
       }
     } else {

@@ -127,10 +127,12 @@ router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) =>
                   goodreads_id: result[0].id,
                 })
                 .catch(err => {
-                  console.log('err came from trying to insert into locker table')
+                  throw new Error(`err came from trying to insert into locker table', \n ${err}`)
                 })
             })
-            .catch(err => console.log('ERROR\n\n', err))
+            .catch(err => {
+              throw new Error(`ERROR: \n ${err}`)
+            })
         } // END OF 4 LOOP
 
         if (booksArr) {
@@ -161,7 +163,7 @@ router.get('/current_user', (req, res) => {
       res.status(200).send(false)
     }
   } catch (error) {
-    console.log(error)
+    throw error
   }
 })
 /*  ================== GET Social Network IDs ================== */

@@ -195,9 +195,11 @@ module.exports = {
   },
   async deleteSocialLike(req, res, next) {
     const user_id = req.user.id
+    const post_id = req.params.id
+
     // check if the record that I want to remove is owned by user_id
     try {
-      const helper = await helpers.deleteSocialLike(...req.body, user_id)
+      const helper = await helpers.deleteSocialLike(post_id, user_id)
       return res.status(helper.statusCode).json(helper.response)
     } catch (err) {
       // check if by throwing an error inside the helper will this get executed ?
@@ -251,18 +253,20 @@ module.exports = {
   },
   async postPonyUp(req, res, next) {
     const user_id = req.user.id
+    const post_id = req.body.id
     try {
-      const helper = await helpers.postPonyUp(req.body.post_id, user_id)
+      const helper = await helpers.postPonyUp(post_id, user_id)
       return res.status(helper.statusCode).json(helper.response)
     } catch (err) {
       return res.status(500).json(err)
     }
   },
 
-  async postPonyDownAway(req, res, next) {
-    const { post_id } = req.body
+  async postPonyDown(req, res, next) {
+    const post_id = req.params.id
+    const user_id = req.user.id
     try {
-      const helper = await helpers.postPonyDownAway(post_id, req.user.id)
+      const helper = await helpers.postPonyDown(post_id, user_id)
       return res.status(helper.statusCode).json(helper.response)
     } catch (err) {
       return res.status(500).json(err)

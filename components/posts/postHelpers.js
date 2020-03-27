@@ -24,7 +24,7 @@ module.exports = {
       return { statusCode: 500, response: { msg: 'fatal error' } }
     }
   },
-  async postPonyDownAway(post_id, user_id) {
+  async postPonyDown(post_id, user_id) {
     try {
       await db('posts_ponies')
         .del()

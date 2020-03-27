@@ -105,7 +105,7 @@ module.exports = {
       }
     }
 
-    // if the type in request body in NOT book, video, or podcast
+    // if the type in request body in NOT book, video, or podcast.
     // will enter this if block
     if (req.user) {
       if (req.body.post_url) {

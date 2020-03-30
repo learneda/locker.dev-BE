@@ -47,4 +47,14 @@ module.exports = {
       return { statusCode: 500, response: { msg: 'fatal error', err } }
     }
   },
+  async getPostLikeCount(post_id) {
+    try {
+      const likeCount = await db('posts_likes')
+        .where({ post_id })
+        .countDistinct('user_id')
+      return { statusCode: 200, response: { msg: 'success', likeCount } }
+    } catch (err) {
+      return { statusCode: 500, response: { msg: 'fatal error', err } }
+    }
+  },
 }

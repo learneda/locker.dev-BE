@@ -11,6 +11,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "ts-node-dev --pretty --respawn --transpileOnly ./index.ts",
+    "dev2": "nodemon index.js",
     "postinstall": "tsc",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix",

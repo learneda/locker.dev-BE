@@ -209,9 +209,7 @@ module.exports = {
   async getPostLikeCount(req, res, next) {
     const { post_id } = req.body
     try {
-      const selectPromise = await db('posts_likes')
-        .where({ post_id })
-        .countDistinct('user_id')
+      const selectPromise = await helpers.getPostLikeCount(post_id)
       if (selectPromise) {
         res.status(200).json(selectPromise)
       }

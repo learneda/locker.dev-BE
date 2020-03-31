@@ -91,80 +91,16 @@ exports.configureSocket = io => {
     // ================================= REMEMBER TO FIX NOTIFICATIONS ========================
     socket.on('like', data => {
       if (data.action === 'unlike') {
-        db('posts_likes')
-          .del()
-          .where({ user_id: data.user_id, post_id: data.id })
-          .then(() => {
-            socket.broadcast.emit('like', data)
-            socket.emit('like', data)
-          })
+        socket.broadcast.emit('like', data)
       } else {
-        db('posts_likes')
-          .insert({ user_id: data.user_id, post_id: data.id })
-          .then(() => {
-            socket.broadcast.emit('like', data)
-            socket.emit('like', data)
-          })
-        if (data.user_id !== data.postOwnerId) {
-          db('notifications')
-            .insert({
-              user_id: data.postOwnerId,
-              post_id: data.id,
-              type: 'like',
-              invoker: data.username,
-            })
-            .then(() => db('online_users').where({ user_id: data.postOwnerId }))
-            .then(online_data => {
-              if (online_data.length) {
-                db('notifications')
-                  .where({ read: false, user_id: online_data[0].user_id })
-                  .then(notificationRes => {
-                    if (notificationRes.length) {
-                      io.to(online_data[0].socket_id).emit('join', notificationRes)
-                    }
-                  })
-              }
-            })
-        }
+        socket.broadcast.emit('like', data)
       }
     })
     socket.on('pony', data => {
       if (data.action === 'pony_down') {
-        db('posts_ponies')
-          .del()
-          .where({ user_id: data.user_id, post_id: data.id })
-          .then(() => {
-            socket.broadcast.emit('pony', data)
-            socket.emit('pony', data)
-          })
+        socket.broadcast.emit('pony', data)
       } else {
-        db('posts_ponies')
-          .insert({ user_id: data.user_id, post_id: data.id })
-          .then(() => {
-            socket.broadcast.emit('pony', data)
-            socket.emit('pony', data)
-          })
-        if (data.user_id !== data.postOwnerId) {
-          db('notifications')
-            .insert({
-              user_id: data.postOwnerId,
-              post_id: data.id,
-              type: 'pony',
-              invoker: data.username,
-            })
-            .then(() => db('online_users').where({ user_id: data.postOwnerId }))
-            .then(online_data => {
-              if (online_data.length) {
-                db('notifications')
-                  .where({ read: false, user_id: online_data[0].user_id })
-                  .then(notificationRes => {
-                    if (notificationRes.length) {
-                      io.to(online_data[0].socket_id).emit('join', notificationRes)
-                    }
-                  })
-              }
-            })
-        }
+        socket.broadcast.emit('pony', data)
       }
     })
   })

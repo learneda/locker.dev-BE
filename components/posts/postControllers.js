@@ -182,9 +182,9 @@ module.exports = {
     }
     if (req.user) {
       try {
-        const insertPromise = await helpers.postsLikesInsert(user_id, id)
-        if (insertPromise) {
-          res.status(insertPromise.statusCode).json({ msg: 'success', insertRecord: insertPromise.response })
+        const helper = await helpers.postsLikesInsert(user_id, id)
+        if (helper) {
+          res.status(helper.statusCode).json({ msg: 'success', response: helper.response })
         }
       } catch (err) {
         res.status(500).json(err)
@@ -200,7 +200,7 @@ module.exports = {
     // check if the record that I want to remove is owned by user_id
     try {
       const helper = await helpers.deleteSocialLike(post_id, user_id)
-      return res.status(helper.statusCode).json(helper.response)
+      return res.status(helper.statusCode).json({ response: helper.response })
     } catch (err) {
       // check if by throwing an error inside the helper will this get executed ?
       res.status(500).json(err)
@@ -254,7 +254,7 @@ module.exports = {
     const post_id = req.body.id
     try {
       const helper = await helpers.postPonyUp(post_id, user_id)
-      return res.status(helper.statusCode).json(helper.response)
+      return res.status(helper.statusCode).json({ response: helper.response })
     } catch (err) {
       return res.status(500).json(err)
     }
@@ -265,7 +265,7 @@ module.exports = {
     const user_id = req.user.id
     try {
       const helper = await helpers.postPonyDown(post_id, user_id)
-      return res.status(helper.statusCode).json(helper.response)
+      return res.status(helper.statusCode).json({ response: helper.response })
     } catch (err) {
       return res.status(500).json(err)
     }

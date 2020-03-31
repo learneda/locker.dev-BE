@@ -37,7 +37,6 @@ module.exports = {
         })
         // if response is not empty has hasLiked is true else false
         post.hasLiked = hasLiked.length > 0 ? true : false
-        console.log('\n 🦄 POST \n', post)
         post.profile_picture = post.user[0].profile_picture
 
         // =========== attaching pony data =============
@@ -66,7 +65,6 @@ module.exports = {
       }
     }
     await commentLoop()
-    console.log(offset)
     if (Number(offset) < 5) {
       const response = {
         posts: responsePost.slice(0, 5).reverse(),
@@ -132,7 +130,6 @@ module.exports = {
         return { msg: 'success', topTags: topTags.rows }
       }
     } catch (err) {
-      console.log(err)
       return { msg: 'error', err }
     }
   },

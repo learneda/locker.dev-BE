@@ -4,8 +4,6 @@ const qs = require('qs')
 
 const db = require('../../dbConfig')
 
-let token
-
 module.exports = {
   async login(req, res, next) {
     const redirect_uri =
@@ -18,29 +16,25 @@ module.exports = {
         redirect_uri: redirect_uri,
       })
       .then(result => {
-        console.log('my response', result.data)
         const code = result.data
-        token = code.split('=')[1]
+        const token = code.split('=')[1]
 
-        console.log(code.split('=')[1])
         res.redirect(`https://getpocket.com/auth/authorize?request_token=${token}&redirect_uri=${redirect_uri}`)
       })
   },
   async pocketCB(req, res, next) {
-    console.log('\n line 23:', token)
     if (req.user) {
       await db('pocket')
         .del()
         .where('user_id', req.user.id)
+      //! REFACTOR THIS NOT WORKABLE
       axios
         .post('https://getpocket.com/v3/oauth/authorize', {
           consumer_key: process.env.POCKET_KEY,
-          code: token,
+          code: undefined,
         })
         .then(response => {
-          console.log('this is response.data', response.data)
           const encodedResponse = response.data
-          console.log(qs.parse(encodedResponse))
           const decoded = qs.parse(encodedResponse)
           axios
             .post('https://getpocket.com/v3/get', {

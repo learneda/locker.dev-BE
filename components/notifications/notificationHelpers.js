@@ -11,7 +11,6 @@ module.exports = {
         return { msg: 'success', read: read[0] }
       }
     } catch (err) {
-      console.log(err)
       return { msg: 'error', err }
     }
   },
@@ -24,7 +23,6 @@ module.exports = {
         return { msg: 'success' }
       }
     } catch (err) {
-      console.log(err)
       return { msg: 'error', err }
     }
   },
@@ -39,7 +37,6 @@ module.exports = {
 
       return { msg: 'success', notifications: notifications.reverse() }
     } catch (err) {
-      console.log(err)
       return { msg: 'error', err }
     }
   },

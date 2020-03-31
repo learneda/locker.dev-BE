@@ -23,35 +23,32 @@ module.exports = {
     const user_id = req.user === undefined ? req.body.user : req.user.id
     upload(req, res, function(err) {
       if (err) {
-        console.log(err)
+        return new Error(err)
       }
       db('users')
         .update('profile_picture', req.file.secure_url)
         .where('id', req.user.id)
         .returning('*')
         .then(response => {
-          console.log('cloud response', response[0])
           res.status(200).json({ success: 'added image', user: response[0] })
         })
-        .catch(err => console.log(err))
+        .catch(err => new Error(err))
     })
   },
   async uploadHeader(req, res, next) {
     upload(req, res, function(err) {
       if (err) {
-        console.log(err)
+        return new Error(err)
       }
-      console.log(req.file)
       if (req.file.secure_url) {
         db('users')
           .update('header_picture', req.file.secure_url)
           .where('id', req.user.id)
           .returning('*')
           .then(response => {
-            console.log('from this one ? wtf', response[0])
             res.status(200).json({ success: 'added image', user: response[0] })
           })
-          .catch(err => console.log(err))
+          .catch(err => new Error(err))
       } else {
         res.status(200).json({ success: 'added image' })
       }
@@ -69,7 +66,7 @@ module.exports = {
         res.status(500).json({ msg: `user doesn't have an a image` })
       }
     } catch (error) {
-      console.log(error, ' 🦄')
+      return new Error(error)
     }
   },
 }

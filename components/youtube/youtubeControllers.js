@@ -3,10 +3,8 @@ require('dotenv').config
 module.exports = {
   async search(req, res, next) {
     try {
-      console.log('this got hit', req.body)
       const { q } = req.body
       const pageToken = req.body.pageToken ? req.body.pageToken : ''
-      console.log(q, typeof pageToken)
       axios
         .get('https://www.googleapis.com/youtube/v3/search', {
           params: {
@@ -25,7 +23,6 @@ module.exports = {
           })
         )
     } catch (err) {
-      console.log(err)
       res.status(err.status).json(err)
     }
   },

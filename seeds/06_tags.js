@@ -41,8 +41,6 @@ for (let i = 0; i < hashtags.length - 1; i++) {
 }
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  console.log(tagObjects)
-
   return knex('tags')
     .del()
     .then(function() {

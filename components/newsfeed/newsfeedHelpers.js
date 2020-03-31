@@ -147,8 +147,6 @@ module.exports = {
       } else {
         type = post.type_id
       }
-      console.log('type => ', type)
-
       // inserting to newsfeed
       const newInsert = await db('newsfeed_posts')
         .insert({
@@ -161,7 +159,6 @@ module.exports = {
           type_id: Number(type),
         })
         .returning('*')
-      console.log(newInsert)
       const record = Object.assign(newInsert[0], userDetails)
 
       record.tags = []
@@ -169,7 +166,6 @@ module.exports = {
       if (post.tags && post.tags.length) {
         const lowerCaseTags = post.tags.toLowerCase()
         const tagArr = myTrim(lowerCaseTags).split('#')
-        console.log('tagArr', tagArr)
         const tagLoop = async () => {
           for (const tag of tagArr) {
             if (tag) {
@@ -210,7 +206,6 @@ module.exports = {
 
       return { msg: 'success', record }
     } catch (err) {
-      console.log(err)
       return { msg: 'error', err }
     }
   },
@@ -242,8 +237,6 @@ module.exports = {
         .where('post_id', postId)
         .countDistinct('user_id')
         .first()
-
-      console.log('like post', Number(likeCount.count))
 
       post.likes = Number(likeCount.count)
 
@@ -293,12 +286,11 @@ module.exports = {
       }
 
       if (post.user_id === userId) {
-        let deletedPost = await db('newsfeed_posts as n')
+        const deletedPost = await db('newsfeed_posts as n')
           .where('n.id', postId)
           .del()
           .returning('*')
-        deletedPost = deletedPost[0]
-        return { msg: 'success', deletedPost }
+        return { msg: 'success', deletedPost: deletedPost[0] }
       } else {
         return { msg: '403' }
       }
@@ -389,8 +381,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      console.log(err)
-      return err
+      return new Error(err)
     }
   },
 }

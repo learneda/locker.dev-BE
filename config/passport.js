@@ -124,11 +124,10 @@ passport.use(
             })
             .returning('*')
             .then(async user_obj => {
-              user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
-                await learnLockerToms(user_obj.id)
+                await learnLockerToms(user_obj[0].id)
               }
-              return done(null, user_obj)
+              return done(null, user_obj[0])
             })
         }
       } catch (err) {
@@ -174,11 +173,10 @@ passport.use(
             })
             .returning('*')
             .then(async user_obj => {
-              user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
-                await learnLockerToms(user_obj.id)
+                await learnLockerToms(user_obj[0].id)
               }
-              return done(null, user_obj)
+              return done(null, user_obj[0])
             })
         }
       } catch (err) {
@@ -198,14 +196,10 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        console.log('inside CB', accessToken, refreshToken, profile)
-        axios
-          .get('/auth/current_user')
-          .then(res => console.log('RESPONSE', res.data))
-          .catch(err => console.log(err))
-        return done(null, { id: 503 })
+        const currentUserId = await axios.get('/auth/current_user')
+
+        return done(null, { id: currentUserId.id })
       } catch (err) {
-        console.log(err)
         return done(err)
       }
     }

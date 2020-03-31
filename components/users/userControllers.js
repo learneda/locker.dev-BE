@@ -7,10 +7,8 @@ module.exports = {
     if (user) {
       try {
         const users = await db('users')
-        // console.log('users', users);
         return res.status(200).json(users)
       } catch (err) {
-        console.log(err)
         res.status(500).json(err)
       }
     } else {
@@ -51,7 +49,6 @@ module.exports = {
           res.status(400).json({ err: 'something went wrong' })
         }
       } catch (err) {
-        console.log(err)
         res.status(500).json(err)
       }
     } else {
@@ -60,7 +57,6 @@ module.exports = {
   },
   async getUserById(req, res, next) {
     const id = req.params.id || req.user.id
-    // console.log(typeof id);
     try {
       const user = await db('users')
         .where({ id: id })
@@ -98,7 +94,6 @@ module.exports = {
         res.status(404).json({ msg: 'user not found..' })
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },
@@ -114,11 +109,9 @@ module.exports = {
         .returning('*')
         .then(result => {
           const data = result[0]
-          console.log(data)
           res.status(200).json(data)
         })
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },
@@ -131,11 +124,9 @@ module.exports = {
         .del()
         .returning('*')
         .then(result => {
-          console.log(result[0])
           res.status(200).json(result[0])
         })
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },
@@ -310,7 +301,6 @@ module.exports = {
           .update({ profile_picture: avatarImageURL })
           .where({ id: user.id })
           .returning('id')
-          .then(user => console.log(user))
       }
     })
     res.send('done')
@@ -326,7 +316,6 @@ module.exports = {
       res.json(savedPostIds)
     } catch (err) {
       res.status(400).json({ error: 'there was an error due to my sloppy code' })
-      console.log(err)
     }
   },
   async savePostId(req, res) {
@@ -343,7 +332,6 @@ module.exports = {
       res.status(200).json('post saved')
     } catch (err) {
       res.status(400).json(err)
-      console.log(err)
     }
   },
   async deleteSavedPostIds(req, res, next) {

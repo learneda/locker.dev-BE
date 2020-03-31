@@ -40,7 +40,7 @@ module.exports = {
         },
       },
       (error, response, body) => {
-        if (!error && response.statusCode == 200) {
+        if (!error && Number(response.statusCode) === 200) {
           const json = JSON.parse(body)
           const resultsWithUrl = json.results.map(course => {
             course.url = `https://udemy.com${course.url}`
@@ -89,7 +89,6 @@ module.exports = {
         res.status(200).json(cleanup)
       }
     } catch (err) {
-      console.log(err)
       res.status(500).json(err)
     }
   },
@@ -169,7 +168,6 @@ async function scrapeLogRocket() {
     .each(function(i, ele) {
       urls[i] = $(this).attr('href')
     })
-  console.log(urls)
   const articles = await runThruUrlMetadata(urls)
   // Existing articles
   const existingArticles = await db('articles')
@@ -251,7 +249,8 @@ setInterval(async () => {
             url: article.url,
           }))
           .catch(err => {
-            console.log(err)
+            //* how to handle this error
+            return err
           })
       })
 

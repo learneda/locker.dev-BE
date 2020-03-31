@@ -8,7 +8,6 @@ function getMonthDaysLeft() {
 module.exports = {
   async setGoal(user_id, post_id, goal) {
     let goal_due
-    console.log('this is goal', goal)
     switch (goal) {
       case 1:
         goal_due = '1 days'

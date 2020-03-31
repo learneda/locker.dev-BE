@@ -11,7 +11,7 @@ exports.isRequestAuthenticated = (req, res, next) => {
     const token = req.headers.authorization
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err) {
-        res.status(401).json({ message: 'not verified' })
+        return res.status(401).json({ message: 'not verified' })
       } else {
         req.user = decodedToken
         next()
@@ -20,9 +20,8 @@ exports.isRequestAuthenticated = (req, res, next) => {
   } else {
     // else check if passport attached a user obj from cookie session
     if (!req.user) {
-      res.status(400).json({ err: 'probably missing token or cookie session' })
-    } else {
-      next()
+      return res.status(400).json({ err: 'probably missing token or cookie session' })
     }
+    next()
   }
 }

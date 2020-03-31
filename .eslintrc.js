@@ -54,7 +54,7 @@ module.exports = {
     'no-unused-expressions': 0,
     'global-require': 0,
     'prefer-template': 0,
-    'no-lonely-if': 0,
+    'no-lonely-if': 1,
     'import/prefer-default-export': 0, // leave off
     '@typescript-eslint/no-explicit-any': 0,
   },

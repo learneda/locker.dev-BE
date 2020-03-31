@@ -32,7 +32,7 @@ module.exports = {
         .then(response => {
           res.status(200).json({ success: 'added image', user: response[0] })
         })
-        .catch(err => new Error(err))
+        .catch(error => new Error(error))
     })
   },
   async uploadHeader(req, res, next) {
@@ -48,7 +48,7 @@ module.exports = {
           .then(response => {
             res.status(200).json({ success: 'added image', user: response[0] })
           })
-          .catch(err => new Error(err))
+          .catch(error => new Error(error))
       } else {
         res.status(200).json({ success: 'added image' })
       }

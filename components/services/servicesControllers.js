@@ -141,8 +141,8 @@ async function scrapeCeddia() {
   const metaPromises = urls.slice(0, 10).map(url => urlMetadata(url))
   let responses = await axios.all(metaPromises)
 
-  responses = responses.map(response => {
-    const { url, title, image, description } = response
+  responses = responses.map(ele => {
+    const { url, title, image, description } = ele
     const article = {
       url,
       title,
@@ -200,12 +200,12 @@ async function scrapeRobin() {
     .each(function(i, ele) {
       urls[i] = $(this).attr('href')
     })
-  const metaPromises = urls.map(url => urlMetadata(url))
+  const metaPromises = urls.map(urlStr => urlMetadata(urlStr))
   let articles = await axios.all(metaPromises)
   articles = articles.map(item => {
-    const { url, title, image, description } = item
+    const { title, image, description } = item
     const article = {
-      url,
+      url: item.url,
       title,
       thumbnail: image,
       description,
@@ -235,12 +235,13 @@ setInterval(async () => {
     'https://davidwalsh.name/feed',
     'https://css-tricks.com/feed/',
   ]
+  // new to fix this logic to cleaner logic so array-callback-return works
   scrappingArray.map(url => {
     Feed.load(url, function(err, rss) {
       const tempo_articles = rss.items.map(item => {
         // for each article, get its url and parse it
-        const url = item.url.split('?')[0]
-        return urlMetadata(url)
+        const splitUrl = item.url.split('?')[0]
+        return urlMetadata(splitUrl)
           .then(article => ({
             created: item.created,
             title: article.title,
@@ -248,9 +249,9 @@ setInterval(async () => {
             thumbnail: article.image,
             url: article.url,
           }))
-          .catch(err => {
+          .catch(error => {
             //* how to handle this error
-            return err
+            return new Error(error)
           })
       })
 

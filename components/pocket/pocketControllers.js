@@ -56,10 +56,10 @@ module.exports = {
                     type_id: 6,
                   })
                   .returning('*')
-                  .then(async result => {
+                  .then(async nextResult => {
                     await db('locker').insert({
                       user_id: req.user.id,
-                      pocket_id: result[0].id,
+                      pocket_id: nextResult[0].id,
                     })
                   })
               }

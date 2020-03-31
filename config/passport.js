@@ -49,7 +49,7 @@ passport.deserializeUser((id, done) => {
     .first()
     .then(user => {
       if (!user) {
-        done(new Error('User not found ' + id))
+        done(new Error('User not found'))
       }
       done(null, user)
     })

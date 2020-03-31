@@ -53,7 +53,7 @@ module.exports = {
     'array-callback-return': 0,
     'no-unused-expressions': 0,
     'global-require': 0,
-    'prefer-template': 0,
+    'prefer-template': 1,
     'no-lonely-if': 1,
     'import/prefer-default-export': 0, // leave off
     '@typescript-eslint/no-explicit-any': 0,

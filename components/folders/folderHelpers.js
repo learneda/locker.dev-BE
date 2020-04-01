@@ -85,7 +85,6 @@ module.exports = {
         .first()
       return { statusCode: 200, response: { msg: 'success', folder } }
     } catch (e) {
-      // console.log(e)
       return { statusCode: 500, response: { msg: 'fatal error' } }
     }
   },

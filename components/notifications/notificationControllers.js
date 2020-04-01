@@ -1,5 +1,6 @@
 const db = require('../../dbConfig')
 const helpers = require('./notificationHelpers')
+
 module.exports = {
   async readNotifications(req, res, next) {
     const userId = req.user.id

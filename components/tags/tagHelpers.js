@@ -1,4 +1,5 @@
 const db = require('../../dbConfig')
+
 module.exports = {
   async getPostsWithTag(tag, userId, offset) {
     const posts = await db.raw(

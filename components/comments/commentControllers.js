@@ -1,6 +1,7 @@
 const db = require('../../dbConfig')
 const io = require('../../index')
 const helpers = require('./commentHelpers')
+
 module.exports = {
   async getAllComments(req, res, next) {
     try {

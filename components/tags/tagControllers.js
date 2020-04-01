@@ -1,4 +1,5 @@
 const helpers = require('./tagHelpers')
+
 module.exports = {
   async getTagPosts(req, res, next) {
     const { tag } = req.params

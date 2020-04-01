@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt')
 const sgMail = require('@sendgrid/mail')
 const db = require('../dbConfig')
 const html = require('./html')
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 // ======= gets called when a new user signs up on production =======

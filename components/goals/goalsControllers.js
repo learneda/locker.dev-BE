@@ -1,4 +1,5 @@
 const helpers = require('./goalsHelpers')
+
 module.exports = {
   async setGoal(req, res, next) {
     const { postId, goal } = req.body

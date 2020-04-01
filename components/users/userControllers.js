@@ -9,10 +9,10 @@ module.exports = {
         const users = await db('users')
         return res.status(200).json(users)
       } catch (err) {
-        res.status(500).json(err)
+        return res.status(500).json(err)
       }
     } else {
-      res.status(400).json({ err: 'not allowed' })
+      return res.status(400).json({ err: 'not allowed' })
     }
   },
   async editProfile(req, res, next) {
@@ -248,7 +248,7 @@ module.exports = {
       .count('friendships.friend_id as followers')
       .limit(20)
 
-    res.json(pickRandom(users, count))
+    return res.json(pickRandom(users, count))
   },
 
   // gets all user following with user data

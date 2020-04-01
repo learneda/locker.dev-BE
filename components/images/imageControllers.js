@@ -25,7 +25,7 @@ module.exports = {
       if (err) {
         return new Error(err)
       }
-      db('users')
+      return db('users')
         .update('profile_picture', req.file.secure_url)
         .where('id', req.user.id)
         .returning('*')
@@ -41,7 +41,7 @@ module.exports = {
         return new Error(err)
       }
       if (req.file.secure_url) {
-        db('users')
+        return db('users')
           .update('header_picture', req.file.secure_url)
           .where('id', req.user.id)
           .returning('*')
@@ -49,9 +49,8 @@ module.exports = {
             res.status(200).json({ success: 'added image', user: response[0] })
           })
           .catch(error => new Error(error))
-      } else {
-        res.status(200).json({ success: 'added image' })
       }
+      return res.status(200).json({ success: 'added image' })
     })
   },
   async getImg(req, res, next) {
@@ -61,10 +60,9 @@ module.exports = {
         .where({ id: user_id })
         .select('profile_picture')
       if (selectPromise) {
-        res.status(200).json(selectPromise)
-      } else {
-        res.status(500).json({ msg: `user doesn't have an a image` })
+        return res.status(200).json(selectPromise)
       }
+      return res.status(500).json({ msg: `user doesn't have an a image` })
     } catch (error) {
       return new Error(error)
     }

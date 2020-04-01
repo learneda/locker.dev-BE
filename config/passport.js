@@ -116,7 +116,7 @@ passport.use(
           }
           sgMail.send(msg)
         }
-        await db('users')
+        const newUser = await db('users')
           .insert({
             github_id: profile.id,
             username: profile.username,
@@ -124,12 +124,10 @@ passport.use(
             profile_picture: profile.photos[0].value,
           })
           .returning('*')
-          .then(async user_obj => {
-            if (process.env.NODE_ENV === 'production') {
-              await learnLockerToms(user_obj[0].id)
-            }
-            return done(null, user_obj[0])
-          })
+        if (process.env.NODE_ENV === 'production') {
+          await learnLockerToms(newUser[0].id)
+        }
+        return done(null, newUser[0])
       } catch (err) {
         return done(err)
       }
@@ -163,7 +161,7 @@ passport.use(
         }
         sgMail.send(msg)
 
-        await db('users')
+        const newUser = await db('users')
           .insert({
             google_id: profile.id,
             username: profile.emails[0].value.split('@')[0],
@@ -172,12 +170,10 @@ passport.use(
             profile_picture: profile.photos[0].value,
           })
           .returning('*')
-          .then(async user_obj => {
-            if (process.env.NODE_ENV === 'production') {
-              await learnLockerToms(user_obj[0].id)
-            }
-            return done(null, user_obj[0])
-          })
+        if (process.env.NODE_ENV === 'production') {
+          await learnLockerToms(newUser[0].id)
+        }
+        return done(null, newUser[0])
       } catch (err) {
         return done(err)
       }

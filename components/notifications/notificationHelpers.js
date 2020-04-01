@@ -7,9 +7,8 @@ module.exports = {
         .update('read', true)
         .where({ user_id: userId })
         .returning('*')
-      if (read) {
-        return { msg: 'success', read: read[0] }
-      }
+
+      return { msg: 'success', read: read[0] }
     } catch (err) {
       return { msg: 'error', err }
     }
@@ -19,9 +18,8 @@ module.exports = {
       const clear = await db('notifications')
         .del()
         .where('user_id', userId)
-      if (clear) {
-        return { msg: 'success' }
-      }
+
+      return { msg: 'success' }
     } catch (err) {
       return { msg: 'error', err }
     }

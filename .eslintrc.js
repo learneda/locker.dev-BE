@@ -39,7 +39,7 @@ module.exports = {
     'object-shorthand': 1,
     'no-await-in-loop': 0,
     'no-param-reassign': 1,
-    'consistent-return': 0,
+    'consistent-return': 1,
     'no-restricted-syntax': 0,
     'no-unneeded-ternary': 1,
     'import/first': 1,

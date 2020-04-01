@@ -5,13 +5,15 @@ const helpers = require('./postHelpers')
 
 module.exports = {
   async getAllCurrentUserPost(req, res, next) {
+    if (!req.user) {
+      return res.status(401).json({ msg: 'unauthorized' })
+    }
     try {
-      if (req.user) {
-        const posts = await db('posts')
-          .where({ user_id: req.user.id })
-          .orderBy('id', 'desc')
-        return res.status(200).json(posts)
+      const helper = await helpers.getAllCurrentUserPost(req.user.id)
+      if (helper.statusCode === 200) {
+        return res.status(helper.statusCode).json(helper.response.posts)
       }
+      return res.status(helper.statusCode).json(helper.response)
     } catch (err) {
       throw new Error('something went wrong')
     }
@@ -152,9 +154,8 @@ module.exports = {
       } else {
         res.status(400).json({ message: 'Please provide a post url ' })
       }
-    } else {
-      res.status(403).json({ error: 'Not authorized' })
     }
+    return res.status(403).json({ error: 'Not authorized' })
   },
 
   async deletePost(req, res, next) {
@@ -183,15 +184,12 @@ module.exports = {
     if (req.user) {
       try {
         const helper = await helpers.postsLikesInsert(user_id, id)
-        if (helper) {
-          res.status(helper.statusCode).json({ msg: 'success', response: helper.response })
-        }
+        return res.status(helper.statusCode).json({ msg: 'success', response: helper.response })
       } catch (err) {
-        res.status(500).json(err)
+        return res.status(500).json(err)
       }
-    } else {
-      res.status(401).json({ msg: 'unauthorized' })
     }
+    return res.status(401).json({ msg: 'unauthorized' })
   },
   async deleteSocialLike(req, res, next) {
     const user_id = req.user.id
@@ -203,7 +201,7 @@ module.exports = {
       return res.status(helper.statusCode).json({ response: helper.response })
     } catch (err) {
       // check if by throwing an error inside the helper will this get executed ?
-      res.status(500).json(err)
+      return res.status(500).json(err)
     }
   },
   async getPostLikeCount(req, res, next) {

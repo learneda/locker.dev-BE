@@ -83,20 +83,22 @@ module.exports = {
     return { msg: 'success', response }
   },
   async createFriendship(user_id, tag) {
-    const tagId = await db('tags')
-      .select('id')
-      .where({ hashtag: tag })
-      .first()
-    if (tagId) {
-      const insert = await db('tag_friendships').insert({
-        user_id,
-        tag_id: tagId.id,
-      })
-      if (insert) {
+    try {
+      const tagId = await db('tags')
+        .select('id')
+        .where({ hashtag: tag })
+        .first()
+      if (tagId) {
+        const insert = await db('tag_friendships').insert({
+          user_id,
+          tag_id: tagId.id,
+        })
+
         return { msg: 'success', hashtag: { id: tagId.id, hashtag: tag } }
       }
-    } else {
       return { msg: '404' }
+    } catch (err) {
+      return { msg: `fatal error ${err}` }
     }
   },
   async unfollowTag(user_id, tag) {
@@ -109,12 +111,10 @@ module.exports = {
         const unfollowTag = await db('tag_friendships')
           .del()
           .where({ tag_id: tagId.id, user_id })
-        if (unfollowTag) {
-          return { msg: 'success', hashtag: { id: tagId.id, hashtag: tag } }
-        }
-      } else {
-        return { msg: '404' }
+
+        return { msg: 'success', hashtag: { id: tagId.id, hashtag: tag } }
       }
+      return { msg: '404' }
     } catch (err) {
       return { msg: 'error', err }
     }
@@ -127,9 +127,7 @@ module.exports = {
       GROUP BY tag_id, tags.hashtag
       ORDER BY COUNT(tag_id) DESC`)
 
-      if (topTags) {
-        return { msg: 'success', topTags: topTags.rows }
-      }
+      return { msg: 'success', topTags: topTags.rows }
     } catch (err) {
       return { msg: 'error', err }
     }
@@ -140,9 +138,7 @@ module.exports = {
         .select('t.hashtag', 't.id')
         .where('user_id', userId)
         .join('tags as t', 't.id', 'tf.tag_id')
-      if (userTags) {
-        return { msg: 'success', userTags }
-      }
+      return { msg: 'success', userTags }
     } catch (err) {
       return { msg: 'error', err }
     }

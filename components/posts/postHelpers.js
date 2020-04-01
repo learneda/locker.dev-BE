@@ -57,4 +57,14 @@ module.exports = {
       return { statusCode: 500, response: { msg: 'fatal error', err } }
     }
   },
+  async getAllCurrentUserPost(user_id) {
+    try {
+      const posts = await db('posts')
+        .where({ user_id })
+        .orderBy('id', 'desc')
+      return { statusCode: 200, response: { msg: 'success', posts } }
+    } catch (err) {
+      return { statusCode: 500, response: { msg: 'fatal err', err } }
+    }
+  },
 }

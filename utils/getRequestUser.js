@@ -14,13 +14,12 @@ exports.isRequestAuthenticated = (req, res, next) => {
         return res.status(401).json({ message: 'not verified' })
       }
       req.user = decodedToken
-      next()
+      return next()
     })
-  } else {
-    // else check if passport attached a user obj from cookie session
-    if (!req.user) {
-      return res.status(400).json({ err: 'probably missing token or cookie session' })
-    }
-    next()
   }
+  // else check if passport attached a user obj from cookie session
+  if (!req.user) {
+    return res.status(400).json({ err: 'probably missing token or cookie session' })
+  }
+  return next()
 }

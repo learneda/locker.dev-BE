@@ -42,7 +42,7 @@ module.exports = {
     'consistent-return': 0,
     'no-restricted-syntax': 0,
     'no-unneeded-ternary': 0,
-    'import/first': 0,
+    'import/first': 1,
     'dot-notation': 1,
     'no-else-return': 1,
     'import/order': 1,

@@ -48,7 +48,7 @@ module.exports = {
     'import/order': 0,
     'no-underscore-dangle': 0,
     'spaced-comment': 0,
-    'guard-for-in': 0,
+    'guard-for-in': 1,
     'no-shadow': 1,
     'array-callback-return': 0,
     'no-unused-expressions': 0,

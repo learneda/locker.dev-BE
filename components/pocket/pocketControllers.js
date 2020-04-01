@@ -43,25 +43,27 @@ module.exports = {
             })
             .then(async result => {
               for (const post in result.data.list) {
-                const obj = result.data.list[post]
-                await db('pocket')
-                  .insert({
-                    resolved_title: obj.resolved_title,
-                    resolved_url: obj.resolved_url,
-                    excerpt: obj.excerpt,
-                    top_image_url: obj.top_image_url,
-                    favorited: obj.time_favorited === 0 ? false : true,
-                    user_id: req.user.id,
-                    item_id: obj.item_id,
-                    type_id: 6,
-                  })
-                  .returning('*')
-                  .then(async nextResult => {
-                    await db('locker').insert({
+                if (Object.prototype.hasOwnProperty.call(result.data.list, post)) {
+                  const obj = result.data.list[post]
+                  await db('pocket')
+                    .insert({
+                      resolved_title: obj.resolved_title,
+                      resolved_url: obj.resolved_url,
+                      excerpt: obj.excerpt,
+                      top_image_url: obj.top_image_url,
+                      favorited: obj.time_favorited === 0 ? false : true,
                       user_id: req.user.id,
-                      pocket_id: nextResult[0].id,
+                      item_id: obj.item_id,
+                      type_id: 6,
                     })
-                  })
+                    .returning('*')
+                    .then(async nextResult => {
+                      await db('locker').insert({
+                        user_id: req.user.id,
+                        pocket_id: nextResult[0].id,
+                      })
+                    })
+                }
               }
               const redirectUrl =
                 process.env.NODE_ENV === 'production'

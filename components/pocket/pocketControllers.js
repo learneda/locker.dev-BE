@@ -51,7 +51,7 @@ module.exports = {
                       resolved_url: obj.resolved_url,
                       excerpt: obj.excerpt,
                       top_image_url: obj.top_image_url,
-                      favorited: obj.time_favorited === 0 ? false : true,
+                      favorited: obj.time_favorited !== 0,
                       user_id: req.user.id,
                       item_id: obj.item_id,
                       type_id: 6,

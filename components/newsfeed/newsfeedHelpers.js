@@ -85,7 +85,7 @@ module.exports = {
             user_id: Number(user_id),
           })
 
-          post.hasPony = hasPony.length > 0 ? true : false
+          post.hasPony = hasPony.length > 0
 
           // checking if user has liked this post
           const hasLiked = await db('posts_likes').where({
@@ -93,7 +93,7 @@ module.exports = {
             user_id: Number(user_id),
           })
           // if response is not empty has hasLiked is true else false
-          post.hasLiked = hasLiked.length > 0 ? true : false
+          post.hasLiked = hasLiked.length > 0
           // ========== ATTACHING TAGS ========
           const tags = await db('post_tags')
             .where({ newsfeed_id: post.id })
@@ -244,7 +244,7 @@ module.exports = {
         user_id: Number(userId),
       })
 
-      post.hasLiked = hasLiked.length > 0 ? true : false
+      post.hasLiked = hasLiked.length > 0
 
       const tags = await db('post_tags')
         .where({ newsfeed_id: postId })
@@ -263,7 +263,7 @@ module.exports = {
         user_id: Number(userId),
       })
 
-      post.hasPony = hasPony.length > 0 ? true : false
+      post.hasPony = hasPony.length > 0
 
       post.posted_at_date = post.created_at
 
@@ -346,7 +346,7 @@ module.exports = {
             user_id: Number(currentUser),
           })
 
-          post.hasPony = hasPony.length > 0 ? true : false
+          post.hasPony = hasPony.length > 0
 
           // checking if user has liked this post
           const hasLiked = await db('posts_likes').where({
@@ -354,7 +354,7 @@ module.exports = {
             user_id: Number(currentUser),
           })
           // if response is not empty has hasLiked is true else false
-          post.hasLiked = hasLiked.length > 0 ? true : false
+          post.hasLiked = hasLiked.length > 0
           // ========== ATTACHING TAGS ========
           const tags = await db('post_tags')
             .where({ newsfeed_id: post.id })

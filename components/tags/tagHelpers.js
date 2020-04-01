@@ -36,7 +36,7 @@ module.exports = {
           user_id: Number(userId),
         })
         // if response is not empty has hasLiked is true else false
-        post.hasLiked = hasLiked.length > 0 ? true : false
+        post.hasLiked = hasLiked.length > 0
         post.profile_picture = post.user[0].profile_picture
 
         // =========== attaching pony data =============
@@ -51,7 +51,7 @@ module.exports = {
           user_id: Number(userId),
         })
 
-        post.hasPony = hasPony.length > 0 ? true : false
+        post.hasPony = hasPony.length > 0
 
         const tags = await db('post_tags')
           .where({ newsfeed_id: post.id })
@@ -68,7 +68,7 @@ module.exports = {
     if (Number(offset) < 5) {
       const response = {
         posts: responsePost.slice(0, 5).reverse(),
-        isFollowing: isFollowing.rows.length > 0 ? true : false,
+        isFollowing: isFollowing.rows.length > 0,
       }
 
       return { msg: 'success', response }
@@ -76,7 +76,7 @@ module.exports = {
 
     const response = {
       posts: responsePost.slice(Number(offset), Number(offset) + 5).reverse(),
-      isFollowing: isFollowing.rows.length > 0 ? true : false,
+      isFollowing: isFollowing.rows.length > 0,
     }
 
     return { msg: 'success', response }

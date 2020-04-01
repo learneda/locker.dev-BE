@@ -282,8 +282,8 @@ module.exports = {
       .returning('*')
       .then(result => {
         const post = result[0]
-        post['profile_picture'] = req.user.profile_picture
-        post['post_id'] = post.id
+        post.profile_picture = req.user.profile_picture
+        post.post_id = post.id
         delete post.id
         res.status(200).json(post)
       })

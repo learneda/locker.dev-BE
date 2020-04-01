@@ -104,32 +104,31 @@ passport.use(
           .first()
         if (existingUser) {
           return done(null, existingUser)
-        } else {
-          if (profile.emails) {
-            const email = profile.emails[0].value
-            const msg = {
-              to: email,
-              from: 'info@learnlocker.dev',
-              subject: 'Welcome to locker.dev!',
-              html: html(profile.username),
-            }
-            sgMail.send(msg)
-          }
-          await db('users')
-            .insert({
-              github_id: profile.id,
-              username: profile.username,
-              display_name: profile.username,
-              profile_picture: profile.photos[0].value,
-            })
-            .returning('*')
-            .then(async user_obj => {
-              if (process.env.NODE_ENV === 'production') {
-                await learnLockerToms(user_obj[0].id)
-              }
-              return done(null, user_obj[0])
-            })
         }
+        if (profile.emails) {
+          const email = profile.emails[0].value
+          const msg = {
+            to: email,
+            from: 'info@learnlocker.dev',
+            subject: 'Welcome to locker.dev!',
+            html: html(profile.username),
+          }
+          sgMail.send(msg)
+        }
+        await db('users')
+          .insert({
+            github_id: profile.id,
+            username: profile.username,
+            display_name: profile.username,
+            profile_picture: profile.photos[0].value,
+          })
+          .returning('*')
+          .then(async user_obj => {
+            if (process.env.NODE_ENV === 'production') {
+              await learnLockerToms(user_obj[0].id)
+            }
+            return done(null, user_obj[0])
+          })
       } catch (err) {
         return done(err)
       }
@@ -154,31 +153,30 @@ passport.use(
           .first()
         if (existingUser) {
           return done(null, existingUser)
-        } else {
-          const msg = {
-            to: profile.emails[0].value,
-            from: 'info@learnlocker.dev',
-            subject: 'Welcome to locker.dev!',
-            html: html(profile.displayName),
-          }
-          sgMail.send(msg)
-
-          await db('users')
-            .insert({
-              google_id: profile.id,
-              username: profile.emails[0].value.split('@')[0],
-              display_name: profile.displayName,
-              email: profile.emails[0].value,
-              profile_picture: profile.photos[0].value,
-            })
-            .returning('*')
-            .then(async user_obj => {
-              if (process.env.NODE_ENV === 'production') {
-                await learnLockerToms(user_obj[0].id)
-              }
-              return done(null, user_obj[0])
-            })
         }
+        const msg = {
+          to: profile.emails[0].value,
+          from: 'info@learnlocker.dev',
+          subject: 'Welcome to locker.dev!',
+          html: html(profile.displayName),
+        }
+        sgMail.send(msg)
+
+        await db('users')
+          .insert({
+            google_id: profile.id,
+            username: profile.emails[0].value.split('@')[0],
+            display_name: profile.displayName,
+            email: profile.emails[0].value,
+            profile_picture: profile.photos[0].value,
+          })
+          .returning('*')
+          .then(async user_obj => {
+            if (process.env.NODE_ENV === 'production') {
+              await learnLockerToms(user_obj[0].id)
+            }
+            return done(null, user_obj[0])
+          })
       } catch (err) {
         return done(err)
       }

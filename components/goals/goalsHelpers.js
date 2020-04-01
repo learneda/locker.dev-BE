@@ -50,9 +50,8 @@ module.exports = {
         .returning('*')
 
       return { msg: 'success', goal: response[0] }
-    } else {
-      return { msg: 'not authorized' }
     }
+    return { msg: 'not authorized' }
   },
   async setGoalStatus(user_id, goal) {
     // If no goal.id exist, no goal to return in database
@@ -73,8 +72,7 @@ module.exports = {
         .returning('*')
       //? I believe .first() gives an error
       return { msg: 'success', goal: response }
-    } else {
-      return { msg: 'not authorized' }
     }
+    return { msg: 'not authorized' }
   },
 }

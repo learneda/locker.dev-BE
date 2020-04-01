@@ -44,9 +44,8 @@ module.exports = {
       const folders = await db('folders').where({ user_id })
       if (folders) {
         return { statusCode: 200, response: { msg: 'success', folders } }
-      } else {
-        return { statusCode: 404, response: { msg: 'something went wrong?' } }
       }
+      return { statusCode: 404, response: { msg: 'something went wrong?' } }
     } catch (err) {
       return { statusCode: 500, response: { msg: 'something went wrong' } }
     }
@@ -72,9 +71,8 @@ module.exports = {
         )
       if (posts) {
         return { statusCode: 200, response: { msg: 'success', posts } }
-      } else {
-        return { statusCode: 404, response: { msg: 'something went wrong' } }
       }
+      return { statusCode: 404, response: { msg: 'something went wrong' } }
     } catch (err) {
       return { statusCode: 500, response: { msg: 'fatal error' } }
     }

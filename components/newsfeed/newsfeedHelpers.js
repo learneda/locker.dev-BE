@@ -111,11 +111,10 @@ module.exports = {
           msg: 'success',
           newsFeed: profileFeed.slice(Number(offset), Number(offset) + 5),
         }
-      } else {
-        return {
-          msg: 'success',
-          newsFeed: profileFeed,
-        }
+      }
+      return {
+        msg: 'success',
+        newsFeed: profileFeed,
       }
     } catch (err) {
       return err
@@ -291,9 +290,8 @@ module.exports = {
           .del()
           .returning('*')
         return { msg: 'success', deletedPost: deletedPost[0] }
-      } else {
-        return { msg: '403' }
       }
+      return { msg: '403' }
     } catch (err) {
       return { msg: 'error', err }
     }
@@ -374,11 +372,10 @@ module.exports = {
           msg: 'success',
           newsFeed: profileFeed.slice(Number(offset), Number(offset) + 5),
         }
-      } else {
-        return {
-          msg: 'success',
-          newsFeed: profileFeed,
-        }
+      }
+      return {
+        msg: 'success',
+        newsFeed: profileFeed,
       }
     } catch (err) {
       return new Error(err)

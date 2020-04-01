@@ -233,23 +233,22 @@ module.exports = {
       }
       const randomSuggestions = pickRandom(friendsOfFriends, count)
       return res.json(pickRandom(friendsOfFriends, count))
-    } else {
-      // base case for a user that doesn't follow anyone
-      const users = await db('friendships')
-        .select(
-          'friendships.friend_id as recommended_follow_id',
-          'users.display_name',
-          'users.profile_picture as image',
-          'users.username'
-        )
-        .join('users', 'friendships.friend_id', 'users.id')
-        .groupBy('friendships.friend_id', 'users.display_name', 'users.username', 'users.profile_picture')
-        .having('friendships.friend_id', '>', '2')
-        .count('friendships.friend_id as followers')
-        .limit(20)
-
-      res.json(pickRandom(users, count))
     }
+    // base case for a user that doesn't follow anyone
+    const users = await db('friendships')
+      .select(
+        'friendships.friend_id as recommended_follow_id',
+        'users.display_name',
+        'users.profile_picture as image',
+        'users.username'
+      )
+      .join('users', 'friendships.friend_id', 'users.id')
+      .groupBy('friendships.friend_id', 'users.display_name', 'users.username', 'users.profile_picture')
+      .having('friendships.friend_id', '>', '2')
+      .count('friendships.friend_id as followers')
+      .limit(20)
+
+    res.json(pickRandom(users, count))
   },
 
   // gets all user following with user data

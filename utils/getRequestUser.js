@@ -12,10 +12,9 @@ exports.isRequestAuthenticated = (req, res, next) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err) {
         return res.status(401).json({ message: 'not verified' })
-      } else {
-        req.user = decodedToken
-        next()
       }
+      req.user = decodedToken
+      next()
     })
   } else {
     // else check if passport attached a user obj from cookie session

@@ -97,9 +97,8 @@ module.exports = {
 
           if (newInsert) {
             return res.status(201).json(newInsert[0])
-          } else {
-            return res.status(300).json({ err: 'could not add new entry' })
           }
+          return res.status(300).json({ err: 'could not add new entry' })
         } catch (err) {
           return res.status(500).json(err)
         }

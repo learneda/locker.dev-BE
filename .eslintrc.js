@@ -33,7 +33,7 @@ module.exports = {
     // airbnb rules to reconsider later
     eqeqeq: 1,
     'func-names': 0,
-    'no-plusplus': 0,
+    'no-plusplus': 1,
     'import/extensions': 0,
     'import/newline-after-import': 0,
     'object-shorthand': 0,

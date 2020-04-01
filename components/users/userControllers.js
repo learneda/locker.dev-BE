@@ -193,7 +193,7 @@ module.exports = {
     }
     if (friendsId.length) {
       // generates an array of users that people I follow are following
-      for (let i = 0; i < friendsId.length; i++) {
+      for (let i = 0; i < friendsId.length; i += 1) {
         const friendsOfFriend = await db('friendships')
           .select(
             'friendships.friend_id as recommended_follow_id',
@@ -209,7 +209,7 @@ module.exports = {
           .whereNotIn('friend_id', friendsIdWithUserId)
         friendsOfFriends = [...friendsOfFriends, ...friendsOfFriend]
       }
-      for (let i = 0; i < friendsOfFriends.length; i++) {
+      for (let i = 0; i < friendsOfFriends.length; i += 1) {
         const friendOfFriendsDetails = await db('users')
           .where('id', friendsOfFriends[i].followed_by_id)
           .first()

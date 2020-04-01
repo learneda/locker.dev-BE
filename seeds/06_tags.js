@@ -31,14 +31,11 @@ const hashtags = [
   'sql',
   'knex',
 ]
-const tagObjects = []
-for (let i = 0; i < hashtags.length - 1; i++) {
-  const hashtag = {
-    id: i + 1,
-    hashtag: hashtags[i],
-  }
-  tagObjects.push(hashtag)
+const createTagObj = (hashtag, i) => {
+  return { id: i + 1, hashtag }
 }
+const tagObjects = hashtags.map(createTagObj)
+
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
   return knex('tags')

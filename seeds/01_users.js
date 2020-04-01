@@ -1,7 +1,8 @@
 const faker = require('faker')
-const fakeInsertData = []
 
-for (let i = 1; i < 100; i++) {
+const allocateArr = Array(99).fill(null)
+
+const createUserObj = ele => {
   const username = faker.internet.userName()
   const location = faker.address.city()
   const profile_picture = faker.image.avatar()
@@ -12,10 +13,9 @@ for (let i = 1; i < 100; i++) {
     location,
     profile_picture,
   }
-
-  fakeInsertData.push(user)
+  return user
 }
-
+const fakeInsertData = allocateArr.map(createUserObj)
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
   return knex('users')

@@ -73,10 +73,10 @@ passport.use(
           done(new Error('credentials wrong'))
         }
       } else {
-        password = bcrypt.hashSync(password, 10)
+        const passwordHash = bcrypt.hashSync(password, 10)
         await db('users').insert({
           email: email,
-          password: password,
+          password: passwordHash,
           display_name: 'a dynamic name',
         })
         const user = await db('users')

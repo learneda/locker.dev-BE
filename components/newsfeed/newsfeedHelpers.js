@@ -210,10 +210,9 @@ module.exports = {
   },
   async getPost(postId, userId) {
     // fetching postId record
-    postId = Number(postId)
     try {
       const post = await db('newsfeed_posts as n')
-        .where('n.id', postId)
+        .where('n.id', Number(postId))
         .join('users as u', 'n.user_id', 'u.id')
         .first()
 
@@ -274,19 +273,17 @@ module.exports = {
   },
   async deletePost(postId, userId) {
     try {
-      postId = Number(postId)
-      userId = Number(userId)
       const post = await db('newsfeed_posts as n')
-        .where('n.id', postId)
+        .where('n.id', Number(postId))
         .first()
 
       if (!post) {
         return { msg: 'post id isnt found' }
       }
 
-      if (post.user_id === userId) {
+      if (Number(post.user_id) === Number(userId)) {
         const deletedPost = await db('newsfeed_posts as n')
-          .where('n.id', postId)
+          .where('n.id', Number(postId))
           .del()
           .returning('*')
         return { msg: 'success', deletedPost: deletedPost[0] }

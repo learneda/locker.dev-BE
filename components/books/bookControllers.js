@@ -15,7 +15,7 @@ module.exports = {
         if (!error) {
           results.map(result => {
             if (result.thumbnail) {
-              result.thumbnail = result.thumbnail.replace('http', 'https')
+              return { ...result, thumbnail: result.thumbnail.replace('http', 'https') }
             }
             return result
           })

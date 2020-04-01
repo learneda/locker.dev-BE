@@ -43,8 +43,7 @@ module.exports = {
         if (!error && Number(response.statusCode) === 200) {
           const json = JSON.parse(body)
           const resultsWithUrl = json.results.map(course => {
-            course.url = `https://udemy.com${course.url}`
-            return course
+            return { ...course, url: `https://udemy.com${course.url}` }
           })
           json.results = resultsWithUrl
           res.json(json)

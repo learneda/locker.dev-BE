@@ -35,7 +35,7 @@ exports.configureSocket = io => {
 
     socket.on('comments', msg => {
       if (msg.action === 'create') {
-        msg.created_at = Date.now()
+        //! double check msg object has created_at key
         socket.broadcast.emit('comments', msg)
         socket.emit('comments', msg)
 

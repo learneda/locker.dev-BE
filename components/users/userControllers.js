@@ -189,8 +189,7 @@ module.exports = {
 
     //* Creates a new array with random elements from ARR (no duplicates) [should be a utility import]
     const pickRandom = (arr, arrLength) => {
-      const _arr = [...arr]
-      return [...Array(arrLength)].map(() => _arr.splice(Math.floor(Math.random() * _arr.length), 1)[0])
+      return [...Array(arrLength)].map(() => arr.splice(Math.floor(Math.random() * arr.length), 1)[0])
     }
     if (friendsId.length) {
       // generates an array of users that people I follow are following

@@ -46,7 +46,7 @@ module.exports = {
     'dot-notation': 0,
     'no-else-return': 0,
     'import/order': 0,
-    'no-underscore-dangle': 0,
+    'no-underscore-dangle': 1,
     'spaced-comment': 0,
     'guard-for-in': 1,
     'no-shadow': 1,

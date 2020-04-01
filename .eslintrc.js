@@ -34,7 +34,7 @@ module.exports = {
     eqeqeq: 1,
     'func-names': 0,
     'no-plusplus': 1,
-    'import/extensions': 0,
+    'import/extensions': 1,
     'import/newline-after-import': 1,
     'object-shorthand': 1,
     'no-await-in-loop': 0,

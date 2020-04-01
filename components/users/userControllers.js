@@ -1,5 +1,5 @@
-const db = require('../../dbConfig')
 const faker = require('faker')
+const db = require('../../dbConfig')
 
 module.exports = {
   async getAllUsers(req, res, next) {

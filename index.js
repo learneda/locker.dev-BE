@@ -1,7 +1,9 @@
 require('dotenv').config()
+const server = require('express')()
+const SocketIO = require('socket.io')
+
 const { configureSocket } = require('./config/configureSocket')
 const { logServerPrompt } = require('./utils/logServerPrompt')
-const server = require('express')()
 
 // Configures passport auth
 require('./config/passport')
@@ -21,6 +23,6 @@ server.get('/', (req, res) => {
 })
 
 // Instantiates Socket-IO instance
-const io = require('socket.io')(myServer)
+const io = SocketIO(myServer)
 // Configure SocketIO
 configureSocket(io)

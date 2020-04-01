@@ -1,9 +1,10 @@
 const router = require('express').Router()
-const controllers = require('./authControllers')
+const axios = require('axios')
 const passport = require('passport')
 const xpath = require('xpath')
 const { DOMParser } = require('xmldom')
-const axios = require('axios')
+
+const controllers = require('./authControllers')
 const db = require('../../dbConfig')
 
 require('dotenv').config() // Need access to process.env.DEV_USER_ID

@@ -1,6 +1,7 @@
 const router = require('express').Router()
-const controllers = require('./servicesControllers')
 const routeCache = require('route-cache')
+
+const controllers = require('./servicesControllers')
 
 router.get('/courses', controllers.getCourses)
 

@@ -1,5 +1,6 @@
-const db = require('../../dbConfig')
 const urlMetadata = require('url-metadata')
+
+const db = require('../../dbConfig')
 const helpers = require('./postHelpers')
 
 module.exports = {

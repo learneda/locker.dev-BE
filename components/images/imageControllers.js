@@ -11,7 +11,7 @@ cloudinary.config({
 })
 
 const storage = cloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary,
   folder: 'demo',
   allowedFormats: ['jpg', 'png', 'gif'],
 })

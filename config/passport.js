@@ -45,7 +45,7 @@ passport.serializeUser((user, done) => done(null, user.id))
 
 passport.deserializeUser((id, done) => {
   db('users')
-    .where({ id: id })
+    .where({ id })
     .first()
     .then(user => {
       if (!user) {
@@ -75,12 +75,12 @@ passport.use(
       } else {
         const passwordHash = bcrypt.hashSync(password, 10)
         await db('users').insert({
-          email: email,
+          email,
           password: passwordHash,
           display_name: 'a dynamic name',
         })
         const user = await db('users')
-          .where({ email: email })
+          .where({ email })
           .first()
         done(null, user)
       }

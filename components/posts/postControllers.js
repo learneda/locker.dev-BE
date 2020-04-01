@@ -297,7 +297,7 @@ module.exports = {
       try {
         const updatePromose = await db('posts')
           .where({ id: post_id })
-          .update({ folder_id: folder_id })
+          .update({ folder_id })
         if (updatePromose) {
           res.status(200).json({ msg: 'success' })
         } else {
@@ -313,7 +313,7 @@ module.exports = {
     if (user_id) {
       try {
         const selectCountPromise = await db('posts')
-          .where({ user_id: user_id })
+          .where({ user_id })
           .count()
         if (selectCountPromise) {
           res.status(200).json(selectCountPromise)

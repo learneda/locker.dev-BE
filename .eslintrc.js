@@ -36,7 +36,7 @@ module.exports = {
     'no-plusplus': 1,
     'import/extensions': 0,
     'import/newline-after-import': 0,
-    'object-shorthand': 0,
+    'object-shorthand': 1,
     'no-await-in-loop': 0,
     'no-param-reassign': 1,
     'consistent-return': 0,

@@ -107,7 +107,7 @@ module.exports = {
       if (tagId) {
         const unfollowTag = await db('tag_friendships')
           .del()
-          .where({ tag_id: tagId.id, user_id: user_id })
+          .where({ tag_id: tagId.id, user_id })
         if (unfollowTag) {
           return { msg: 'success', hashtag: { id: tagId.id, hashtag: tag } }
         }

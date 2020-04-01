@@ -16,7 +16,7 @@ module.exports = {
     const { postOwnerId, type, username } = recordData
     try {
       const notification = db('notifications')
-        .insert({ user_id: postOwnerId, post_id: recordData.post_id, type: type, invoker: username })
+        .insert({ user_id: postOwnerId, post_id: recordData.post_id, type, invoker: username })
         .returning('*')
       return notification
     } catch (err) {

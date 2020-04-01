@@ -13,7 +13,7 @@ module.exports = {
     axios
       .post('https://getpocket.com/v3/oauth/request', {
         consumer_key: process.env.POCKET_KEY,
-        redirect_uri: redirect_uri,
+        redirect_uri,
       })
       .then(result => {
         const code = result.data

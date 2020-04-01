@@ -24,8 +24,8 @@ module.exports = {
           .where({ id })
 
           .update({
-            display_name: display_name,
-            website_url: website_url,
+            display_name,
+            website_url,
             profile_picture,
             username,
             bio,
@@ -59,7 +59,7 @@ module.exports = {
     const id = req.params.id || req.user.id
     try {
       const user = await db('users')
-        .where({ id: id })
+        .where({ id })
         .select(
           'id',
           'username',
@@ -86,7 +86,7 @@ module.exports = {
     const { username } = req.params
     try {
       const selectPromise = await db('users')
-        .where({ username: username })
+        .where({ username })
         .select('username', 'display_name', 'profile_picture', 'bio', 'location', 'website_url')
       if (selectPromise) {
         res.status(200).json(selectPromise)
@@ -163,8 +163,8 @@ module.exports = {
     const friend_id = req.params.id
     try {
       const following = await db('friendships').where({
-        user_id: user_id,
-        friend_id: friend_id,
+        user_id,
+        friend_id,
       })
       if (following.length) {
         res.status(200).json({

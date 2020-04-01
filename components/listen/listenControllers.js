@@ -14,7 +14,7 @@ module.exports = {
           q,
           sort_by_date: 1,
           type: 'episode',
-          offset: offset,
+          offset,
           language: 'English',
         },
       })

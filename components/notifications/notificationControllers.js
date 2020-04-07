@@ -41,4 +41,14 @@ module.exports = {
       }
     }
   },
+
+  async addNotification(req, res, next) {
+    const { user_id, post_id, type, username } = req.body
+    const response = await helpers.addNotification(user_id, post_id, type, username)
+    if (response.msg === 'success') {
+      res.status(201).json(response.notificationRecord)
+    } else {
+      res.status(500).json(response)
+    }
+  },
 }

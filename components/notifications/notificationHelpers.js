@@ -38,4 +38,20 @@ module.exports = {
       return { msg: 'error', err }
     }
   },
+  async addNotification(user_id, post_id, type, username) {
+    try {
+      const notificationRecord = await db('notifications')
+        .insert({
+          user_id,
+          post_id,
+          read: false,
+          type,
+          invoker: username,
+        })
+        .returning('*')
+      return { msg: 'success', notificationRecord }
+    } catch (err) {
+      return { msg: 'error', err }
+    }
+  },
 }

@@ -181,7 +181,6 @@ module.exports = {
   async recommendedFollow(req, res, next) {
     const user_id = req.query.id
     const count = Number(req.query.count) || 3
-    let friendsOfFriends = []
     // makes an array with user_id's that I follow
     const friends = await db('friendships').where('user_id', user_id)
     const friendsId = friends.map(friend => friend.friend_id)
@@ -192,31 +191,31 @@ module.exports = {
       return [...Array(arrLength)].map(() => arr.splice(Math.floor(Math.random() * arr.length), 1)[0])
     }
     if (friendsId.length) {
+      const promises = []
       // generates an array of users that people I follow are following
-      for (let i = 0; i < friendsId.length; i += 1) {
-        const friendsOfFriend = await db('friendships')
+      for (let i = 0; i < friendsId.id; i += 1) {
+        const friendsOfFriend = db('friendships')
           .select(
             'friendships.friend_id as recommended_follow_id',
             'friendships.user_id as followed_by_id',
-            'users.profile_picture as image',
-            'users.display_name',
-            'users.username',
-            'users.bio',
-            'users.location'
+            'u2.username as followed_by_username',
+            'u2.display_name as followed_by_display_name',
+            'u1.profile_picture as image',
+            'u1.display_name',
+            'u1.username',
+            'u1.bio',
+            'u1.location'
           )
-          .join('users', 'friendships.friend_id', 'users.id') // joins user table
+          .join('users as u1', 'friendships.friend_id', 'u1.id') // joins user table
+          .join('users as u2', 'friendships.user_id', 'u2.id')
           .where('user_id', friendsId[i])
           .whereNotIn('friend_id', friendsIdWithUserId)
-        friendsOfFriends = [...friendsOfFriends, ...friendsOfFriend]
+        promises.push(friendsOfFriend)
       }
-      for (let i = 0; i < friendsOfFriends.length; i += 1) {
-        const friendOfFriendsDetails = await db('users')
-          .where('id', friendsOfFriends[i].followed_by_id)
-          .first()
-        friendsOfFriends[i].followed_by_username = friendOfFriendsDetails.username
-        friendsOfFriends[i].followed_by_display_name = friendOfFriendsDetails.followed_by_display_name
-      }
-      if (friendsOfFriends.length < count) {
+
+      const resolvedPromises = await Promise.all(promises)
+      // if current user doesn't follow more than 3 people to ensure some suggestions, lets just get some random users to suggest
+      if (resolvedPromises.length < count) {
         const users = await db('friendships')
           .select(
             'friendships.friend_id as recommended_follow_id',
@@ -227,12 +226,12 @@ module.exports = {
           .join('users', 'friendships.friend_id', 'users.id')
           .groupBy('friendships.friend_id', 'users.display_name', 'users.username', 'users.profile_picture')
           .having('friendships.friend_id', '>', '2')
-          // .count('friendships.friend_id as followers')
           .limit(20)
         return res.json(pickRandom(users, count))
       }
-      const randomSuggestions = pickRandom(friendsOfFriends, count)
-      return res.json(pickRandom(friendsOfFriends, count))
+      // else lets use our resolvePromises arr
+      const friendsOfFriends = pickRandom(resolvedPromises.flat(), count)
+      return res.json(friendsOfFriends)
     }
     // base case for a user that doesn't follow anyone
     const users = await db('friendships')

@@ -52,7 +52,7 @@ passport.deserializeUser((id, done) => {
       if (!user) {
         done(new Error('User not found'))
       }
-      done(null, user)
+      done(null, user.id)
     })
 })
 

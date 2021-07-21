@@ -1,4 +1,3 @@
-require('dotenv').config()
 const db = require('../../dbConfig')
 const localhost_url = 'http://localhost:3000'
 const url = 'https://learnlocker.app'

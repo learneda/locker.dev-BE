@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const googleTranslate = require('google-translate')(process.env.GOOGLE_TRANSLATE_KEY)
 
 module.exports = {

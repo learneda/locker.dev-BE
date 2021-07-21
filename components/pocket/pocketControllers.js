@@ -1,4 +1,3 @@
-require('dotenv').config()
 const axios = require('axios')
 const qs = require('qs')
 
@@ -14,7 +13,7 @@ module.exports = {
         : 'http://localhost:8000/api/pocket/cb'
     axios
       .post('https://getpocket.com/v3/oauth/request', {
-        consumer_key: process.env.POCKET_KEY,
+        consumer_key: process.env.POCKET_API_KEY,
         redirect_uri: redirect_uri,
       })
       .then(result => {
@@ -34,7 +33,7 @@ module.exports = {
         .where('user_id', req.user.id)
       axios
         .post('https://getpocket.com/v3/oauth/authorize', {
-          consumer_key: process.env.POCKET_KEY,
+          consumer_key: process.env.POCKET_API_KEY,
           code: token,
         })
         .then(response => {
@@ -44,7 +43,7 @@ module.exports = {
           const decoded = qs.parse(encodedResponse)
           axios
             .post('https://getpocket.com/v3/get', {
-              consumer_key: process.env.POCKET_KEY,
+              consumer_key: process.env.POCKET_API_KEY,
               access_token: decoded.access_token,
             })
             .then(async result => {

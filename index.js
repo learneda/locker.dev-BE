@@ -1,4 +1,3 @@
-require('dotenv').config()
 const { configureSocket } = require('./config/')
 const { logServerPrompt } = require('./utils')
 

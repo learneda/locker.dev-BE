@@ -1,4 +1,3 @@
-require('dotenv').config()
 const axios = require('axios')
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
@@ -92,8 +91,8 @@ passport.use(
 passport.use(
   new GitHubStrategy(
     {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      clientID: process.env.GITHUB_API_KEY,
+      clientSecret: process.env.GITHUB_API_SECRET,
       callbackURL: '/auth/github/cb',
       proxy: true,
     },
@@ -142,8 +141,8 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientID: process.env.GOOGLE_API_KEY,
+      clientSecret: process.env.GOOGLE_API_SECRET,
       callbackURL: '/auth/google/callback',
       proxy: true,
     },
@@ -192,8 +191,8 @@ passport.use(
 passport.use(
   new MeetupStrategy(
     {
-      clientID: process.env.MEETUP_KEY,
-      clientSecret: process.env.MEETUP_SECRET,
+      clientID: process.env.MEETUP_API_KEY,
+      clientSecret: process.env.MEETUP_API_SECRET,
       callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
     },
     async (accessToken, refreshToken, profile, done) => {

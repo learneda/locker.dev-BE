@@ -5,8 +5,6 @@ const xpath = require('xpath')
 const dom = require('xmldom').DOMParser
 const axios = require('axios')
 const db = require('../../dbConfig')
-const generateToken = require('../../utils').generateToken
-require('dotenv').config() // Need access to process.env.DEV_USER_ID
 
 /*  ================== GITHUB ================== */
 router.get('/github', passport.authenticate('github'))

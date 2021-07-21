@@ -1,5 +1,4 @@
 const axios = require('axios')
-require('dotenv').config
 
 module.exports = {
   async search(req, res, next) {
@@ -8,7 +7,7 @@ module.exports = {
     axios
       .get('https://listen-api.listennotes.com/api/v2/search', {
         headers: {
-          'X-ListenAPI-Key': process.env.LISTEN_KEY,
+          'X-ListenAPI-Key': process.env.LISTEN_API_KEY,
         },
         params: {
           q,

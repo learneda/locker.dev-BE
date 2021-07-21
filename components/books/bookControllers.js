@@ -1,4 +1,3 @@
-require('dotenv').config()
 const books = require('google-books-search')
 
 module.exports = {

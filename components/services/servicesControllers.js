@@ -36,8 +36,8 @@ module.exports = {
         uri: `https://www.udemy.com/api-2.0/courses?page=${page}`,
         qs: queryParams,
         auth: {
-          username: process.env.UDEMY_ID,
-          password: process.env.UDEMY_SECRET,
+          username: process.env.UDEMY_USERNAME_ID,
+          password: process.env.UDEMY_API_SECRET,
         },
       },
       (error, response, body) => {

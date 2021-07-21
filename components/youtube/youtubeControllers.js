@@ -1,5 +1,5 @@
 const axios = require('axios')
-require('dotenv').config
+
 module.exports = {
   async search(req, res, next) {
     try {
@@ -15,7 +15,7 @@ module.exports = {
             part: 'snippet',
             maxResults: 12,
             type: 'video',
-            key: process.env.YOUTUBE_KEY,
+            key: process.env.YOUTUBE_API_KEY,
           },
         })
         .then(result =>

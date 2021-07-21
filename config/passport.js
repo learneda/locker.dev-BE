@@ -5,7 +5,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const MeetupStrategy = require('passport-meetup-oauth2').Strategy
 const LocalStrategy = require('passport-local').Strategy
 const GoodreadsStrategy = require('passport-goodreads').Strategy
-const bcrypt = require('bcrypt')
 const sgMail = require('@sendgrid/mail')
 const db = require('../dbConfig')
 const html = require('./html')
@@ -54,38 +53,6 @@ passport.deserializeUser((id, done) => {
     })
 })
 
-passport.use(
-  new LocalStrategy(
-    {
-      usernameField: 'email',
-      passwordField: 'password',
-    },
-    async function(email, password, done) {
-      const existingUser = await db('users')
-        .where('email', email)
-        .first()
-      if (existingUser) {
-        const passwordCheck = bcrypt.compareSync(password, existingUser.password)
-        if (passwordCheck === true) {
-          done(null, existingUser)
-        } else {
-          done(new Error('credentials wrong'))
-        }
-      } else {
-        password = bcrypt.hashSync(password, 10)
-        await db('users').insert({
-          email: email,
-          password: password,
-          display_name: 'a dynamic name',
-        })
-        const user = await db('users')
-          .where({ email: email })
-          .first()
-        done(null, user)
-      }
-    }
-  )
-)
 /*  ================== GITHUB ================== */
 
 passport.use(

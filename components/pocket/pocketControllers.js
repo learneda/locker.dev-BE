@@ -71,7 +71,7 @@ module.exports = {
               }
               const redirectUrl =
                 process.env.NODE_ENV === 'production'
-                  ? 'https://learnlocker.dev/locker'
+                  ? 'https://learnlocker.app/locker'
                   : 'http://localhost:3000/locker'
               res.redirect(redirectUrl)
             })

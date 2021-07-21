@@ -15,5 +15,4 @@ module.exports = server => {
   require('./youtube')(server)
   require('./listen')(server)
   require('./goals')(server)
-  require('./macrame')(server)
 }

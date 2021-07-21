@@ -4,8 +4,8 @@
   "description": "learned-",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node -r dotenv-safe/config index.js",
+    "dev": "nodemon -r dotenv-safe/config index.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "prettier --config .prettierrc '**/*.{ts,js}' --write",

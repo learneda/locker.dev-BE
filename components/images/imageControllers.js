@@ -1,6 +1,6 @@
 const multer = require('multer')
-const cloudinary = require('cloudinary')
-const cloudinaryStorage = require('multer-storage-cloudinary')
+const cloudinary = require('cloudinary').v2
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
 const db = require('../../dbConfig')
 
 cloudinary.config({
@@ -9,7 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 })
 
-const storage = cloudinaryStorage({
+const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   folder: 'demo',
   allowedFormats: ['jpg', 'png', 'gif'],

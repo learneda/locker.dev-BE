@@ -1,9 +1,7 @@
 const db = require('../../dbConfig')
-const localhost_url = 'http://localhost:3000'
-const url = 'https://learnlocker.app'
 
 const selectRedirect = (res, route) => {
-  process.env.NODE_ENV === 'production' ? res.redirect(`${url}${route}`) : res.redirect(`${localhost_url}${route}`)
+  res.redirect(`${process.env.REDIRECT_URL}${route}`)
 }
 
 module.exports = {

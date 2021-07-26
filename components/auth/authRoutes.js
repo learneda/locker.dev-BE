@@ -133,8 +133,7 @@ router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) =>
 
         if (booksArr) {
           // deciding if URL should be local or deployed
-          const redirectUrl =
-            process.env.NODE_ENV === 'production' ? 'https://learnlocker.app/locker' : 'http://localhost:3000/locker'
+          const redirectUrl = process.env.REDIRECT_URL
           res.redirect(redirectUrl)
         } else {
           throw new Error('newsFeedError')

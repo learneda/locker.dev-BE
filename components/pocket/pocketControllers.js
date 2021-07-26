@@ -7,10 +7,7 @@ let token
 
 module.exports = {
   async login(req, res, next) {
-    const redirect_uri =
-      process.env.NODE_ENV === 'production'
-        ? 'https://learned-a.herokuapp.com/api/pocket/cb'
-        : 'http://localhost:8000/api/pocket/cb'
+    const redirect_uri = `${process.env.REDIRECT_URL}/api/pocket/cb`
     axios
       .post('https://getpocket.com/v3/oauth/request', {
         consumer_key: process.env.POCKET_API_KEY,
@@ -68,10 +65,7 @@ module.exports = {
                     })
                   })
               }
-              const redirectUrl =
-                process.env.NODE_ENV === 'production'
-                  ? 'https://learnlocker.app/locker'
-                  : 'http://localhost:3000/locker'
+              const redirectUrl = process.env.REDIRECT_URL
               res.redirect(redirectUrl)
             })
         })

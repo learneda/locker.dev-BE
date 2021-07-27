@@ -148,7 +148,7 @@ passport.use(
     {
       clientID: process.env.MEETUP_API_KEY,
       clientSecret: process.env.MEETUP_API_SECRET,
-      callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
+      callbackURL: '/auth/meetup/cb',
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

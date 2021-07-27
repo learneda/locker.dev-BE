@@ -3,11 +3,10 @@ const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const MeetupStrategy = require('passport-meetup-oauth2').Strategy
-const LocalStrategy = require('passport-local').Strategy
 const GoodreadsStrategy = require('passport-goodreads').Strategy
 const sgMail = require('@sendgrid/mail')
 const db = require('../dbConfig')
-const html = require('./html')
+const { createWelcomeEmail } = require('../utils')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 // ======= gets called when a new user signs up on production =======
@@ -33,10 +32,6 @@ async function learnLockerToms(userId) {
     user_id: userId,
     friend_id: 112,
   })
-  // await db('friendships').insert({
-  //   user_id: userId,
-  //   friend_id: 107,
-  // })
 }
 
 passport.serializeUser((user, done) => done(null, user.id))
@@ -71,18 +66,9 @@ passport.use(
         if (existingUser) {
           return done(null, existingUser)
         } else {
-          if (profile.emails) {
-            const email = profile.emails[0].value
-            const msg = {
-              to: email,
-              from: 'info@learnlocker.dev',
-              subject: 'Welcome to locker.dev!',
-              html: html(profile.username),
-            }
-            sgMail.send(msg)
-          }
           await db('users')
             .insert({
+              id: profile.id,
               github_id: profile.id,
               username: profile.username,
               display_name: profile.username,
@@ -92,6 +78,12 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
+                if (profile.emails) {
+                  const userEmailAddress = profile.emails[0].value
+                  const userName = profile.username
+                  const email = createWelcomeEmail(userEmailAddress, userName)
+                  sgMail.send(email)
+                }
                 await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)
@@ -122,14 +114,6 @@ passport.use(
         if (existingUser) {
           return done(null, existingUser)
         } else {
-          const msg = {
-            to: profile.emails[0].value,
-            from: 'info@learnlocker.dev',
-            subject: 'Welcome to locker.dev!',
-            html: html(profile.displayName),
-          }
-          sgMail.send(msg)
-
           await db('users')
             .insert({
               google_id: profile.id,
@@ -142,6 +126,10 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
+                const userEmailAddress = profile.emails[0].value
+                const userName = profile.displayName
+                const email = createWelcomeEmail(userEmailAddress, userName)
+                sgMail.send(email)
                 await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)

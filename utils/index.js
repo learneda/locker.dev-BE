@@ -15,4 +15,5 @@ module.exports = {
   ...require('./getRequestUser'),
   ...require('./generateToken'),
   logServerPrompt,
+  createWelcomeEmail: require('./createWelcomeEmail'),
 }

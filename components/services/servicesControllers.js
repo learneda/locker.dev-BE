@@ -1,6 +1,6 @@
 const request = require('request')
 const axios = require('axios')
-const Feed = require('rss-to-json')
+const { parse } = require('rss-to-json')
 const urlMetadata = require('url-metadata')
 const cheerio = require('cheerio')
 const db = require('../../dbConfig')
@@ -8,18 +8,25 @@ const log = console.log
 
 async function runThruUrlMetadata(arr) {
   const metaPromises = arr.map(url => urlMetadata(url))
-  let responses = await axios.all(metaPromises)
-  responses = responses.map(response => {
-    const { url, title, image, description } = response
-    const article = {
-      url,
-      title,
-      thumbnail: image,
-      description,
-    }
-    return article
-  })
-  return responses
+
+  try {
+    const responses = await Promise.allSettled(metaPromises)
+    return responses
+      .filter(res => res.status === 'fulfilled')
+      .map(response => {
+        const { url, title, image, description } = response.value
+        const article = {
+          url,
+          title,
+          thumbnail: image,
+          description,
+        }
+        return article
+      })
+  } catch (err) {
+    console.log('runThruUrlMetadata err', err)
+    return err
+  }
 }
 
 module.exports = {
@@ -50,7 +57,8 @@ module.exports = {
           json.results = resultsWithUrl
           res.json(json)
         } else {
-          res.json(response)
+          const { statusCode, body } = response.toJSON()
+          res.status(statusCode).json(body)
         }
       }
     )
@@ -100,24 +108,28 @@ async function scrapeAlligator() {
   const rootUrl = `https://alligator.io/explore/`
   const response = await axios.get(rootUrl)
   const $ = cheerio.load(response.data)
-  const urls = []
+  const scapedUrls = []
   $('.front-flex')
     .find('a')
     .each(function(i, ele) {
-      urls[i] = $(this).attr('href')
+      scapedUrls[i] = $(this).attr('href')
     })
-  const articles = await runThruUrlMetadata(urls)
+
+  const articles = await runThruUrlMetadata(scapedUrls)
   // Existing articles
   const existingArticles = await db('articles')
-  const existingUrls = existingArticles.map((article, index) => {
+
+  const existingUrls = existingArticles.map(article => {
     return article.url.split('?')[0]
   })
   // Filter articles
   const filteredArticles = articles.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
+    return !existingUrls.includes(article.url)
   })
-  await db('articles').insert(filteredArticles)
+
+  if (filteredArticles.length) {
+    await db('articles').insert(filteredArticles)
+  }
 }
 
 async function scrapeCeddia() {
@@ -157,7 +169,9 @@ async function scrapeCeddia() {
     const splittedUrl = article.url.split('?')[0]
     return !existingUrls.includes(splittedUrl)
   })
-  await db('articles').insert(filteredArticles)
+  if (filteredArticles.length) {
+    await db('articles').insert(filteredArticles)
+  }
 }
 
 async function scrapeLogRocket() {
@@ -170,7 +184,6 @@ async function scrapeLogRocket() {
     .each(function(i, ele) {
       urls[i] = $(this).attr('href')
     })
-  console.log(urls)
   const articles = await runThruUrlMetadata(urls)
   // Existing articles
   const existingArticles = await db('articles')
@@ -182,7 +195,9 @@ async function scrapeLogRocket() {
     const splittedUrl = article.url.split('?')[0]
     return !existingUrls.includes(splittedUrl)
   })
-  await db('articles').insert(filteredArticles)
+  if (filteredArticles.length) {
+    await db('articles').insert(filteredArticles)
+  }
 }
 
 async function scrapeRobin() {
@@ -239,7 +254,7 @@ setInterval(async () => {
     'https://css-tricks.com/feed/',
   ]
   scrappingArray.map(url => {
-    Feed.load(url, function(err, rss) {
+    parse(url, function(err, rss) {
       const tempo_articles = rss.items.map(item => {
         // for each article, get its url and parse it
         const url = item.url.split('?')[0]
@@ -284,25 +299,31 @@ setInterval(async () => {
 //  robinwieruch.de & overreacted.io & Ceddia
 
 async function scrapeDan() {
-  const response = await axios.get('https://overreacted.io/')
-  const $ = cheerio.load(response.data)
-  const urlsArr = []
-  $('article')
-    .find('header > h3 > a')
-    .each(function(i, ele) {
-      urlsArr[i] = `https://overreacted.io${$(this).attr('href')}`
+  try {
+    const response = await axios.get('https://overreacted.io/')
+    const $ = cheerio.load(response.data)
+    const scapedUrls = []
+    $('article')
+      .find('header > h3 > a')
+      .each(function(i) {
+        scapedUrls[i] = `https://overreacted.io${$(this).attr('href')}`
+      })
+
+    const existingArticles = await db('articles')
+
+    // FILTERING TITLES
+    const existingUrls = existingArticles.map(article => {
+      return article.url
     })
-
-  const existingArticles = await db('articles')
-
-  // FILTERING TITLES
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url
-  })
-
-  const filteredUrl = urlsArr.filter(url => !existingUrls.includes(url))
-
-  await db('articles').insert(await runThruUrlMetadata(filteredUrl))
+    const newUrls = scapedUrls.filter(url => !existingUrls.includes(url))
+    if (newUrls.length) {
+      const newArticles = await runThruUrlMetadata(newUrls)
+      await db('articles').insert(newArticles)
+    }
+    return
+  } catch (err) {
+    console.error('SCRAPE DAN ERR', err)
+  }
 }
 
 setInterval(async () => {

@@ -4,7 +4,7 @@ const { parse } = require('rss-to-json')
 const urlMetadata = require('url-metadata')
 const cheerio = require('cheerio')
 const db = require('../../dbConfig')
-const log = console.log
+const { handleScrapping } = require('../../utils')
 
 async function runThruUrlMetadata(arr) {
   const metaPromises = arr.map(url => urlMetadata(url))
@@ -144,7 +144,7 @@ async function scrapeCeddia() {
   let urls = []
   $('ul')
     .find('li > a')
-    .each(function(i, ele) {
+    .each(function(i) {
       urls[i] = $(this).attr('href')
     })
   // first 3 entries are not articles
@@ -175,57 +175,25 @@ async function scrapeCeddia() {
 }
 
 async function scrapeLogRocket() {
-  const rootUrl = `https://blog.logrocket.com/`
-  const response = await axios.get(rootUrl)
-  const $ = cheerio.load(response.data)
-  const urls = []
-  $('.listfeaturedtag')
-    .find('div > div > div > div > a')
-    .each(function(i, ele) {
-      urls[i] = $(this).attr('href')
-    })
-  const articles = await runThruUrlMetadata(urls)
-  // Existing articles
-  const existingArticles = await db('articles')
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url.split('?')[0]
-  })
-  // Filter articles
-  const filteredArticles = articles.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
-  })
-  if (filteredArticles.length) {
-    await db('articles').insert(filteredArticles)
+  const targetUrl = `https://blog.logrocket.com`
+  const selector = {
+    startingPoint: '.listfeaturedtag',
+    find: 'div > div > div > div > a',
   }
+  handleScrapping(targetUrl, selector, { prependUrl: false })
 }
 
 async function scrapeRobin() {
-  // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
-  const existingArticles = await db('articles')
-
-  // FILTERING BY BASE URL
-  const existingUrls = existingArticles.map(article => {
-    return article.url.split('?')[0]
-  })
-  // Scrapping w/ cheerio
-  const url = `https://www.robinwieruch.de`
-  const response = await axios.get(url + '/categories/recent')
-  const $ = cheerio.load(response.data)
-  const scrappedUrls = []
-  $('section[itemtype="http://schema.org/Blog"]')
-    .find('div > article > div > header > h2 > a')
-    .each(function(i) {
-      scrappedUrls[i] = url + $(this).attr('href')
-    })
-
-  const filteredUrls = scrappedUrls.filter(url => {
-    return !existingUrls.includes(url)
-  })
-  if (filteredUrls.length) {
-    const newArticles = await runThruUrlMetadata(filteredUrls)
-    db('articles').insert(newArticles)
+  const targetUrl = 'https://www.robinwieruch.de/categories/recent'
+  const selector = {
+    startingPoint: 'section[itemtype="http://schema.org/Blog"]',
+    find: 'div > article > div > header > h2 > a',
   }
+  const options = {
+    prependUrl: 'https://www.robinwieruch.de',
+  }
+  handleScrapping(targetUrl, selector, options)
+  return
 }
 
 // ======= Scrapping RSS Feeds Every <ms> ======

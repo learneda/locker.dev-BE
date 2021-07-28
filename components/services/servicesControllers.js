@@ -259,26 +259,15 @@ setInterval(async () => {
 
 async function scrapeDan() {
   try {
-    const response = await axios.get('https://overreacted.io/')
-    const $ = cheerio.load(response.data)
-    const scrappedUrls = []
-    $('article')
-      .find('header > h3 > a')
-      .each(function(i) {
-        scrappedUrls[i] = `https://overreacted.io${$(this).attr('href')}`
-      })
-
-    const existingArticles = await db('articles')
-
-    // FILTERING TITLES
-    const existingUrls = existingArticles.map(article => {
-      return article.url
-    })
-    const newUrls = scrappedUrls.filter(url => !existingUrls.includes(url))
-    if (newUrls.length) {
-      const newArticles = await runThruUrlMetadata(newUrls)
-      await db('articles').insert(newArticles)
+    const targetUrl = 'https://overreacted.io'
+    const selector = {
+      startingPoint: 'article',
+      find: 'header > h3 > a',
     }
+    const options = {
+      prependUrl: targetUrl,
+    }
+    handleScrapping(targetUrl, selector, options)
     return
   } catch (err) {
     console.error('SCRAPE DAN ERR', err)

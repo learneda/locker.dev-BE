@@ -23,6 +23,9 @@ async function handleScrapping(rootUrl, selector, options) {
       scrappedUrls[i] = href
     })
 
+  if (options?.custom) {
+    await options.custom(scrappedUrls)
+  }
   const newUrls = scrappedUrls.filter(url => !existingUrls.includes(url))
 
   if (newUrls.length) {

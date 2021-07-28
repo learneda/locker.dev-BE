@@ -133,45 +133,23 @@ async function scrapeAlligator() {
 }
 
 async function scrapeCeddia() {
-  const existingArticles = await db('articles')
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url.split('?')[0]
-  })
-  const rootUrl = `https://daveceddia.com`
-  const archiveUrl = `https://daveceddia.com/archives/`
-  const response = await axios.get(archiveUrl)
-  const $ = cheerio.load(response.data)
-  let urls = []
-  $('ul')
-    .find('li > a')
-    .each(function(i) {
-      urls[i] = $(this).attr('href')
-    })
-  // first 3 entries are not articles
-  urls = urls.slice(3)
-  // url are relative ... prepending rootUrl
-  urls = urls.map(url => rootUrl + url)
-  // Need to slice only a few promises to prevent promise overflow
-  const metaPromises = urls.slice(0, 10).map(url => urlMetadata(url))
-  let responses = await axios.all(metaPromises)
-
-  responses = responses.map(response => {
-    const { url, title, image, description } = response
-    const article = {
-      url,
-      title,
-      thumbnail: image,
-      description,
-    }
-    return article
-  })
-  const filteredArticles = responses.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
-  })
-  if (filteredArticles.length) {
-    await db('articles').insert(filteredArticles)
+  const customManipulations = arr => {
+    // first 3 entries are not articles
+    arr.splice(0, 3)
+    // Need to slice only a few promises to prevent promise overflow
+    arr.splice(10, arr.length - 1)
   }
+  const targetUrl = 'https://daveceddia.com/archives'
+  const selector = {
+    startingPoint: 'ul',
+    find: 'li > a',
+  }
+  const options = {
+    prependUrl: 'https://daveceddia.com',
+    custom: customManipulations,
+  }
+  handleScrapping(targetUrl, selector, options)
+  return
 }
 
 async function scrapeLogRocket() {

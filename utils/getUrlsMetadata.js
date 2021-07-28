@@ -10,7 +10,7 @@ async function getUrlsMetadata(arr) {
       .map(response => {
         const { url, title, image, description } = response.value
         const article = {
-          url: url.slice(0, -1),
+          url,
           title,
           thumbnail: image,
           description,

@@ -1,33 +1,8 @@
 const request = require('request')
-const axios = require('axios')
 const { parse } = require('rss-to-json')
 const urlMetadata = require('url-metadata')
-const cheerio = require('cheerio')
 const db = require('../../dbConfig')
-const { handleScrapping } = require('../../utils')
-
-async function runThruUrlMetadata(arr) {
-  const metaPromises = arr.map(url => urlMetadata(url))
-
-  try {
-    const responses = await Promise.allSettled(metaPromises)
-    return responses
-      .filter(res => res.status === 'fulfilled')
-      .map(response => {
-        const { url, title, image, description } = response.value
-        const article = {
-          url,
-          title,
-          thumbnail: image,
-          description,
-        }
-        return article
-      })
-  } catch (err) {
-    console.log('runThruUrlMetadata err', err)
-    return err
-  }
-}
+const { handleScrapping, getUrlsMetadata } = require('../../utils')
 
 module.exports = {
   getCourses(req, res, next) {
@@ -105,31 +80,23 @@ module.exports = {
 }
 
 async function scrapeAlligator() {
-  const rootUrl = `https://alligator.io/explore/`
-  const response = await axios.get(rootUrl)
-  const $ = cheerio.load(response.data)
-  const scrappedUrls = []
-  $('.front-flex')
-    .find('a')
-    .each(function(i, ele) {
-      scrappedUrls[i] = $(this).attr('href')
+  const getMetadataEarly = async arr => {
+    const metadata = await getUrlsMetadata(arr)
+    arr.forEach((value, i) => {
+      arr[i] = metadata[i].url
     })
-
-  const articles = await runThruUrlMetadata(scrappedUrls)
-  // Existing articles
-  const existingArticles = await db('articles')
-
-  const existingUrls = existingArticles.map(article => {
-    return article.url.split('?')[0]
-  })
-  // Filter articles
-  const filteredArticles = articles.filter(article => {
-    return !existingUrls.includes(article.url)
-  })
-
-  if (filteredArticles.length) {
-    await db('articles').insert(filteredArticles)
   }
+  const targetUrl = 'https://alligator.io/explore'
+  const selector = {
+    startingPoint: '.front-flex',
+    find: 'a',
+  }
+  const options = {
+    prependUrl: false,
+    custom: getMetadataEarly,
+  }
+  handleScrapping(targetUrl, selector, options)
+  return
 }
 
 async function scrapeCeddia() {

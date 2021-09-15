@@ -1,16 +1,15 @@
-require('dotenv').config()
 const multer = require('multer')
-const cloudinary = require('cloudinary')
-const cloudinaryStorage = require('multer-storage-cloudinary')
+const cloudinary = require('cloudinary').v2
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
 const db = require('../../dbConfig')
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 })
 
-const storage = cloudinaryStorage({
+const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   folder: 'demo',
   allowedFormats: ['jpg', 'png', 'gif'],
@@ -48,7 +47,6 @@ module.exports = {
           .where('id', req.user.id)
           .returning('*')
           .then(response => {
-            console.log('from this one ? wtf', response[0])
             res.status(200).json({ success: 'added image', user: response[0] })
           })
           .catch(err => console.log(err))

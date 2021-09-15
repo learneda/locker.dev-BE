@@ -1,15 +1,12 @@
-require('dotenv').config()
 const axios = require('axios')
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const MeetupStrategy = require('passport-meetup-oauth2').Strategy
-const LocalStrategy = require('passport-local').Strategy
 const GoodreadsStrategy = require('passport-goodreads').Strategy
-const bcrypt = require('bcrypt')
 const sgMail = require('@sendgrid/mail')
 const db = require('../dbConfig')
-const html = require('./html')
+const { createWelcomeEmail } = require('../utils')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 // ======= gets called when a new user signs up on production =======
@@ -35,10 +32,6 @@ async function learnLockerToms(userId) {
     user_id: userId,
     friend_id: 112,
   })
-  // await db('friendships').insert({
-  //   user_id: userId,
-  //   friend_id: 107,
-  // })
 }
 
 passport.serializeUser((user, done) => done(null, user.id))
@@ -55,45 +48,13 @@ passport.deserializeUser((id, done) => {
     })
 })
 
-passport.use(
-  new LocalStrategy(
-    {
-      usernameField: 'email',
-      passwordField: 'password',
-    },
-    async function(email, password, done) {
-      const existingUser = await db('users')
-        .where('email', email)
-        .first()
-      if (existingUser) {
-        const passwordCheck = bcrypt.compareSync(password, existingUser.password)
-        if (passwordCheck === true) {
-          done(null, existingUser)
-        } else {
-          done(new Error('credentials wrong'))
-        }
-      } else {
-        password = bcrypt.hashSync(password, 10)
-        await db('users').insert({
-          email: email,
-          password: password,
-          display_name: 'a dynamic name',
-        })
-        const user = await db('users')
-          .where({ email: email })
-          .first()
-        done(null, user)
-      }
-    }
-  )
-)
 /*  ================== GITHUB ================== */
 
 passport.use(
   new GitHubStrategy(
     {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      clientID: process.env.GITHUB_API_KEY,
+      clientSecret: process.env.GITHUB_API_SECRET,
       callbackURL: '/auth/github/cb',
       proxy: true,
     },
@@ -105,18 +66,9 @@ passport.use(
         if (existingUser) {
           return done(null, existingUser)
         } else {
-          if (profile.emails) {
-            const email = profile.emails[0].value
-            const msg = {
-              to: email,
-              from: 'info@learnlocker.dev',
-              subject: 'Welcome to locker.dev!',
-              html: html(profile.username),
-            }
-            sgMail.send(msg)
-          }
           await db('users')
             .insert({
+              id: profile.id,
               github_id: profile.id,
               username: profile.username,
               display_name: profile.username,
@@ -126,6 +78,12 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
+                if (profile.emails) {
+                  const userEmailAddress = profile.emails[0].value
+                  const userName = profile.username
+                  const email = createWelcomeEmail(userEmailAddress, userName)
+                  sgMail.send(email)
+                }
                 await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)
@@ -142,8 +100,8 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientID: process.env.GOOGLE_API_KEY,
+      clientSecret: process.env.GOOGLE_API_SECRET,
       callbackURL: '/auth/google/callback',
       proxy: true,
     },
@@ -156,14 +114,6 @@ passport.use(
         if (existingUser) {
           return done(null, existingUser)
         } else {
-          const msg = {
-            to: profile.emails[0].value,
-            from: 'info@learnlocker.dev',
-            subject: 'Welcome to locker.dev!',
-            html: html(profile.displayName),
-          }
-          sgMail.send(msg)
-
           await db('users')
             .insert({
               google_id: profile.id,
@@ -176,6 +126,10 @@ passport.use(
             .then(async user_obj => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
+                const userEmailAddress = profile.emails[0].value
+                const userName = profile.displayName
+                const email = createWelcomeEmail(userEmailAddress, userName)
+                sgMail.send(email)
                 await learnLockerToms(user_obj.id)
               }
               return done(null, user_obj)
@@ -192,9 +146,9 @@ passport.use(
 passport.use(
   new MeetupStrategy(
     {
-      clientID: process.env.MEETUP_KEY,
-      clientSecret: process.env.MEETUP_SECRET,
-      callbackURL: 'https://api.learnlocker.dev/auth/meetup/cb',
+      clientID: process.env.MEETUP_API_KEY,
+      clientSecret: process.env.MEETUP_API_SECRET,
+      callbackURL: '/auth/meetup/cb',
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

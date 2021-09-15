@@ -20,6 +20,7 @@ exports.up = function(knex, Promise) {
   })
 }
 
-exports.down = function(knex, Promise) {
+exports.down = async function(knex, Promise) {
+  await knex.schema.dropTableIfExists('integrations')
   return knex.schema.dropTableIfExists('pocket')
 }

@@ -1,4 +1,3 @@
-require('dotenv').config()
 const axios = require('axios')
 const qs = require('qs')
 
@@ -8,13 +7,10 @@ let token
 
 module.exports = {
   async login(req, res, next) {
-    const redirect_uri =
-      process.env.NODE_ENV === 'production'
-        ? 'https://learned-a.herokuapp.com/api/pocket/cb'
-        : 'http://localhost:8000/api/pocket/cb'
+    const redirect_uri = `${process.env.REDIRECT_URL}/api/pocket/cb`
     axios
       .post('https://getpocket.com/v3/oauth/request', {
-        consumer_key: process.env.POCKET_KEY,
+        consumer_key: process.env.POCKET_API_KEY,
         redirect_uri: redirect_uri,
       })
       .then(result => {
@@ -34,7 +30,7 @@ module.exports = {
         .where('user_id', req.user.id)
       axios
         .post('https://getpocket.com/v3/oauth/authorize', {
-          consumer_key: process.env.POCKET_KEY,
+          consumer_key: process.env.POCKET_API_KEY,
           code: token,
         })
         .then(response => {
@@ -44,7 +40,7 @@ module.exports = {
           const decoded = qs.parse(encodedResponse)
           axios
             .post('https://getpocket.com/v3/get', {
-              consumer_key: process.env.POCKET_KEY,
+              consumer_key: process.env.POCKET_API_KEY,
               access_token: decoded.access_token,
             })
             .then(async result => {
@@ -69,10 +65,7 @@ module.exports = {
                     })
                   })
               }
-              const redirectUrl =
-                process.env.NODE_ENV === 'production'
-                  ? 'https://learnlocker.app/locker'
-                  : 'http://localhost:3000/locker'
+              const redirectUrl = process.env.REDIRECT_URL
               res.redirect(redirectUrl)
             })
         })

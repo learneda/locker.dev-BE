@@ -1,26 +1,8 @@
 const request = require('request')
-const axios = require('axios')
-const Feed = require('rss-to-json')
+const { parse } = require('rss-to-json')
 const urlMetadata = require('url-metadata')
-const cheerio = require('cheerio')
 const db = require('../../dbConfig')
-const log = console.log
-
-async function runThruUrlMetadata(arr) {
-  const metaPromises = arr.map(url => urlMetadata(url))
-  let responses = await axios.all(metaPromises)
-  responses = responses.map(response => {
-    const { url, title, image, description } = response
-    const article = {
-      url,
-      title,
-      thumbnail: image,
-      description,
-    }
-    return article
-  })
-  return responses
-}
+const { handleScrapping, getUrlsMetadata } = require('../../utils')
 
 module.exports = {
   getCourses(req, res, next) {
@@ -36,8 +18,8 @@ module.exports = {
         uri: `https://www.udemy.com/api-2.0/courses?page=${page}`,
         qs: queryParams,
         auth: {
-          username: process.env.UDEMY_ID,
-          password: process.env.UDEMY_SECRET,
+          username: process.env.UDEMY_USERNAME_ID,
+          password: process.env.UDEMY_API_SECRET,
         },
       },
       (error, response, body) => {
@@ -50,7 +32,8 @@ module.exports = {
           json.results = resultsWithUrl
           res.json(json)
         } else {
-          res.json(response)
+          const { statusCode, body } = response.toJSON()
+          res.status(statusCode).json(body)
         }
       }
     )
@@ -97,129 +80,65 @@ module.exports = {
 }
 
 async function scrapeAlligator() {
-  const rootUrl = `https://alligator.io/explore/`
-  const response = await axios.get(rootUrl)
-  const $ = cheerio.load(response.data)
-  const urls = []
-  $('.front-flex')
-    .find('a')
-    .each(function(i, ele) {
-      urls[i] = $(this).attr('href')
+  const getMetadataEarly = async arr => {
+    const metadata = await getUrlsMetadata(arr)
+    arr.forEach((value, i) => {
+      arr[i] = metadata[i].url
     })
-  const articles = await runThruUrlMetadata(urls)
-  // Existing articles
-  const existingArticles = await db('articles')
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url.split('?')[0]
-  })
-  // Filter articles
-  const filteredArticles = articles.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
-  })
-  await db('articles').insert(filteredArticles)
+  }
+  const targetUrl = 'https://alligator.io/explore'
+  const selector = {
+    startingPoint: '.front-flex',
+    find: 'a',
+  }
+  const options = {
+    prependUrl: false,
+    custom: getMetadataEarly,
+  }
+  handleScrapping(targetUrl, selector, options)
+  return
 }
 
 async function scrapeCeddia() {
-  const existingArticles = await db('articles')
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url.split('?')[0]
-  })
-  const rootUrl = `https://daveceddia.com`
-  const archiveUrl = `https://daveceddia.com/archives/`
-  const response = await axios.get(archiveUrl)
-  const $ = cheerio.load(response.data)
-  let urls = []
-  $('ul')
-    .find('li > a')
-    .each(function(i, ele) {
-      urls[i] = $(this).attr('href')
-    })
-  // first 3 entries are not articles
-  urls = urls.slice(3)
-  // url are relative ... prepending rootUrl
-  urls = urls.map(url => rootUrl + url)
-  // Need to slice only a few promises to prevent promise overflow
-  const metaPromises = urls.slice(0, 10).map(url => urlMetadata(url))
-  let responses = await axios.all(metaPromises)
-
-  responses = responses.map(response => {
-    const { url, title, image, description } = response
-    const article = {
-      url,
-      title,
-      thumbnail: image,
-      description,
-    }
-    return article
-  })
-  const filteredArticles = responses.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
-  })
-  await db('articles').insert(filteredArticles)
+  const customManipulations = arr => {
+    // first 3 entries are not articles
+    arr.splice(0, 3)
+    // Need to slice only a few promises to prevent promise overflow
+    arr.splice(10, arr.length - 1)
+  }
+  const targetUrl = 'https://daveceddia.com/archives'
+  const selector = {
+    startingPoint: 'ul',
+    find: 'li > a',
+  }
+  const options = {
+    prependUrl: 'https://daveceddia.com',
+    custom: customManipulations,
+  }
+  handleScrapping(targetUrl, selector, options)
+  return
 }
 
 async function scrapeLogRocket() {
-  const rootUrl = `https://blog.logrocket.com/`
-  const response = await axios.get(rootUrl)
-  const $ = cheerio.load(response.data)
-  const urls = []
-  $('.listfeaturedtag')
-    .find('div > div > div > div > a')
-    .each(function(i, ele) {
-      urls[i] = $(this).attr('href')
-    })
-  console.log(urls)
-  const articles = await runThruUrlMetadata(urls)
-  // Existing articles
-  const existingArticles = await db('articles')
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url.split('?')[0]
-  })
-  // Filter articles
-  const filteredArticles = articles.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
-  })
-  await db('articles').insert(filteredArticles)
+  const targetUrl = `https://blog.logrocket.com`
+  const selector = {
+    startingPoint: '.listfeaturedtag',
+    find: 'div > div > div > div > a',
+  }
+  handleScrapping(targetUrl, selector, { prependUrl: false })
 }
 
 async function scrapeRobin() {
-  // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
-  const existingArticles = await db('articles')
-
-  // FILTERING BY BASE URL
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url.split('?')[0]
-  })
-  // Scrapping w/ cheerio
-  const url = `https://www.robinwieruch.de/`
-  const response = await axios.get(url)
-  const $ = cheerio.load(response.data)
-  const urls = []
-  $('section[class="post"]')
-    .find('div > div > div > a')
-    .each(function(i, ele) {
-      urls[i] = $(this).attr('href')
-    })
-  const metaPromises = urls.map(url => urlMetadata(url))
-  let articles = await axios.all(metaPromises)
-  articles = articles.map(item => {
-    const { url, title, image, description } = item
-    const article = {
-      url,
-      title,
-      thumbnail: image,
-      description,
-    }
-    return article
-  })
-  const filteredArticles = articles.filter(article => {
-    const splittedUrl = article.url.split('?')[0]
-    return !existingUrls.includes(splittedUrl)
-  })
-  db('articles').insert(filteredArticles)
+  const targetUrl = 'https://www.robinwieruch.de/categories/recent'
+  const selector = {
+    startingPoint: 'section[itemtype="http://schema.org/Blog"]',
+    find: 'div > article > div > header > h2 > a',
+  }
+  const options = {
+    prependUrl: 'https://www.robinwieruch.de',
+  }
+  handleScrapping(targetUrl, selector, options)
+  return
 }
 
 // ======= Scrapping RSS Feeds Every <ms> ======
@@ -239,7 +158,7 @@ setInterval(async () => {
     'https://css-tricks.com/feed/',
   ]
   scrappingArray.map(url => {
-    Feed.load(url, function(err, rss) {
+    parse(url, function(err, rss) {
       const tempo_articles = rss.items.map(item => {
         // for each article, get its url and parse it
         const url = item.url.split('?')[0]
@@ -284,25 +203,20 @@ setInterval(async () => {
 //  robinwieruch.de & overreacted.io & Ceddia
 
 async function scrapeDan() {
-  const response = await axios.get('https://overreacted.io/')
-  const $ = cheerio.load(response.data)
-  const urlsArr = []
-  $('article')
-    .find('header > h3 > a')
-    .each(function(i, ele) {
-      urlsArr[i] = `https://overreacted.io${$(this).attr('href')}`
-    })
-
-  const existingArticles = await db('articles')
-
-  // FILTERING TITLES
-  const existingUrls = existingArticles.map((article, index) => {
-    return article.url
-  })
-
-  const filteredUrl = urlsArr.filter(url => !existingUrls.includes(url))
-
-  await db('articles').insert(await runThruUrlMetadata(filteredUrl))
+  try {
+    const targetUrl = 'https://overreacted.io'
+    const selector = {
+      startingPoint: 'article',
+      find: 'header > h3 > a',
+    }
+    const options = {
+      prependUrl: targetUrl,
+    }
+    handleScrapping(targetUrl, selector, options)
+    return
+  } catch (err) {
+    console.error('SCRAPE DAN ERR', err)
+  }
 }
 
 setInterval(async () => {

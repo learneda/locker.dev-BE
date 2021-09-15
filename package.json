@@ -4,18 +4,13 @@
   "description": "learned-",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node -r dotenv-safe/config index.js",
+    "dev": "nodemon -r dotenv-safe/config index.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "prettier --config .prettierrc '**/*.{ts,js}' --write",
     "localpg": "knex migrate:rollback && knex migrate:latest && knex seed:run",
     "prodpg": "heroku run knex migrate:rollback && heroku run knex migrate:latest && heroku run knex seed:run"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix"
@@ -28,45 +23,42 @@
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^6.4.0",
-    "article-parser": "^2.4.0",
-    "axios": "^0.19.0",
-    "bcrypt": "^3.0.6",
-    "chalk": "^3.0.0",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.1",
     "cheerio": "^1.0.0-rc.3",
-    "cloudinary": "^1.14.0",
+    "cloudinary": "^1.26.2",
     "compression": "^1.7.4",
     "cookie-session": "^1.3.3",
     "cors": "^2.8.5",
-    "dotenv": "^8.0.0",
+    "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
-    "faker": "^4.1.0",
+    "faker": "^5.5.3",
     "google-books-search": "^0.3.1",
-    "google-translate": "^2.3.0",
     "he": "^1.2.0",
-    "helmet": "^3.18.0",
+    "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.19.1",
+    "knex": "^0.95.8",
     "lodash": "^4.17.15",
     "morgan": "^1.9.1",
     "multer": "^1.4.1",
-    "multer-storage-cloudinary": "^2.2.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "passport": "^0.4.0",
     "passport-github": "^1.1.0",
     "passport-goodreads": "^1.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport-meetup-oauth2": "0.0.2",
-    "pg": "^7.11.0",
+    "pg": "^8.6.0",
     "prerender-node": "^3.2.4",
-    "prettier": "^1.18.2",
+    "prettier": "^2.3.2",
     "qs": "^6.7.0",
     "request": "^2.88.0",
     "route-cache": "^0.4.4",
-    "rss-to-json": "^1.0.4",
-    "socket.io": "^2.2.0",
+    "rss-to-json": "^2.0.1",
+    "socket.io": "^4.1.3",
     "url-metadata": "^2.4.0",
-    "xmldom": "^0.1.27",
-    "xpath": "0.0.27"
+    "xmldom": "^0.6.0",
+    "xpath": "^0.0.32"
   },
   "devDependencies": {
     "@types/express": "^4.17.3",
@@ -78,9 +70,8 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "husky": "^4.2.3",
     "lint-staged": "^10.0.8",
-    "nodemon": "^1.19.1",
+    "nodemon": "^2.0.12",
     "typescript": "^3.8.3"
   }
 }

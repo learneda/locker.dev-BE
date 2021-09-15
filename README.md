@@ -19,13 +19,8 @@ Development site hosted on here: https://api.learnlocker.app
 
 3. Create a `.env` file and insert the following code. Replace values with yours!!
 
-   ```javascript
-   PORT = YOUR_PORT
-   DB_LOCAL_URL = 'your-database-connection-string'
-   GITHUB_CLIENT_ID = 'your-github-client-id'
-   GITHUB_SECRET = 'your-github-secret'
-   COOKIE_SECRET = 'middleware-cookie-session-secret'
-   TOKEN_SECRET = 'your-jsonWebToken-secret'
+   ```
+      Take a look at the `.env.example` file for required vars
    ```
 
 4. Create DB

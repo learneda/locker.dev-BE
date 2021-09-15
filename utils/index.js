@@ -15,4 +15,7 @@ module.exports = {
   ...require('./getRequestUser'),
   ...require('./generateToken'),
   logServerPrompt,
+  createWelcomeEmail: require('./createWelcomeEmail'),
+  handleScrapping: require('./handleScrapping'),
+  getUrlsMetadata: require('./getUrlsMetadata'),
 }

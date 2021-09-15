@@ -5,8 +5,6 @@ const xpath = require('xpath')
 const dom = require('xmldom').DOMParser
 const axios = require('axios')
 const db = require('../../dbConfig')
-const generateToken = require('../../utils').generateToken
-require('dotenv').config() // Need access to process.env.DEV_USER_ID
 
 /*  ================== GITHUB ================== */
 router.get('/github', passport.authenticate('github'))
@@ -135,8 +133,7 @@ router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) =>
 
         if (booksArr) {
           // deciding if URL should be local or deployed
-          const redirectUrl =
-            process.env.NODE_ENV === 'production' ? 'https://learnlocker.app/locker' : 'http://localhost:3000/locker'
+          const redirectUrl = process.env.REDIRECT_URL
           res.redirect(redirectUrl)
         } else {
           throw new Error('newsFeedError')

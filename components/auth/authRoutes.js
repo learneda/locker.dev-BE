@@ -35,7 +35,7 @@ router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) =>
         id: req.account.profile.id,
       },
     })
-    .then(async response => {
+    .then(async (response) => {
       // GETTING XML DATA
       const xml = response.data
       const doc = new dom().parseFromString(xml)
@@ -88,15 +88,13 @@ router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) =>
         booksArr.push(bookObj)
       }
       // get all existing Records to filter out duplicates
-      const existingRecords = await db('goodreads')
-        .select('book_id')
-        .where({ user_id: userId })
+      const existingRecords = await db('goodreads').select('book_id').where({ user_id: userId })
 
       // IF USER HAS ANY EXISTING RECORDS
       if (existingRecords.length) {
-        const existingBookIds = existingRecords.map(record => record.book_id)
+        const existingBookIds = existingRecords.map((record) => record.book_id)
         // filtering out duplicates & redefining books Arr var
-        booksArr = booksArr.filter(book => {
+        booksArr = booksArr.filter((book) => {
           return !existingBookIds.includes(book.id)
         })
       }
@@ -118,22 +116,22 @@ router.get('/goodreads/cb', passport.authorize('goodreads'), (req, res, next) =>
               user_id: userId,
             })
             .returning('*')
-            .then(async result => {
+            .then(async (result) => {
               await db('locker')
                 .insert({
                   user_id: userId,
                   goodreads_id: result[0].id,
                 })
-                .catch(err => {
+                .catch((err) => {
                   console.log('err came from trying to insert into locker table')
                 })
             })
-            .catch(err => console.log('ERROR\n\n', err))
+            .catch((err) => console.log('ERROR\n\n', err))
         } // END OF 4 LOOP
 
         if (booksArr) {
           // deciding if URL should be local or deployed
-          const redirectUrl = process.env.REDIRECT_URL
+          const redirectUrl = process.env.LEARN_LOCKER_FRONTEND_URL
           res.redirect(redirectUrl)
         } else {
           throw new Error('newsFeedError')

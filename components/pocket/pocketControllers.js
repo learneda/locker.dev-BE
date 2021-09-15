@@ -7,13 +7,13 @@ let token
 
 module.exports = {
   async login(req, res, next) {
-    const redirect_uri = `${process.env.REDIRECT_URL}/api/pocket/cb`
+    const redirect_uri = `${process.env.LEARN_LOCKER_FRONTEND_URL}/api/pocket/cb`
     axios
       .post('https://getpocket.com/v3/oauth/request', {
         consumer_key: process.env.POCKET_API_KEY,
         redirect_uri: redirect_uri,
       })
-      .then(result => {
+      .then((result) => {
         console.log('my response', result.data)
         const code = result.data
         token = code.split('=')[1]
@@ -25,15 +25,13 @@ module.exports = {
   async pocketCB(req, res, next) {
     console.log('\n line 23:', token)
     if (req.user) {
-      await db('pocket')
-        .del()
-        .where('user_id', req.user.id)
+      await db('pocket').del().where('user_id', req.user.id)
       axios
         .post('https://getpocket.com/v3/oauth/authorize', {
           consumer_key: process.env.POCKET_API_KEY,
           code: token,
         })
-        .then(response => {
+        .then((response) => {
           console.log('this is response.data', response.data)
           const encodedResponse = response.data
           console.log(qs.parse(encodedResponse))
@@ -43,7 +41,7 @@ module.exports = {
               consumer_key: process.env.POCKET_API_KEY,
               access_token: decoded.access_token,
             })
-            .then(async result => {
+            .then(async (result) => {
               for (const post in result.data.list) {
                 const obj = result.data.list[post]
                 await db('pocket')
@@ -58,14 +56,14 @@ module.exports = {
                     type_id: 6,
                   })
                   .returning('*')
-                  .then(async result => {
+                  .then(async (result) => {
                     await db('locker').insert({
                       user_id: req.user.id,
                       pocket_id: result[0].id,
                     })
                   })
               }
-              const redirectUrl = process.env.REDIRECT_URL
+              const redirectUrl = process.env.LEARN_LOCKER_FRONTEND_URL
               res.redirect(redirectUrl)
             })
         })

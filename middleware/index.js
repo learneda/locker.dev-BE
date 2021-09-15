@@ -7,22 +7,14 @@ const compression = require('compression')
 const cors = require('cors')
 const prerender = require('prerender-node')
 
+const origins = process.env.CORS_WHITELIST_ORIGINS.split(',')
+
 const corsOptions = {
   credentials: true,
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:5000',
-    'http://localhost:3001',
-    'http://localhost:8000',
-    'https://learnedadev.netlify.com',
-    'https://learnlocker.app',
-    'http://127.0.0.1:80',
-    'https://127.0.0.1:80',
-    'https://prompt.netlify.com',
-  ],
+  origin: origins,
 }
 
-module.exports = server => {
+module.exports = (server) => {
   server.use(express.json())
   server.use(
     cookieSession({

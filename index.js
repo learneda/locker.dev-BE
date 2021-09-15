@@ -22,6 +22,11 @@ server.get('/', (req, res) => {
 })
 
 // Instantiates Socket-IO instance
-const io = require('socket.io')(myServer)
+const io = require('socket.io')(myServer, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+  },
+})
 // Configure SocketIO
 configureSocket(io)

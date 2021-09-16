@@ -1,7 +1,7 @@
 const db = require('../../dbConfig')
 
 const selectRedirect = (res, route) => {
-  res.redirect(`${process.env.REDIRECT_URL}${route}`)
+  res.redirect(`${process.env.LEARN_LOCKER_FRONTEND_URL}${route}`)
 }
 
 module.exports = {
@@ -20,10 +20,7 @@ module.exports = {
   },
   async getSocialNetworkIDs(req, res, next) {
     const id = req.user.id
-    const socialIds = await db('users')
-      .select('github_id', 'google_id')
-      .where({ id })
-      .first()
+    const socialIds = await db('users').select('github_id', 'google_id').where({ id }).first()
     try {
       if (socialIds) {
         res.status(200).json(socialIds)

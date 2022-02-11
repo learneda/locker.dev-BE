@@ -16,17 +16,17 @@ const corsOptions = {
 
 module.exports = (server) => {
   server.use(express.json())
+  server.use(cors(corsOptions))
+  server.use(helmet())
+  server.use(compression())
+  server.use(logger(process.env.NODE_ENV === 'production' ? 'combined': 'dev'))
   server.use(
     cookieSession({
-      name: 'learned-a',
+      name: 'session',
       keys: [process.env.COOKIE_KEY],
       maxAge: 24 * 60 * 60 * 1000,
     })
   )
-  server.use(cors(corsOptions))
-  server.use(helmet())
-  server.use(compression())
-  server.use(logger('dev'))
   server.use(passport.initialize())
   server.use(passport.session())
   server.use(prerender.set('prerenderToken', process.env.PRERENDERED_TOKEN))

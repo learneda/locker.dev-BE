@@ -59,11 +59,10 @@ module.exports = {
     }
   },
   async getUserById(req, res, next) {
-    const id = req.params.id || req.user.id
-    // console.log(typeof id);
+    const id = req.params.id
     try {
       const user = await db('users')
-        .where({ id: id })
+        .where({ id })
         .select(
           'id',
           'username',

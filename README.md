@@ -25,6 +25,11 @@ Development site hosted on here: https://api.learnlocker.app
 
 4. Create DB
 
+   ```
+      npx knex migrate:latest
+      npx knex seed:run
+   ```
+
 5. Start the server
    ```javascript
    npm start [OR] npm run dev

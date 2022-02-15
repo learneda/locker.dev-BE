@@ -40,7 +40,7 @@ passport.deserializeUser((id, done) => {
   db('users')
     .where({ id: id })
     .first()
-    .then(user => {
+    .then((user) => {
       if (!user) {
         done(new Error('User not found ' + id))
       }
@@ -60,9 +60,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const existingUser = await db('users')
-          .where('github_id', profile.id)
-          .first()
+        const existingUser = await db('users').where('github_id', profile.id).first()
         if (existingUser) {
           return done(null, existingUser)
         } else {
@@ -75,7 +73,7 @@ passport.use(
               profile_picture: profile.photos[0].value,
             })
             .returning('*')
-            .then(async user_obj => {
+            .then(async (user_obj) => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
                 if (profile.emails) {
@@ -108,9 +106,7 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         const google_id = profile.id
-        const existingUser = await db('users')
-          .where('google_id', google_id)
-          .first()
+        const existingUser = await db('users').where('google_id', google_id).first()
         if (existingUser) {
           return done(null, existingUser)
         } else {
@@ -123,7 +119,7 @@ passport.use(
               profile_picture: profile.photos[0].value,
             })
             .returning('*')
-            .then(async user_obj => {
+            .then(async (user_obj) => {
               user_obj = user_obj[0]
               if (process.env.NODE_ENV === 'production') {
                 const userEmailAddress = profile.emails[0].value
@@ -155,8 +151,8 @@ passport.use(
         console.log('inside CB', accessToken, refreshToken, profile)
         axios
           .get('/auth/current_user')
-          .then(res => console.log('RESPONSE', res.data))
-          .catch(err => console.log(err))
+          .then((res) => console.log('RESPONSE', res.data))
+          .catch((err) => console.log(err))
         return done(null, { id: 503 })
       } catch (err) {
         console.log(err)

@@ -25,7 +25,7 @@ module.exports = {
       (error, response, body) => {
         if (!error && response.statusCode == 200) {
           const json = JSON.parse(body)
-          const resultsWithUrl = json.results.map(course => {
+          const resultsWithUrl = json.results.map((course) => {
             course.url = `https://udemy.com${course.url}`
             return course
           })
@@ -80,7 +80,7 @@ module.exports = {
 }
 
 async function scrapeAlligator() {
-  const getMetadataEarly = async arr => {
+  const getMetadataEarly = async (arr) => {
     const metadata = await getUrlsMetadata(arr)
     arr.forEach((value, i) => {
       arr[i] = metadata[i].url
@@ -100,7 +100,7 @@ async function scrapeAlligator() {
 }
 
 async function scrapeCeddia() {
-  const customManipulations = arr => {
+  const customManipulations = (arr) => {
     // first 3 entries are not articles
     arr.splice(0, 3)
     // Need to slice only a few promises to prevent promise overflow
@@ -142,7 +142,7 @@ async function scrapeRobin() {
 }
 
 // ======= Scrapping RSS Feeds Every <ms> ======
-setInterval(async () => {
+;async () => {
   // GETTING ALL DB ARTICLES TO AVOID ADDING DUPLICATES
   const existingArticles = await db('articles')
 
@@ -157,32 +157,32 @@ setInterval(async () => {
     'https://davidwalsh.name/feed',
     'https://css-tricks.com/feed/',
   ]
-  scrappingArray.map(url => {
-    parse(url, function(err, rss) {
-      const tempo_articles = rss.items.map(item => {
+  scrappingArray.map((url) => {
+    parse(url, function (err, rss) {
+      const tempo_articles = rss.items.map((item) => {
         // for each article, get its url and parse it
         const url = item.url.split('?')[0]
         return urlMetadata(url)
-          .then(article => ({
+          .then((article) => ({
             created: item.created,
             title: article.title,
             description: article.description,
             thumbnail: article.image,
             url: article.url,
           }))
-          .catch(err => {
+          .catch((err) => {
             console.log(err)
           })
       })
 
-      Promise.all(tempo_articles).then(async articles => {
+      Promise.all(tempo_articles).then(async (articles) => {
         const filteredArticles = articles.filter((article, index) => {
           const splittedUrl = article.url.split('?')[0]
           return !existingUrls.includes(splittedUrl)
         })
 
         // Filter out articles that lack a description
-        const descFilteredArticles = filteredArticles.filter(article => !!article.description)
+        const descFilteredArticles = filteredArticles.filter((article) => !!article.description)
 
         // INSERTING UNIQUE ARTICLES
         for (const article of descFilteredArticles) {
@@ -197,7 +197,7 @@ setInterval(async () => {
       })
     })
   })
-}, 360000)
+}
 
 // Scraping using Cheerio:
 //  robinwieruch.de & overreacted.io & Ceddia
@@ -219,10 +219,10 @@ async function scrapeDan() {
   }
 }
 
-setInterval(async () => {
+;async () => {
   scrapeRobin()
   scrapeDan()
   scrapeCeddia()
   scrapeAlligator()
   scrapeLogRocket()
-}, 360000)
+}

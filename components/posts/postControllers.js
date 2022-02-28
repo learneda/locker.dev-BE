@@ -5,9 +5,7 @@ module.exports = {
   async getAllCurrentUserPost(req, res, next) {
     try {
       if (req.user) {
-        const posts = await db('posts')
-          .where({ user_id: req.user.id })
-          .orderBy('id', 'desc')
+        const posts = await db('posts').where({ user_id: req.user.id }).orderBy('id', 'desc')
         return res.status(200).json(posts)
       }
     } catch (err) {
@@ -32,7 +30,7 @@ module.exports = {
           'sp.saved_to_profile'
         )
         // joins saved_post_id boolean
-        .leftJoin('saved_post_id AS sp', function() {
+        .leftJoin('saved_post_id AS sp', function () {
           this.on('p.id', 'sp.post_id')
         })
         .where({ 'p.user_id': user_id })
@@ -48,9 +46,7 @@ module.exports = {
     const { id } = req.params
     try {
       if (id) {
-        const post = await db('posts')
-          .where({ id })
-          .first()
+        const post = await db('posts').where({ id }).first()
         if (post) {
           res.status(200).json({ post })
         }
@@ -66,10 +62,7 @@ module.exports = {
 
     // selecting type id from types tbl. type title string comes from request body
     if (req.body.type) {
-      const type = await db('types')
-        .select('id')
-        .where('type_title', req.body.type)
-        .first()
+      const type = await db('types').select('id').where('type_title', req.body.type).first()
 
       if (mediaTypes.includes(req.body.type)) {
         try {
@@ -91,9 +84,7 @@ module.exports = {
           }
 
           // inserting record
-          const newInsert = await db('posts')
-            .insert(newPost)
-            .returning('*')
+          const newInsert = await db('posts').insert(newPost).returning('*')
 
           if (newInsert) {
             return res.status(201).json(newInsert[0])
@@ -139,9 +130,7 @@ module.exports = {
               root_url: rootUrl,
               type_id: req.body.type_id,
             }
-            const newInsert = await db('posts')
-              .insert(newPost)
-              .returning('*')
+            const newInsert = await db('posts').insert(newPost).returning('*')
             if (newInsert) {
               res.status(201).json(newInsert[0])
             } else {
@@ -170,30 +159,39 @@ module.exports = {
         .where({ id, user_id: req.user.id })
         .delete()
         .returning('*')
-        .then(deletedRecord => {
+        .then((deletedRecord) => {
           const deletedCollection = deletedRecord[0]
           res.status(200).json({ deletedRecord: deletedCollection, msg: 'delete successful' })
         })
-        .catch(err => res.json({ msg: 'post id not found' }))
+        .catch((err) => res.json({ msg: 'post id not found' }))
     } else {
       res.status(403).json({ error: 'Not authorized' })
     }
   },
-
+  // rename to postReaction
   async socialLikePost(req, res, next) {
     const user_id = req.user.id
     const post_id = req.body.post_id
+    const reaction = req.body.reaction
+    let dbResponse = null
     if (req.user) {
+      if (!user_id && !post_id) {
+        res.status(200).json({ msg: 'requires user_id & post_id' })
+      }
       try {
-        const insertPromise = await db('posts_likes').insert({
-          user_id,
-          post_id,
-        })
-        if (insertPromise) {
-          res.status(200).json({ msg: 'success' })
-        } else {
-          res.status(200).json({ msg: 'requires user_id & post_id' })
+        if (reaction === 'like') {
+          dbResponse = await db('posts_likes').insert({
+            user_id,
+            post_id,
+          })
+        } else if (reaction === 'unlike') {
+          dbResponse = await db('posts_likes').del().where({ user_id, post_id })
+        } else if (reaction === 'pony_up') {
+          dbResponse = await db('posts_ponies').insert({ user_id, post_id })
+        } else if (reaction === 'pony_down') {
+          dbResponse = await db('posts_ponies').del().where({ user_id, post_id })
         }
+        return res.status(200).json({ msg: 'success' })
       } catch (err) {
         console.log(err)
         res.status(500).json(err)
@@ -205,9 +203,7 @@ module.exports = {
   async getPostLikeCount(req, res, next) {
     const post_id = req.body.post_id
     try {
-      const selectPromise = await db('posts_likes')
-        .where({ post_id })
-        .countDistinct('user_id')
+      const selectPromise = await db('posts_likes').where({ post_id }).countDistinct('user_id')
       if (selectPromise) {
         res.status(200).json(selectPromise)
       }
@@ -260,14 +256,14 @@ module.exports = {
       .where({ id })
       .update({ post_url, title, description, user_thoughts, shared })
       .returning('*')
-      .then(result => {
+      .then((result) => {
         const post = result[0]
         post['profile_picture'] = req.user.profile_picture
         post['post_id'] = post.id
         delete post.id
         res.status(200).json(post)
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err)
         res.status(500).json({ msg: 'something went wrong' })
       })
@@ -276,9 +272,7 @@ module.exports = {
     const { folder_id, post_id } = req.body
     if (folder_id && post_id) {
       try {
-        const updatePromose = await db('posts')
-          .where({ id: post_id })
-          .update({ folder_id: folder_id })
+        const updatePromose = await db('posts').where({ id: post_id }).update({ folder_id: folder_id })
         if (updatePromose) {
           res.status(200).json({ msg: 'success' })
         } else {
@@ -294,9 +288,7 @@ module.exports = {
     const user_id = req.user === undefined ? req.body.user_id : req.user.id
     if (user_id) {
       try {
-        const selectCountPromise = await db('posts')
-          .where({ user_id: user_id })
-          .count()
+        const selectCountPromise = await db('posts').where({ user_id: user_id }).count()
         if (selectCountPromise) {
           res.status(200).json(selectCountPromise)
         } else {

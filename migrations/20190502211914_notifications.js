@@ -1,5 +1,5 @@
-exports.up = function(knex, Promise) {
-  return knex.schema.createTable('notifications', tbl => {
+exports.up = function (knex, Promise) {
+  return knex.schema.createTable('notifications', (tbl) => {
     tbl.increments('id')
     tbl
       .integer('user_id')
@@ -8,11 +8,10 @@ exports.up = function(knex, Promise) {
       .onDelete('cascade')
       .onUpdate('cascade')
       .notNullable()
-
     tbl
-      .integer('post_id')
+      .integer('newsfeed_id')
       .references('id')
-      .inTable('posts')
+      .inTable('newsfeed_posts')
       .onDelete('cascade')
       .onUpdate('cascade')
       .notNullable()
@@ -25,6 +24,6 @@ exports.up = function(knex, Promise) {
   })
 }
 
-exports.down = function(knex, Promise) {
+exports.down = function (knex, Promise) {
   return knex.schema.dropTableIfExists('notifications')
 }

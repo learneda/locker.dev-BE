@@ -43,23 +43,32 @@ module.exports = {
   async createNotification(req, res) {
     const { user_id, post_id, type, invoker } = req.body
     let result = null
+    function notificationInsert() {
+      return db('notifications').insert({
+        user_id,
+        post_id,
+        type,
+        invoker,
+      })
+    }
+    function deleteNotification(str) {
+      return db('notifications').del().where({ user_id: user_id, post_id, invoker, type: str })
+    }
     switch (type) {
       case 'like':
-        result = await db('notifications').insert({
-          user_id,
-          post_id,
-          type,
-          invoker,
-        })
+        result = await notificationInsert()
         break
       case 'unlike':
-        console.log('DELETE ENTRY')
-        result = 'pending on u'
+        result = await deleteNotification('like')
         break
+      case 'pony_up':
+        result = await notificationInsert()
+        break
+      case 'pony_down':
+        result = await deleteNotification('pony_up')
       default:
         break
     }
-    console.log('RESULT', result)
     res.status(200)
   },
 }

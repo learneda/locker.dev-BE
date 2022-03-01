@@ -20,36 +20,36 @@ const upload = multer({ storage }).single('profile_pic')
 module.exports = {
   async uploadImg(req, res, next) {
     const user_id = req.user === undefined ? req.body.user : req.user.id
-    upload(req, res, function(err) {
+    upload(req, res, function (err) {
       if (err) {
         console.log(err)
       }
       db('users')
-        .update('profile_picture', req.file.secure_url)
+        .update('profile_picture', req.file.path)
         .where('id', req.user.id)
         .returning('*')
-        .then(response => {
+        .then((response) => {
           console.log('cloud response', response[0])
-          res.status(200).json({ success: 'added image', user: response[0] })
+          return res.status(200).json({ success: 'added image', user: response[0] })
         })
-        .catch(err => console.log(err))
+        .catch((err) => console.log(err))
     })
   },
   async uploadHeader(req, res, next) {
-    upload(req, res, function(err) {
+    upload(req, res, function (err) {
       if (err) {
         console.log(err)
       }
       console.log(req.file)
-      if (req.file.secure_url) {
+      if (req.file.path) {
         db('users')
-          .update('header_picture', req.file.secure_url)
+          .update('header_picture', req.file.path)
           .where('id', req.user.id)
           .returning('*')
-          .then(response => {
+          .then((response) => {
             res.status(200).json({ success: 'added image', user: response[0] })
           })
-          .catch(err => console.log(err))
+          .catch((err) => console.log(err))
       } else {
         res.status(200).json({ success: 'added image' })
       }
@@ -58,9 +58,7 @@ module.exports = {
   async getImg(req, res, next) {
     try {
       const user_id = req.user === undefined ? req.body.user_id : req.user.id
-      const selectPromise = await db('users')
-        .where({ id: user_id })
-        .select('profile_picture')
+      const selectPromise = await db('users').where({ id: user_id }).select('profile_picture')
       if (selectPromise) {
         res.status(200).json(selectPromise)
       } else {

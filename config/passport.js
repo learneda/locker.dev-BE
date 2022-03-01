@@ -66,7 +66,6 @@ passport.use(
         } else {
           await db('users')
             .insert({
-              id: profile.id,
               github_id: profile.id,
               username: profile.username,
               display_name: profile.username,

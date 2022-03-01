@@ -27,9 +27,9 @@ const io = require('socket.io')(myServer, {
     origin: process.env.LEARN_LOCKER_FRONTEND_URL,
     methods: ['GET', 'POST'],
     credentials: true,
-    allowedHeaders: ['session']
+    allowedHeaders: ['session'],
   },
 })
-require('./socket-io/middleware')(io)
+// require('./socket-io/middleware')(io)
 
 configureSocket(io)

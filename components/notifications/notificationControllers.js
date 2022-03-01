@@ -40,4 +40,26 @@ module.exports = {
       }
     }
   },
+  async createNotification(req, res) {
+    const { user_id, post_id, type, invoker } = req.body
+    let result = null
+    switch (type) {
+      case 'like':
+        result = await db('notifications').insert({
+          user_id,
+          post_id,
+          type,
+          invoker,
+        })
+        break
+      case 'unlike':
+        console.log('DELETE ENTRY')
+        result = 'pending on u'
+        break
+      default:
+        break
+    }
+    console.log('RESULT', result)
+    res.status(200)
+  },
 }

@@ -7,4 +7,6 @@ router.get('/', controllers.getAllNotifications)
 
 router.delete('/clear', controllers.clearNotifications)
 
+router.post('/', controllers.createNotification)
+
 module.exports = router

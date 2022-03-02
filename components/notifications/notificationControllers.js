@@ -41,18 +41,20 @@ module.exports = {
     }
   },
   async createNotification(req, res) {
-    const { user_id, post_id, type, invoker } = req.body
+    const { user_id, newsfeed_id, type, invoker } = req.body
     let result = null
     function notificationInsert() {
       return db('notifications').insert({
         user_id,
-        post_id,
+        newsfeed_id,
         type,
         invoker,
       })
     }
     function deleteNotification(str) {
-      return db('notifications').del().where({ user_id: user_id, post_id, invoker, type: str })
+      return db('notifications')
+        .del()
+        .where({ user_id: user_id, newsfeed_id, invoker, type: str })
     }
     switch (type) {
       case 'like':

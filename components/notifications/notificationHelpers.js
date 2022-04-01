@@ -17,9 +17,7 @@ module.exports = {
   },
   async deleteNotifications(userId) {
     try {
-      const clear = await db('notifications')
-        .del()
-        .where('user_id', userId)
+      const clear = await db('notifications').del().where('user_id', userId)
       if (clear) {
         return { msg: 'success' }
       }
@@ -31,9 +29,17 @@ module.exports = {
   async getNotifications(userId) {
     try {
       const notifications = await db('notifications as n')
-        .select('n.id', 'n.post_id', 'n.type', 'n.read', 'n.invoker', 'np.thumbnail_url', 'u.profile_picture')
+        .select(
+          'n.id',
+          'n.newsfeed_id',
+          'n.type',
+          'n.read',
+          'n.invoker',
+          'np.thumbnail_url',
+          'u.profile_picture'
+        )
         .where('n.user_id', userId)
-        .join('newsfeed_posts as np', 'np.id', 'n.post_id')
+        .join('newsfeed_posts as np', 'np.id', 'n.newsfeed_id')
         .join('users as u', 'u.username', 'n.invoker')
         .orderBy('n.created_at', 'desc')
 
